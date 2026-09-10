@@ -1,6 +1,11 @@
 import type { MusicianProfile, JamEvent, Post } from '../types';
 
-const TOKEN_KEY = 'bandmate_auth_token';
+const TOKEN_KEY = 'bandmate_session_token';
+
+// Clean legacy auto-login token from browser storage
+try {
+  localStorage.removeItem('bandmate_auth_token');
+} catch {}
 
 export function getAuthToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);

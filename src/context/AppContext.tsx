@@ -120,7 +120,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     refreshEvents();
     refreshPosts();
 
-    // Check token
+    // Check token - user is NOT authenticated on startup unless a valid session exists
     const token = getAuthToken();
     if (token) {
       authApi.getMe()
@@ -133,14 +133,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           setCurrentUser(null);
           setCurrentMusician(null);
         });
-    } else {
-      // If not logged in on first load, auto-login as Davide demo for frictionless immediate preview
-      authApi.login({ email: 'davide@bandmate.it', password: 'password123' })
-        .then(res => {
-          setCurrentUser(res.user);
-          setCurrentMusician(res.musician);
-        })
-        .catch(() => {});
     }
   }, [refreshMusicians, refreshEvents, refreshPosts]);
 

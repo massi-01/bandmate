@@ -6,6 +6,7 @@ import { EventsView } from './components/EventsView';
 import { FeedView } from './components/FeedView';
 import { ProfileModal } from './components/ProfileModal';
 import { AuthModal } from './components/AuthModal';
+import { MobileBottomNav } from './components/MobileBottomNav';
 import { Music, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
@@ -21,6 +22,7 @@ const MainAppContent: React.FC = () => {
         {activeTab === 'feed' && <FeedView />}
       </main>
 
+      <MobileBottomNav />
       <ProfileModal />
       <AuthModal />
 

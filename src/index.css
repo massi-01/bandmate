@@ -1079,17 +1079,91 @@ button, input, select, textarea {
   to { opacity: 1; transform: translateX(0); }
 }
 
-/* Responsive adjustments */
-@media (max-width: 900px) {
+/* Mobile Bottom Navigation Bar */
+.mobile-bottom-nav {
+  display: none;
+}
+
+.auth-btn-text-mobile {
+  display: none;
+}
+
+.auth-btn-text-desktop {
+  display: inline;
+}
+
+/* Tablet refinements */
+@media (min-width: 861px) and (max-width: 1100px) {
+  .nav-tab-btn {
+    padding: 7px 12px;
+    font-size: 0.84rem;
+    gap: 6px;
+  }
+  .navbar {
+    padding: 10px 16px;
+  }
+}
+
+/* Mobile adjustments (<= 860px) */
+@media (max-width: 860px) {
+  /* Hide desktop tabs in the header so they NEVER overlap the logo or login button */
   .nav-tabs {
+    display: none !important;
+  }
+
+  /* Dedicated bottom tab bar */
+  .mobile-bottom-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
     position: fixed;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 60;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-    background: rgba(15, 23, 42, 0.95);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(11, 15, 28, 0.95);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-subtle);
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)) 12px;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.6);
+  }
+
+  .mobile-nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-nav-btn:active {
+    transform: scale(0.95);
+  }
+
+  .mobile-nav-btn.active {
+    color: #ffffff;
+    background: rgba(139, 92, 246, 0.18);
+  }
+
+  .mobile-nav-btn.active svg {
+    color: var(--accent-purple-light);
+    filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.6));
+  }
+
+  /* Ensure page content has room above fixed bottom bar */
+  .main-content {
+    padding-bottom: 96px !important;
   }
 
   .brand-tagline {
@@ -1115,6 +1189,23 @@ button, input, select, textarea {
     padding: 10px 14px;
   }
 
+  .navbar-inner {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .brand-text {
+    font-size: 1.25rem;
+  }
+
   .user-pill-role {
     display: none;
   }
@@ -1123,3 +1214,27 @@ button, input, select, textarea {
     font-size: 1.5rem;
   }
 }
+
+@media (max-width: 480px) {
+  .auth-btn-text-desktop {
+    display: none;
+  }
+
+  .auth-btn-text-mobile {
+    display: inline;
+  }
+
+  .user-pill-name {
+    max-width: 85px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.8rem;
+  }
+
+  .user-pill-btn {
+    padding: 4px 8px 4px 4px;
+    gap: 6px;
+  }
+}
+

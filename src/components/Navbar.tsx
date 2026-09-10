@@ -234,11 +234,12 @@ export const Navbar: React.FC = () => {
             </>
           ) : (
             <button 
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary btn-sm auth-btn"
               onClick={() => setIsAuthModalOpen(true)}
             >
               <LogIn size={15} />
-              <span>Accedi / Registrati</span>
+              <span className="auth-btn-text-desktop">Accedi / Registrati</span>
+              <span className="auth-btn-text-mobile">Accedi</span>
             </button>
           )}
         </div>
