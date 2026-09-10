@@ -1,6 +1,7 @@
 # 🗄️ Modelli Dati e Attributi di BandMate
 
-Questo documento descrive in dettaglio l'architettura dei dati di **BandMate**, le tabelle relazionali memorizzate nel database SQLite (`data/bandmate.db`), i relativi tipi TypeScript corrispondenti (`src/types/index.ts`), le relazioni tra le entità e tutti gli attributi con relativi vincoli e descrizioni.
+Questo documento descrive in dettaglio l'architettura dei dati di **BandMate**, le collezioni memorizzate nel database **MongoDB Atlas** (cloud-hosted), i relativi schemi Mongoose (`server/models/`), i tipi TypeScript corrispondenti (`src/types/index.ts`), le relazioni tra le entità e tutti gli attributi con relativi vincoli e descrizioni.
+
 
 ---
 

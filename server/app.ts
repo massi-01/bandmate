@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { connectDB } from './db.ts';
 import { authRouter } from './routes/authRoutes.ts';
 import { musiciansRouter } from './routes/musiciansRoutes.ts';
 import { eventsRouter } from './routes/eventsRoutes.ts';
@@ -10,9 +11,20 @@ export const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Ensure MongoDB is connected before handling API requests
+app.use(async (_req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err: any) {
+    console.error('MongoDB connection error:', err);
+    res.status(500).json({ error: 'Errore di connessione al database: ' + err.message });
+  }
+});
+
 // Health check
 app.get(['/api/health', '/health', '/api', '/'], (_req, res) => {
-  res.json({ status: 'ok', service: 'BandMate API', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', service: 'BandMate API (MongoDB)', timestamp: new Date().toISOString() });
 });
 
 // Mount Routes for both /api/* and root /* (for Vercel rewrites flexibility)
@@ -29,5 +41,3 @@ app.use('/api/posts', postsRouter);
 app.use('/posts', postsRouter);
 
 export default app;
-
-

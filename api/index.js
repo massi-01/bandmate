@@ -15179,7 +15179,7 @@ var require_mimeScore = __commonJS({
 var require_mime_types = __commonJS({
   "node_modules/mime-types/index.js"(exports) {
     "use strict";
-    var db2 = require_mime_db();
+    var db = require_mime_db();
     var extname = __require("path").extname;
     var mimeScore = require_mimeScore();
     var EXTRACT_TYPE_REGEXP = /^\s*([^;\s]*)(?:;|\s|$)/;
@@ -15198,7 +15198,7 @@ var require_mime_types = __commonJS({
         return false;
       }
       var match = EXTRACT_TYPE_REGEXP.exec(type);
-      var mime = match && db2[match[1].toLowerCase()];
+      var mime = match && db[match[1].toLowerCase()];
       if (mime && mime.charset) {
         return mime.charset;
       }
@@ -15232,19 +15232,19 @@ var require_mime_types = __commonJS({
       }
       return exts[0];
     }
-    function lookup(path2) {
-      if (!path2 || typeof path2 !== "string") {
+    function lookup(path) {
+      if (!path || typeof path !== "string") {
         return false;
       }
-      var extension2 = extname("x." + path2).toLowerCase().slice(1);
+      var extension2 = extname("x." + path).toLowerCase().slice(1);
       if (!extension2) {
         return false;
       }
       return exports.types[extension2] || false;
     }
     function populateMaps(extensions, types) {
-      Object.keys(db2).forEach(function forEachMimeType(type) {
-        var mime = db2[type];
+      Object.keys(db).forEach(function forEachMimeType(type) {
+        var mime = db[type];
         var exts = mime.extensions;
         if (!exts || !exts.length) {
           return;
@@ -15265,14 +15265,14 @@ var require_mime_types = __commonJS({
       });
     }
     function _preferredType(ext, type0, type1) {
-      var score0 = type0 ? mimeScore(type0, db2[type0].source) : 0;
-      var score1 = type1 ? mimeScore(type1, db2[type1].source) : 0;
+      var score0 = type0 ? mimeScore(type0, db[type0].source) : 0;
+      var score1 = type1 ? mimeScore(type1, db[type1].source) : 0;
       return score0 > score1 ? type0 : type1;
     }
     function _preferredTypeLegacy(ext, type0, type1) {
       var SOURCE_RANK = ["nginx", "apache", void 0, "iana"];
-      var score0 = type0 ? SOURCE_RANK.indexOf(db2[type0].source) : 0;
-      var score1 = type1 ? SOURCE_RANK.indexOf(db2[type1].source) : 0;
+      var score0 = type0 ? SOURCE_RANK.indexOf(db[type0].source) : 0;
+      var score1 = type1 ? SOURCE_RANK.indexOf(db[type1].source) : 0;
       if (exports.types[extension] !== "application/octet-stream" && (score0 > score1 || score0 === score1 && exports.types[extension]?.slice(0, 12) === "application/")) {
         return type0;
       }
@@ -18923,13 +18923,13 @@ var require_view = __commonJS({
   "node_modules/express/lib/view.js"(exports, module) {
     "use strict";
     var debug = require_src()("express:view");
-    var path2 = __require("node:path");
-    var fs2 = __require("node:fs");
-    var dirname = path2.dirname;
-    var basename = path2.basename;
-    var extname = path2.extname;
-    var join = path2.join;
-    var resolve = path2.resolve;
+    var path = __require("node:path");
+    var fs = __require("node:fs");
+    var dirname = path.dirname;
+    var basename = path.basename;
+    var extname = path.extname;
+    var join = path.join;
+    var resolve = path.resolve;
     module.exports = View;
     function View(name, options) {
       var opts = options || {};
@@ -18958,17 +18958,17 @@ var require_view = __commonJS({
       this.path = this.lookup(fileName);
     }
     View.prototype.lookup = function lookup(name) {
-      var path3;
+      var path2;
       var roots = [].concat(this.root);
       debug('lookup "%s"', name);
-      for (var i = 0; i < roots.length && !path3; i++) {
+      for (var i = 0; i < roots.length && !path2; i++) {
         var root = roots[i];
         var loc = resolve(root, name);
         var dir = dirname(loc);
         var file = basename(loc);
-        path3 = this.resolve(dir, file);
+        path2 = this.resolve(dir, file);
       }
-      return path3;
+      return path2;
     };
     View.prototype.render = function render(options, callback) {
       var sync = true;
@@ -18990,21 +18990,21 @@ var require_view = __commonJS({
     };
     View.prototype.resolve = function resolve2(dir, file) {
       var ext = this.ext;
-      var path3 = join(dir, file);
-      var stat = tryStat(path3);
+      var path2 = join(dir, file);
+      var stat = tryStat(path2);
       if (stat && stat.isFile()) {
-        return path3;
+        return path2;
       }
-      path3 = join(dir, basename(file, ext), "index" + ext);
-      stat = tryStat(path3);
+      path2 = join(dir, basename(file, ext), "index" + ext);
+      stat = tryStat(path2);
       if (stat && stat.isFile()) {
-        return path3;
+        return path2;
       }
     };
-    function tryStat(path3) {
-      debug('stat "%s"', path3);
+    function tryStat(path2) {
+      debug('stat "%s"', path2);
       try {
-        return fs2.statSync(path3);
+        return fs.statSync(path2);
       } catch (e) {
         return void 0;
       }
@@ -20244,15 +20244,15 @@ var require_dist3 = __commonJS({
       let index = 0;
       function consumeUntil(end) {
         const output = [];
-        let path2 = "";
+        let path = "";
         function writePath() {
-          if (!path2)
+          if (!path)
             return;
           output.push({
             type: "text",
-            value: encodePath(path2)
+            value: encodePath(path)
           });
-          path2 = "";
+          path = "";
         }
         while (index < chars.length) {
           const value = chars[index++];
@@ -20264,7 +20264,7 @@ var require_dist3 = __commonJS({
             if (index === chars.length) {
               throw new PathError(`Unexpected end after \\ at index ${index}`, str);
             }
-            path2 += chars[index++];
+            path += chars[index++];
             continue;
           }
           if (value === ":" || value === "*") {
@@ -20308,7 +20308,7 @@ var require_dist3 = __commonJS({
           if (value === "}" || value === "(" || value === ")" || value === "[" || value === "]" || value === "+" || value === "?" || value === "!") {
             throw new PathError(`Unexpected ${value} at index ${index - 1}`, str);
           }
-          path2 += value;
+          path += value;
         }
         if (end) {
           throw new PathError(`Unexpected end at index ${index}, expected ${end}`, str);
@@ -20318,17 +20318,17 @@ var require_dist3 = __commonJS({
       }
       return new TokenData(consumeUntil(""), str);
     }
-    function compile(path2, options = {}) {
+    function compile(path, options = {}) {
       const { encode = encodeURIComponent, delimiter = DEFAULT_DELIMITER } = options;
-      const data = typeof path2 === "object" ? path2 : parse(path2, options);
+      const data = typeof path === "object" ? path : parse(path, options);
       const fn = tokensToFunction(data.tokens, delimiter, encode);
-      return function path3(params = {}) {
+      return function path2(params = {}) {
         const missing = [];
-        const path4 = fn(params, missing);
+        const path3 = fn(params, missing);
         if (missing.length) {
           throw new TypeError(`Missing parameters: ${missing.join(", ")}`);
         }
-        return path4;
+        return path3;
       };
     }
     function tokensToFunction(tokens, delimiter, encode) {
@@ -20390,9 +20390,9 @@ var require_dist3 = __commonJS({
         return encodeValue(value);
       };
     }
-    function match(path2, options = {}) {
+    function match(path, options = {}) {
       const { decode = decodeURIComponent, delimiter = DEFAULT_DELIMITER } = options;
-      const { regexp, keys } = pathToRegexp(path2, options);
+      const { regexp, keys } = pathToRegexp(path, options);
       const decoders = keys.map((key) => {
         if (decode === false)
           return NOOP_VALUE;
@@ -20404,7 +20404,7 @@ var require_dist3 = __commonJS({
         const m = regexp.exec(input);
         if (!m)
           return false;
-        const path3 = m[0];
+        const path2 = m[0];
         const params = /* @__PURE__ */ Object.create(null);
         for (let i = 1; i < m.length; i++) {
           if (m[i] === void 0)
@@ -20413,21 +20413,21 @@ var require_dist3 = __commonJS({
           const decoder = decoders[i - 1];
           params[key.name] = decoder(m[i]);
         }
-        return { path: path3, params };
+        return { path: path2, params };
       };
     }
-    function pathToRegexp(path2, options = {}) {
+    function pathToRegexp(path, options = {}) {
       const { delimiter = DEFAULT_DELIMITER, end = true, sensitive = false, trailing = true } = options;
       const keys = [];
       let source = "";
       let combinations = 0;
-      function process2(path3) {
-        if (Array.isArray(path3)) {
-          for (const p of path3)
+      function process2(path2) {
+        if (Array.isArray(path2)) {
+          for (const p of path2)
             process2(p);
           return;
         }
-        const data = typeof path3 === "object" ? path3 : parse(path3, options);
+        const data = typeof path2 === "object" ? path2 : parse(path2, options);
         flatten(data.tokens, 0, [], (tokens) => {
           if (combinations >= 256) {
             throw new PathError("Too many path combinations", data.originalPath);
@@ -20438,7 +20438,7 @@ var require_dist3 = __commonJS({
           combinations++;
         });
       }
-      process2(path2);
+      process2(path);
       let pattern = `^(?:${source})`;
       if (trailing)
         pattern += "(?:" + escape2(delimiter) + "$)?";
@@ -20578,18 +20578,18 @@ var require_layer = __commonJS({
     var TRAILING_SLASH_REGEXP = /\/+$/;
     var MATCHING_GROUP_REGEXP = /\((?:\?<(.*?)>)?(?!\?)/g;
     module.exports = Layer;
-    function Layer(path2, options, fn) {
+    function Layer(path, options, fn) {
       if (!(this instanceof Layer)) {
-        return new Layer(path2, options, fn);
+        return new Layer(path, options, fn);
       }
-      debug("new %o", path2);
+      debug("new %o", path);
       const opts = options || {};
       this.handle = fn;
       this.keys = [];
       this.name = fn.name || "<anonymous>";
       this.params = void 0;
       this.path = void 0;
-      this.slash = path2 === "/" && opts.end === false;
+      this.slash = path === "/" && opts.end === false;
       function matcher(_path) {
         if (_path instanceof RegExp) {
           const keys = [];
@@ -20628,7 +20628,7 @@ var require_layer = __commonJS({
           decode: decodeParam
         });
       }
-      this.matchers = Array.isArray(path2) ? path2.map(matcher) : [matcher(path2)];
+      this.matchers = Array.isArray(path) ? path.map(matcher) : [matcher(path)];
     }
     Layer.prototype.handleError = function handleError(error, req, res, next) {
       const fn = this.handle;
@@ -20668,9 +20668,9 @@ var require_layer = __commonJS({
         next(err);
       }
     };
-    Layer.prototype.match = function match(path2) {
+    Layer.prototype.match = function match(path) {
       let match2;
-      if (path2 != null) {
+      if (path != null) {
         if (this.slash) {
           this.params = {};
           this.path = "";
@@ -20678,7 +20678,7 @@ var require_layer = __commonJS({
         }
         let i = 0;
         while (!match2 && i < this.matchers.length) {
-          match2 = this.matchers[i](path2);
+          match2 = this.matchers[i](path);
           i++;
         }
       }
@@ -20706,13 +20706,13 @@ var require_layer = __commonJS({
         throw err;
       }
     }
-    function loosen(path2) {
-      if (path2 instanceof RegExp || path2 === "/") {
-        return path2;
+    function loosen(path) {
+      if (path instanceof RegExp || path === "/") {
+        return path;
       }
-      return Array.isArray(path2) ? path2.map(function(p) {
+      return Array.isArray(path) ? path.map(function(p) {
         return loosen(p);
-      }) : String(path2).replace(TRAILING_SLASH_REGEXP, "");
+      }) : String(path).replace(TRAILING_SLASH_REGEXP, "");
     }
   }
 });
@@ -20728,9 +20728,9 @@ var require_route = __commonJS({
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
     module.exports = Route;
-    function Route(path2) {
-      debug("new %o", path2);
-      this.path = path2;
+    function Route(path) {
+      debug("new %o", path);
+      this.path = path;
       this.stack = [];
       this.methods = /* @__PURE__ */ Object.create(null);
     }
@@ -20938,8 +20938,8 @@ var require_router = __commonJS({
         if (++sync > 100) {
           return setImmediate(next, err);
         }
-        const path2 = getPathname(req);
-        if (path2 == null) {
+        const path = getPathname(req);
+        if (path == null) {
           return done(layerError);
         }
         let layer;
@@ -20947,7 +20947,7 @@ var require_router = __commonJS({
         let route;
         while (match !== true && idx < stack.length) {
           layer = stack[idx++];
-          match = matchLayer(layer, path2);
+          match = matchLayer(layer, path);
           route = layer.route;
           if (typeof match !== "boolean") {
             layerError = layerError || match;
@@ -20985,18 +20985,18 @@ var require_router = __commonJS({
           } else if (route) {
             layer.handleRequest(req, res, next);
           } else {
-            trimPrefix(layer, layerError, layerPath, path2);
+            trimPrefix(layer, layerError, layerPath, path);
           }
           sync = 0;
         });
       }
-      function trimPrefix(layer, layerError, layerPath, path2) {
+      function trimPrefix(layer, layerError, layerPath, path) {
         if (layerPath.length !== 0) {
-          if (layerPath !== path2.substring(0, layerPath.length)) {
+          if (layerPath !== path.substring(0, layerPath.length)) {
             next(layerError);
             return;
           }
-          const c = path2[layerPath.length];
+          const c = path[layerPath.length];
           if (c && c !== "/") {
             next(layerError);
             return;
@@ -21020,7 +21020,7 @@ var require_router = __commonJS({
     };
     Router5.prototype.use = function use(handler) {
       let offset = 0;
-      let path2 = "/";
+      let path = "/";
       if (typeof handler !== "function") {
         let arg = handler;
         while (Array.isArray(arg) && arg.length !== 0) {
@@ -21028,7 +21028,7 @@ var require_router = __commonJS({
         }
         if (typeof arg !== "function") {
           offset = 1;
-          path2 = handler;
+          path = handler;
         }
       }
       const callbacks = flatten.call(slice.call(arguments, offset), Infinity);
@@ -21040,8 +21040,8 @@ var require_router = __commonJS({
         if (typeof fn !== "function") {
           throw new TypeError("argument handler must be a function");
         }
-        debug("use %o %s", path2, fn.name || "<anonymous>");
-        const layer = new Layer(path2, {
+        debug("use %o %s", path, fn.name || "<anonymous>");
+        const layer = new Layer(path, {
           sensitive: this.caseSensitive,
           strict: false,
           end: false
@@ -21051,9 +21051,9 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router5.prototype.route = function route(path2) {
-      const route2 = new Route(path2);
-      const layer = new Layer(path2, {
+    Router5.prototype.route = function route(path) {
+      const route2 = new Route(path);
+      const layer = new Layer(path, {
         sensitive: this.caseSensitive,
         strict: this.strict,
         end: true
@@ -21066,8 +21066,8 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router5.prototype[method] = function(path2) {
-        const route = this.route(path2);
+      Router5.prototype[method] = function(path) {
+        const route = this.route(path);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
       };
@@ -21096,9 +21096,9 @@ var require_router = __commonJS({
       const fqdnIndex = url.substring(0, pathLength).indexOf("://");
       return fqdnIndex !== -1 ? url.substring(0, url.indexOf("/", 3 + fqdnIndex)) : void 0;
     }
-    function matchLayer(layer, path2) {
+    function matchLayer(layer, path) {
       try {
-        return layer.match(path2);
+        return layer.match(path);
       } catch (err) {
         return err;
       }
@@ -21326,7 +21326,7 @@ var require_application = __commonJS({
     };
     app2.use = function use(fn) {
       var offset = 0;
-      var path2 = "/";
+      var path = "/";
       if (typeof fn !== "function") {
         var arg = fn;
         while (Array.isArray(arg) && arg.length !== 0) {
@@ -21334,7 +21334,7 @@ var require_application = __commonJS({
         }
         if (typeof arg !== "function") {
           offset = 1;
-          path2 = fn;
+          path = fn;
         }
       }
       var fns = flatten.call(slice.call(arguments, offset), Infinity);
@@ -21344,12 +21344,12 @@ var require_application = __commonJS({
       var router = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router.use(path2, fn2);
+          return router.use(path, fn2);
         }
-        debug(".use app under %s", path2);
-        fn2.mountpath = path2;
+        debug(".use app under %s", path);
+        fn2.mountpath = path;
         fn2.parent = this;
-        router.use(path2, function mounted_app(req, res, next) {
+        router.use(path, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -21361,8 +21361,8 @@ var require_application = __commonJS({
       }, this);
       return this;
     };
-    app2.route = function route(path2) {
-      return this.router.route(path2);
+    app2.route = function route(path) {
+      return this.router.route(path);
     };
     app2.engine = function engine(ext, fn) {
       if (typeof fn !== "function") {
@@ -21405,7 +21405,7 @@ var require_application = __commonJS({
       }
       return this;
     };
-    app2.path = function path2() {
+    app2.path = function path() {
       return this.parent ? this.parent.path() + this.mountpath : "";
     };
     app2.enabled = function enabled(setting) {
@@ -21421,17 +21421,17 @@ var require_application = __commonJS({
       return this.set(setting, false);
     };
     methods.forEach(function(method) {
-      app2[method] = function(path2) {
+      app2[method] = function(path) {
         if (method === "get" && arguments.length === 1) {
-          return this.set(path2);
+          return this.set(path);
         }
-        var route = this.route(path2);
+        var route = this.route(path);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
       };
     });
-    app2.all = function all(path2) {
-      var route = this.route(path2);
+    app2.all = function all(path) {
+      var route = this.route(path);
       var args = slice.call(arguments, 1);
       for (var i = 0; i < methods.length; i++) {
         route[methods[i]].apply(route, args);
@@ -22416,7 +22416,7 @@ var require_request = __commonJS({
       var subdomains2 = !isIP(hostname) ? hostname.split(".").reverse() : [hostname];
       return subdomains2.slice(offset);
     });
-    defineGetter(req, "path", function path2() {
+    defineGetter(req, "path", function path() {
       return parse(this).pathname;
     });
     defineGetter(req, "host", function host() {
@@ -22627,8 +22627,8 @@ var require_content_disposition = __commonJS({
       this.type = type;
       this.parameters = parameters;
     }
-    function basename(path2) {
-      const normalized = path2.replaceAll("\\", "/");
+    function basename(path) {
+      const normalized = path.replaceAll("\\", "/");
       let end = normalized.length;
       while (end > 0 && normalized[end - 1] === "/") {
         end--;
@@ -22869,32 +22869,32 @@ var require_send = __commonJS({
     var escapeHtml = require_escape_html();
     var etag = require_etag();
     var fresh = require_fresh();
-    var fs2 = __require("fs");
+    var fs = __require("fs");
     var mime = require_mime_types();
     var ms = require_ms();
     var onFinished = require_on_finished();
     var parseRange = require_range_parser();
-    var path2 = __require("path");
+    var path = __require("path");
     var statuses = require_statuses();
     var Stream = __require("stream");
     var util = __require("util");
-    var extname = path2.extname;
-    var join = path2.join;
-    var normalize = path2.normalize;
-    var resolve = path2.resolve;
-    var sep = path2.sep;
+    var extname = path.extname;
+    var join = path.join;
+    var normalize = path.normalize;
+    var resolve = path.resolve;
+    var sep = path.sep;
     var BYTES_RANGE_REGEXP = /^ *bytes=/;
     var MAX_MAXAGE = 60 * 60 * 24 * 365 * 1e3;
     var UP_PATH_REGEXP = /(?:^|[\\/])\.\.(?:[\\/]|$)/;
     module.exports = send;
-    function send(req, path3, options) {
-      return new SendStream(req, path3, options);
+    function send(req, path2, options) {
+      return new SendStream(req, path2, options);
     }
-    function SendStream(req, path3, options) {
+    function SendStream(req, path2, options) {
       Stream.call(this);
       var opts = options || {};
       this.options = opts;
-      this.path = path3;
+      this.path = path2;
       this.req = req;
       this._acceptRanges = opts.acceptRanges !== void 0 ? Boolean(opts.acceptRanges) : true;
       this._cacheControl = opts.cacheControl !== void 0 ? Boolean(opts.cacheControl) : true;
@@ -23008,10 +23008,10 @@ var require_send = __commonJS({
       var lastModified = this.res.getHeader("Last-Modified");
       return parseHttpDate(lastModified) <= parseHttpDate(ifRange);
     };
-    SendStream.prototype.redirect = function redirect(path3) {
+    SendStream.prototype.redirect = function redirect(path2) {
       var res = this.res;
       if (hasListeners(this, "directory")) {
-        this.emit("directory", res, path3);
+        this.emit("directory", res, path2);
         return;
       }
       if (this.hasTrailingSlash()) {
@@ -23031,38 +23031,38 @@ var require_send = __commonJS({
     SendStream.prototype.pipe = function pipe(res) {
       var root = this._root;
       this.res = res;
-      var path3 = decode(this.path);
-      if (path3 === -1) {
+      var path2 = decode(this.path);
+      if (path2 === -1) {
         this.error(400);
         return res;
       }
-      if (~path3.indexOf("\0")) {
+      if (~path2.indexOf("\0")) {
         this.error(400);
         return res;
       }
       var parts;
       if (root !== null) {
-        if (path3) {
-          path3 = normalize("." + sep + path3);
+        if (path2) {
+          path2 = normalize("." + sep + path2);
         }
-        if (UP_PATH_REGEXP.test(path3)) {
-          debug('malicious path "%s"', path3);
+        if (UP_PATH_REGEXP.test(path2)) {
+          debug('malicious path "%s"', path2);
           this.error(403);
           return res;
         }
-        parts = path3.split(sep);
-        path3 = normalize(join(root, path3));
+        parts = path2.split(sep);
+        path2 = normalize(join(root, path2));
       } else {
-        if (UP_PATH_REGEXP.test(path3)) {
-          debug('malicious path "%s"', path3);
+        if (UP_PATH_REGEXP.test(path2)) {
+          debug('malicious path "%s"', path2);
           this.error(403);
           return res;
         }
-        parts = normalize(path3).split(sep);
-        path3 = resolve(path3);
+        parts = normalize(path2).split(sep);
+        path2 = resolve(path2);
       }
       if (containsDotFile(parts)) {
-        debug('%s dotfile "%s"', this._dotfiles, path3);
+        debug('%s dotfile "%s"', this._dotfiles, path2);
         switch (this._dotfiles) {
           case "allow":
             break;
@@ -23076,13 +23076,13 @@ var require_send = __commonJS({
         }
       }
       if (this._index.length && this.hasTrailingSlash()) {
-        this.sendIndex(path3);
+        this.sendIndex(path2);
         return res;
       }
-      this.sendFile(path3);
+      this.sendFile(path2);
       return res;
     };
-    SendStream.prototype.send = function send2(path3, stat) {
+    SendStream.prototype.send = function send2(path2, stat) {
       var len = stat.size;
       var options = this.options;
       var opts = {};
@@ -23094,9 +23094,9 @@ var require_send = __commonJS({
         this.headersAlreadySent();
         return;
       }
-      debug('pipe "%s"', path3);
-      this.setHeader(path3, stat);
-      this.type(path3);
+      debug('pipe "%s"', path2);
+      this.setHeader(path2, stat);
+      this.type(path2);
       if (this.isConditionalGET()) {
         if (this.isPreconditionFailure()) {
           this.error(412);
@@ -23145,30 +23145,30 @@ var require_send = __commonJS({
         res.end();
         return;
       }
-      this.stream(path3, opts);
+      this.stream(path2, opts);
     };
-    SendStream.prototype.sendFile = function sendFile(path3) {
+    SendStream.prototype.sendFile = function sendFile(path2) {
       var i = 0;
       var self = this;
-      debug('stat "%s"', path3);
-      fs2.stat(path3, function onstat(err, stat) {
-        var pathEndsWithSep = path3[path3.length - 1] === sep;
-        if (err && err.code === "ENOENT" && !extname(path3) && !pathEndsWithSep) {
+      debug('stat "%s"', path2);
+      fs.stat(path2, function onstat(err, stat) {
+        var pathEndsWithSep = path2[path2.length - 1] === sep;
+        if (err && err.code === "ENOENT" && !extname(path2) && !pathEndsWithSep) {
           return next(err);
         }
         if (err) return self.onStatError(err);
-        if (stat.isDirectory()) return self.redirect(path3);
+        if (stat.isDirectory()) return self.redirect(path2);
         if (pathEndsWithSep) return self.error(404);
-        self.emit("file", path3, stat);
-        self.send(path3, stat);
+        self.emit("file", path2, stat);
+        self.send(path2, stat);
       });
       function next(err) {
         if (self._extensions.length <= i) {
           return err ? self.onStatError(err) : self.error(404);
         }
-        var p = path3 + "." + self._extensions[i++];
+        var p = path2 + "." + self._extensions[i++];
         debug('stat "%s"', p);
-        fs2.stat(p, function(err2, stat) {
+        fs.stat(p, function(err2, stat) {
           if (err2) return next(err2);
           if (stat.isDirectory()) return next();
           self.emit("file", p, stat);
@@ -23176,7 +23176,7 @@ var require_send = __commonJS({
         });
       }
     };
-    SendStream.prototype.sendIndex = function sendIndex(path3) {
+    SendStream.prototype.sendIndex = function sendIndex(path2) {
       var i = -1;
       var self = this;
       function next(err) {
@@ -23184,9 +23184,9 @@ var require_send = __commonJS({
           if (err) return self.onStatError(err);
           return self.error(404);
         }
-        var p = join(path3, self._index[i]);
+        var p = join(path2, self._index[i]);
         debug('stat "%s"', p);
-        fs2.stat(p, function(err2, stat) {
+        fs.stat(p, function(err2, stat) {
           if (err2) return next(err2);
           if (stat.isDirectory()) return next();
           self.emit("file", p, stat);
@@ -23195,10 +23195,10 @@ var require_send = __commonJS({
       }
       next();
     };
-    SendStream.prototype.stream = function stream(path3, options) {
+    SendStream.prototype.stream = function stream(path2, options) {
       var self = this;
       var res = this.res;
-      var stream2 = fs2.createReadStream(path3, options);
+      var stream2 = fs.createReadStream(path2, options);
       this.emit("stream", stream2);
       stream2.pipe(res);
       function cleanup() {
@@ -23213,17 +23213,17 @@ var require_send = __commonJS({
         self.emit("end");
       });
     };
-    SendStream.prototype.type = function type(path3) {
+    SendStream.prototype.type = function type(path2) {
       var res = this.res;
       if (res.getHeader("Content-Type")) return;
-      var ext = extname(path3);
+      var ext = extname(path2);
       var type2 = mime.contentType(ext) || "application/octet-stream";
       debug("content-type %s", type2);
       res.setHeader("Content-Type", type2);
     };
-    SendStream.prototype.setHeader = function setHeader(path3, stat) {
+    SendStream.prototype.setHeader = function setHeader(path2, stat) {
       var res = this.res;
-      this.emit("headers", res, path3, stat);
+      this.emit("headers", res, path2, stat);
       if (this._acceptRanges && !res.getHeader("Accept-Ranges")) {
         debug("accept ranges");
         res.setHeader("Accept-Ranges", "bytes");
@@ -23281,9 +23281,9 @@ var require_send = __commonJS({
       }
       return err instanceof Error ? createError(status, err, { expose: false }) : createError(status, err);
     }
-    function decode(path3) {
+    function decode(path2) {
       try {
-        return decodeURIComponent(path3);
+        return decodeURIComponent(path2);
       } catch (err) {
         return -1;
       }
@@ -23427,7 +23427,7 @@ var require_response = __commonJS({
     var http = __require("node:http");
     var onFinished = require_on_finished();
     var mime = require_mime_types();
-    var path2 = __require("node:path");
+    var path = __require("node:path");
     var pathIsAbsolute = __require("node:path").isAbsolute;
     var statuses = require_statuses();
     var sign = require_cookie_signature().sign;
@@ -23436,8 +23436,8 @@ var require_response = __commonJS({
     var setCharset = require_utils3().setCharset;
     var cookie = require_cookie();
     var send = require_send();
-    var extname = path2.extname;
-    var resolve = path2.resolve;
+    var extname = path.extname;
+    var resolve = path.resolve;
     var vary = require_vary();
     var { Buffer: Buffer2 } = __require("node:buffer");
     var res = Object.create(http.ServerResponse.prototype);
@@ -23583,26 +23583,26 @@ var require_response = __commonJS({
       this.type("txt");
       return this.send(body);
     };
-    res.sendFile = function sendFile(path3, options, callback) {
+    res.sendFile = function sendFile(path2, options, callback) {
       var done = callback;
       var req = this.req;
       var res2 = this;
       var next = req.next;
       var opts = options || {};
-      if (!path3) {
+      if (!path2) {
         throw new TypeError("path argument is required to res.sendFile");
       }
-      if (typeof path3 !== "string") {
+      if (typeof path2 !== "string") {
         throw new TypeError("path must be a string to res.sendFile");
       }
       if (typeof options === "function") {
         done = options;
         opts = {};
       }
-      if (!opts.root && !pathIsAbsolute(path3)) {
+      if (!opts.root && !pathIsAbsolute(path2)) {
         throw new TypeError("path must be absolute or specify root to res.sendFile");
       }
-      var pathname = encodeURI(path3);
+      var pathname = encodeURI(path2);
       opts.etag = this.app.enabled("etag");
       var file = send(req, pathname, opts);
       sendfile(res2, file, opts, function(err) {
@@ -23613,7 +23613,7 @@ var require_response = __commonJS({
         }
       });
     };
-    res.download = function download(path3, filename, options, callback) {
+    res.download = function download(path2, filename, options, callback) {
       var done = callback;
       var name = filename;
       var opts = options || null;
@@ -23630,7 +23630,7 @@ var require_response = __commonJS({
         opts = filename;
       }
       var headers = {
-        "Content-Disposition": contentDisposition(name || path3)
+        "Content-Disposition": contentDisposition(name || path2)
       };
       if (opts && opts.headers) {
         var keys = Object.keys(opts.headers);
@@ -23643,7 +23643,7 @@ var require_response = __commonJS({
       }
       opts = Object.create(opts);
       opts.headers = headers;
-      var fullPath = !opts.root ? resolve(path3) : path3;
+      var fullPath = !opts.root ? resolve(path2) : path2;
       return this.sendFile(fullPath, opts, done);
     };
     res.contentType = res.type = function contentType(type) {
@@ -23926,11 +23926,11 @@ var require_serve_static = __commonJS({
         }
         var forwardError = !fallthrough;
         var originalUrl = parseUrl.original(req);
-        var path2 = parseUrl(req).pathname;
-        if (path2 === "/" && originalUrl.pathname.substr(-1) !== "/") {
-          path2 = "";
+        var path = parseUrl(req).pathname;
+        if (path === "/" && originalUrl.pathname.substr(-1) !== "/") {
+          path = "";
         }
-        var stream = send(req, path2, opts);
+        var stream = send(req, path, opts);
         stream.on("directory", onDirectory);
         if (setHeaders) {
           stream.on("headers", setHeaders);
@@ -24319,16 +24319,203 @@ var require_lib3 = __commonJS({
 var import_express5 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 
-// server/routes/authRoutes.ts
-var import_express = __toESM(require_express2(), 1);
-
 // server/db.ts
-import fs from "node:fs";
-import path from "node:path";
-import { createRequire } from "node:module";
+import mongoose6 from "mongoose";
+
+// server/models/User.ts
+import mongoose, { Schema } from "mongoose";
+var UserSchema = new Schema(
+  {
+    _id: { type: String, required: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    passwordHash: { type: String, required: true },
+    salt: { type: String, required: true },
+    createdAt: { type: String, required: true, default: () => (/* @__PURE__ */ new Date()).toISOString() }
+  },
+  {
+    _id: false,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret._id;
+        delete ret.__v;
+        return ret;
+      }
+    }
+  }
+);
+UserSchema.virtual("id").get(function() {
+  return this._id;
+});
+var User = mongoose.models.User || mongoose.model("User", UserSchema);
+
+// server/models/Musician.ts
+import mongoose2, { Schema as Schema2 } from "mongoose";
+var MusicianSchema = new Schema2(
+  {
+    _id: { type: String, required: true },
+    userId: { type: String, required: true, unique: true, ref: "User" },
+    name: { type: String, required: true, trim: true },
+    username: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    age: { type: Number, required: true },
+    gender: { type: String, required: true },
+    city: { type: String, required: true, trim: true },
+    region: { type: String, default: "" },
+    avatar: { type: String, default: "" },
+    bio: { type: String, default: "" },
+    availability: { type: String, required: true, default: "Disponibile per Jam" },
+    experienceYears: { type: Number, required: true, default: 1 },
+    phoneOrContact: { type: String, default: "" },
+    instruments: [
+      {
+        name: { type: String, required: true },
+        level: { type: String, required: true },
+        isPrimary: { type: Boolean, default: false }
+      }
+    ],
+    genres: [{ type: String }],
+    socialLinks: {
+      instagram: { type: String, default: "" },
+      spotify: { type: String, default: "" },
+      youtube: { type: String, default: "" },
+      soundcloud: { type: String, default: "" }
+    },
+    createdAt: { type: String, required: true, default: () => (/* @__PURE__ */ new Date()).toISOString() }
+  },
+  {
+    _id: false,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret._id;
+        delete ret.__v;
+        return ret;
+      }
+    }
+  }
+);
+MusicianSchema.virtual("id").get(function() {
+  return this._id;
+});
+var Musician = mongoose2.models.Musician || mongoose2.model("Musician", MusicianSchema);
+
+// server/models/Event.ts
+import mongoose3, { Schema as Schema3 } from "mongoose";
+var EventSchema = new Schema3(
+  {
+    _id: { type: String, required: true },
+    organizerId: { type: String, required: true, ref: "Musician" },
+    title: { type: String, required: true, trim: true },
+    description: { type: String, default: "" },
+    type: { type: String, required: true, default: "Jam Session" },
+    date: { type: String, required: true },
+    time: { type: String, required: true },
+    locationName: { type: String, required: true, trim: true },
+    address: { type: String, default: "" },
+    city: { type: String, required: true, trim: true },
+    genres: [{ type: String }],
+    slots: [
+      {
+        id: { type: String, required: true },
+        instrument: { type: String, required: true },
+        maxCount: { type: Number, required: true, default: 1 },
+        assignedMusicians: [
+          {
+            musicianId: { type: String, required: true },
+            musicianName: { type: String, required: true },
+            musicianAvatar: { type: String, default: "" },
+            joinedAt: { type: String, required: true }
+          }
+        ]
+      }
+    ],
+    equipmentNotes: { type: String, default: "" },
+    createdAt: { type: String, required: true, default: () => (/* @__PURE__ */ new Date()).toISOString() }
+  },
+  {
+    _id: false,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret._id;
+        delete ret.__v;
+        return ret;
+      }
+    }
+  }
+);
+EventSchema.virtual("id").get(function() {
+  return this._id;
+});
+var Event = mongoose3.models.Event || mongoose3.model("Event", EventSchema);
+
+// server/models/Post.ts
+import mongoose4, { Schema as Schema4 } from "mongoose";
+var PostSchema = new Schema4(
+  {
+    _id: { type: String, required: true },
+    authorId: { type: String, required: true, ref: "Musician" },
+    category: { type: String, required: true, default: "cercasi-musicista" },
+    title: { type: String, required: true, trim: true },
+    content: { type: String, required: true },
+    city: { type: String, required: true, trim: true },
+    targetInstruments: [{ type: String }],
+    genres: [{ type: String }],
+    likes: [{ type: String }],
+    comments: [
+      {
+        id: { type: String, required: true },
+        authorId: { type: String, required: true },
+        authorName: { type: String, required: true },
+        authorAvatar: { type: String, default: "" },
+        authorInstrument: { type: String, default: "Musicista" },
+        content: { type: String, required: true },
+        createdAt: { type: String, required: true, default: () => (/* @__PURE__ */ new Date()).toISOString() }
+      }
+    ],
+    createdAt: { type: String, required: true, default: () => (/* @__PURE__ */ new Date()).toISOString() }
+  },
+  {
+    _id: false,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret._id;
+        delete ret.__v;
+        return ret;
+      }
+    }
+  }
+);
+PostSchema.virtual("id").get(function() {
+  return this._id;
+});
+var Post = mongoose4.models.Post || mongoose4.model("Post", PostSchema);
 
 // server/auth.ts
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+
+// server/models/Session.ts
+import mongoose5, { Schema as Schema5 } from "mongoose";
+var SessionSchema = new Schema5(
+  {
+    token: { type: String, required: true, unique: true, index: true },
+    userId: { type: String, required: true, ref: "User", index: true },
+    createdAt: { type: String, required: true, default: () => (/* @__PURE__ */ new Date()).toISOString() }
+  },
+  {
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        delete ret.__v;
+        return ret;
+      }
+    }
+  }
+);
+var Session = mongoose5.models.Session || mongoose5.model("Session", SessionSchema);
+
+// server/auth.ts
 function hashPassword(password) {
   const salt = randomBytes(16).toString("hex");
   const hash = scryptSync(password, salt, 64).toString("hex");
@@ -24343,785 +24530,383 @@ function verifyPassword(password, hash, salt) {
 function generateToken() {
   return randomBytes(32).toString("hex");
 }
-function getSessionUser(token) {
+async function getSessionUser(token) {
   if (!token) return null;
-  const session = db.prepare(`
-    SELECT s.token, u.id as user_id, u.email, m.id as musician_id, m.name as musician_name, m.avatar as musician_avatar
-    FROM sessions s
-    JOIN users u ON s.user_id = u.id
-    LEFT JOIN musicians m ON m.user_id = u.id
-    WHERE s.token = ?
-  `).get(token);
-  return session || null;
+  const session = await Session.findOne({ token });
+  if (!session) return null;
+  const user = await User.findById(session.userId);
+  if (!user) return null;
+  const musician = await Musician.findOne({ userId: user._id });
+  return {
+    token: session.token,
+    user_id: user._id,
+    email: user.email,
+    musician_id: musician ? musician._id : null,
+    musician_name: musician ? musician.name : null,
+    musician_avatar: musician ? musician.avatar : null
+  };
 }
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     res.status(401).json({ error: "Accesso negato: token mancante o non valido." });
     return;
   }
   const token = authHeader.substring(7);
-  const sessionUser = getSessionUser(token);
-  if (!sessionUser) {
-    res.status(401).json({ error: "Sessione scaduta o non valida. Effettua nuovamente il login." });
-    return;
-  }
-  req.user = {
-    id: sessionUser.user_id,
-    email: sessionUser.email
-  };
-  if (sessionUser.musician_id) {
-    req.musician = {
-      id: sessionUser.musician_id,
-      name: sessionUser.musician_name,
-      avatar: sessionUser.musician_avatar
+  try {
+    const sessionUser = await getSessionUser(token);
+    if (!sessionUser) {
+      res.status(401).json({ error: "Sessione scaduta o non valida. Effettua nuovamente il login." });
+      return;
+    }
+    req.user = {
+      id: sessionUser.user_id,
+      email: sessionUser.email
     };
+    if (sessionUser.musician_id) {
+      req.musician = {
+        id: sessionUser.musician_id,
+        name: sessionUser.musician_name,
+        avatar: sessionUser.musician_avatar
+      };
+    }
+    next();
+  } catch (err) {
+    res.status(500).json({ error: "Errore durante la verifica dell'autenticazione: " + err.message });
   }
-  next();
 }
 
 // server/db.ts
-var InMemoryDatabase = class {
-  users = /* @__PURE__ */ new Map();
-  sessions = /* @__PURE__ */ new Map();
-  musicians = /* @__PURE__ */ new Map();
-  events = /* @__PURE__ */ new Map();
-  posts = /* @__PURE__ */ new Map();
-  exec(_sql) {
+var DEFAULT_MONGODB_URI = "mongodb+srv://massigatta_db_user:UauV3ZVvGQu9ycMn@bandmate.gtkawg6.mongodb.net/bandmate?retryWrites=true&w=majority&appName=bandmate";
+var MONGODB_URI = process.env.MONGODB_URI || DEFAULT_MONGODB_URI;
+var cached = global.mongooseCache || { conn: null, promise: null };
+if (!global.mongooseCache) {
+  global.mongooseCache = cached;
+}
+async function connectDB() {
+  if (cached.conn && mongoose6.connection.readyState === 1) {
+    return cached.conn;
   }
-  prepare(sql) {
-    const clean = sql.trim().replace(/\s+/g, " ");
-    if (clean.includes("COUNT(*) as count FROM users")) {
-      return { get: () => ({ count: this.users.size }) };
-    }
-    if (clean.startsWith("INSERT INTO users")) {
-      return {
-        run: (id, email, password_hash, salt, created_at) => {
-          this.users.set(id, { id, email, password_hash, salt, created_at });
+  if (!cached.promise) {
+    cached.promise = mongoose6.connect(MONGODB_URI, {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 1e4
+    }).then((m) => {
+      console.log("\u2705 Connected to MongoDB Atlas database (bandmate)");
+      return m;
+    });
+  }
+  try {
+    cached.conn = await cached.promise;
+    await seedInitialDataIfNeeded();
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+  return cached.conn;
+}
+var hasCheckedSeed = false;
+async function seedInitialDataIfNeeded() {
+  if (hasCheckedSeed) return;
+  hasCheckedSeed = true;
+  try {
+    const userCount = await User.countDocuments();
+    if (userCount > 0) return;
+    console.log("\u{1F331} Seeding MongoDB with demo musicians, events, and posts...");
+    const defaultPassword = "password123";
+    const { hash, salt } = hashPassword(defaultPassword);
+    const now = (/* @__PURE__ */ new Date()).toISOString();
+    const demoMusicians = [
+      {
+        id: "m1",
+        email: "davide@bandmate.it",
+        name: "Davide De Luca",
+        username: "davidedeluca",
+        age: 26,
+        gender: "Uomo",
+        city: "Milano (MI)",
+        region: "Lombardia",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+        bio: "Chitarrista e polistrumentista. Suono da oltre 10 anni tra rock alternativo, indie e blues. Amo le jam improvvisate e cerco sempre gente motivata per progetti seri o birre e sala prove!",
+        instruments: [
+          { name: "Chitarra Elettrica", level: "Avanzato", isPrimary: true },
+          { name: "Chitarra Acustica", level: "Avanzato" },
+          { name: "Voce", level: "Intermedio" }
+        ],
+        genres: ["Indie Rock", "Blues", "Alternative", "Post-Punk"],
+        availability: "Disponibile per Jam",
+        experienceYears: 10,
+        phoneOrContact: "davide.deluca@musicmail.it",
+        socialLinks: {
+          instagram: "@davide_guitar_lab",
+          spotify: "Davide DL Solo"
         }
-      };
-    }
-    if (clean.startsWith("SELECT id FROM users WHERE email = ?")) {
-      return {
-        get: (email) => {
-          const u = Array.from(this.users.values()).find((x) => x.email.toLowerCase() === email.toLowerCase());
-          return u ? { id: u.id } : void 0;
-        }
-      };
-    }
-    if (clean.startsWith("SELECT * FROM users WHERE email = ?")) {
-      return {
-        get: (email) => {
-          return Array.from(this.users.values()).find((x) => x.email.toLowerCase() === email.toLowerCase());
-        }
-      };
-    }
-    if (clean.startsWith("INSERT INTO sessions")) {
-      return {
-        run: (token, user_id, created_at) => {
-          this.sessions.set(token, { token, user_id, created_at });
-        }
-      };
-    }
-    if (clean.includes("FROM sessions s") && clean.includes("WHERE s.token = ?")) {
-      return {
-        get: (token) => {
-          const sess = this.sessions.get(token);
-          if (!sess) return void 0;
-          const user = this.users.get(sess.user_id);
-          if (!user) return void 0;
-          const musician = Array.from(this.musicians.values()).find((m) => m.user_id === user.id);
-          return {
-            token: sess.token,
-            user_id: user.id,
-            email: user.email,
-            musician_id: musician ? musician.id : null,
-            musician_name: musician ? musician.name : null,
-            musician_avatar: musician ? musician.avatar : null
-          };
-        }
-      };
-    }
-    if (clean.startsWith("DELETE FROM sessions WHERE token = ?")) {
-      return {
-        run: (token) => {
-          this.sessions.delete(token);
-        }
-      };
-    }
-    if (clean.startsWith("INSERT INTO musicians")) {
-      return {
-        run: (...params) => {
-          this.musicians.set(params[0], {
-            id: params[0],
-            user_id: params[1],
-            name: params[2],
-            username: params[3],
-            age: params[4],
-            gender: params[5],
-            city: params[6],
-            region: params[7],
-            avatar: params[8],
-            bio: params[9],
-            availability: params[10],
-            experience_years: params[11],
-            phone_or_contact: params[12],
-            instruments_json: params[13],
-            genres_json: params[14],
-            social_links_json: params[15],
-            created_at: params[16]
-          });
-        }
-      };
-    }
-    if (clean.startsWith("SELECT * FROM musicians ORDER BY created_at DESC")) {
-      return {
-        all: () => Array.from(this.musicians.values()).sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""))
-      };
-    }
-    if (clean.startsWith("SELECT * FROM musicians WHERE id = ?")) {
-      return {
-        get: (id) => this.musicians.get(id)
-      };
-    }
-    if (clean.startsWith("SELECT * FROM musicians WHERE user_id = ?")) {
-      return {
-        get: (userId) => Array.from(this.musicians.values()).find((m) => m.user_id === userId)
-      };
-    }
-    if (clean.startsWith("SELECT instruments_json FROM musicians WHERE id = ?")) {
-      return {
-        get: (id) => {
-          const m = this.musicians.get(id);
-          return m ? { instruments_json: m.instruments_json } : void 0;
-        }
-      };
-    }
-    if (clean.startsWith("UPDATE musicians SET")) {
-      return {
-        run: (...params) => {
-          const id = params[params.length - 1];
-          const m = this.musicians.get(id);
-          if (m) {
-            m.name = params[0];
-            m.age = params[1];
-            m.gender = params[2];
-            m.city = params[3];
-            m.region = params[4];
-            m.avatar = params[5];
-            m.bio = params[6];
-            m.availability = params[7];
-            m.experience_years = params[8];
-            m.phone_or_contact = params[9];
-            m.instruments_json = params[10];
-            m.genres_json = params[11];
-            m.social_links_json = params[12];
-          }
-        }
-      };
-    }
-    if (clean.startsWith("INSERT INTO events")) {
-      return {
-        run: (...params) => {
-          this.events.set(params[0], {
-            id: params[0],
-            organizer_id: params[1],
-            title: params[2],
-            description: params[3],
-            type: params[4],
-            date: params[5],
-            time: params[6],
-            location_name: params[7],
-            address: params[8],
-            city: params[9],
-            genres_json: params[10],
-            slots_json: params[11],
-            equipment_notes: params[12],
-            created_at: params[13]
-          });
-        }
-      };
-    }
-    if (clean.startsWith("SELECT * FROM events ORDER BY date ASC, time ASC")) {
-      return {
-        all: () => Array.from(this.events.values()).sort((a, b) => ((a.date || "") + (a.time || "")).localeCompare((b.date || "") + (b.time || "")))
-      };
-    }
-    if (clean.startsWith("SELECT * FROM events WHERE id = ?")) {
-      return {
-        get: (id) => this.events.get(id)
-      };
-    }
-    if (clean.startsWith("UPDATE events SET slots_json = ? WHERE id = ?")) {
-      return {
-        run: (slots_json, id) => {
-          const ev = this.events.get(id);
-          if (ev) ev.slots_json = slots_json;
-        }
-      };
-    }
-    if (clean.startsWith("INSERT INTO posts")) {
-      return {
-        run: (...params) => {
-          this.posts.set(params[0], {
-            id: params[0],
-            author_id: params[1],
-            category: params[2],
-            title: params[3],
-            content: params[4],
-            city: params[5],
-            target_instruments_json: params[6],
-            genres_json: params[7],
-            likes_json: params[8],
-            comments_json: params[9],
-            created_at: params[10]
-          });
-        }
-      };
-    }
-    if (clean.startsWith("SELECT * FROM posts ORDER BY created_at DESC")) {
-      return {
-        all: () => Array.from(this.posts.values()).sort((a, b) => (b.created_at || "").localeCompare(a.created_at || ""))
-      };
-    }
-    if (clean.startsWith("SELECT * FROM posts WHERE id = ?")) {
-      return {
-        get: (id) => this.posts.get(id)
-      };
-    }
-    if (clean.startsWith("UPDATE posts SET likes_json = ? WHERE id = ?")) {
-      return {
-        run: (likes_json, id) => {
-          const p = this.posts.get(id);
-          if (p) p.likes_json = likes_json;
-        }
-      };
-    }
-    if (clean.startsWith("UPDATE posts SET comments_json = ? WHERE id = ?")) {
-      return {
-        run: (comments_json, id) => {
-          const p = this.posts.get(id);
-          if (p) p.comments_json = comments_json;
-        }
-      };
-    }
-    console.warn("Unhandled SQL in InMemoryDatabase:", clean);
-    return {
-      run: () => {
       },
-      get: () => void 0,
-      all: () => []
-    };
-  }
-};
-var isVercel = process.env.VERCEL === "1" || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
-var dataDir = isVercel ? "/tmp" : path.resolve(process.cwd(), "data");
-if (!fs.existsSync(dataDir)) {
-  try {
-    fs.mkdirSync(dataDir, { recursive: true });
-  } catch (err) {
-    console.error("Error creating data directory:", err);
-  }
-}
-var dbPath = path.join(dataDir, "bandmate.db");
-var requireModule = createRequire(import.meta.url);
-var DatabaseSyncClass = null;
-try {
-  const sqliteModule = requireModule("node:sqlite");
-  DatabaseSyncClass = sqliteModule.DatabaseSync;
-} catch {
-}
-var databaseInstance = null;
-if (DatabaseSyncClass) {
-  try {
-    databaseInstance = new DatabaseSyncClass(dbPath);
-  } catch (err) {
-    console.warn("Falling back to in-memory SQLite database:", err);
-    try {
-      databaseInstance = new DatabaseSyncClass(":memory:");
-    } catch {
-      databaseInstance = null;
-    }
-  }
-}
-if (!databaseInstance) {
-  databaseInstance = new InMemoryDatabase();
-}
-var db = databaseInstance;
-function initDatabase() {
-  db.exec("PRAGMA foreign_keys = ON;");
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      email TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      salt TEXT NOT NULL,
-      created_at TEXT NOT NULL
-    );
-  `);
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS sessions (
-      token TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-    );
-  `);
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS musicians (
-      id TEXT PRIMARY KEY,
-      user_id TEXT UNIQUE NOT NULL,
-      name TEXT NOT NULL,
-      username TEXT UNIQUE NOT NULL,
-      age INTEGER NOT NULL,
-      gender TEXT NOT NULL,
-      city TEXT NOT NULL,
-      region TEXT,
-      avatar TEXT,
-      bio TEXT,
-      availability TEXT NOT NULL,
-      experience_years INTEGER NOT NULL,
-      phone_or_contact TEXT,
-      instruments_json TEXT NOT NULL,
-      genres_json TEXT NOT NULL,
-      social_links_json TEXT,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-    );
-  `);
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS events (
-      id TEXT PRIMARY KEY,
-      organizer_id TEXT NOT NULL,
-      title TEXT NOT NULL,
-      description TEXT,
-      type TEXT NOT NULL,
-      date TEXT NOT NULL,
-      time TEXT NOT NULL,
-      location_name TEXT NOT NULL,
-      address TEXT,
-      city TEXT NOT NULL,
-      genres_json TEXT NOT NULL,
-      slots_json TEXT NOT NULL,
-      equipment_notes TEXT,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY (organizer_id) REFERENCES musicians(id) ON DELETE CASCADE
-    );
-  `);
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS posts (
-      id TEXT PRIMARY KEY,
-      author_id TEXT NOT NULL,
-      category TEXT NOT NULL,
-      title TEXT NOT NULL,
-      content TEXT NOT NULL,
-      city TEXT NOT NULL,
-      target_instruments_json TEXT NOT NULL,
-      genres_json TEXT NOT NULL,
-      likes_json TEXT NOT NULL,
-      comments_json TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      FOREIGN KEY (author_id) REFERENCES musicians(id) ON DELETE CASCADE
-    );
-  `);
-  const userCount = db.prepare("SELECT COUNT(*) as count FROM users;").get().count;
-  if (userCount === 0) {
-    seedInitialData();
-  }
-}
-function seedInitialData() {
-  console.log("\u{1F331} Seeding initial BandMate database with demo musicians and events...");
-  const defaultPassword = "password123";
-  const { hash, salt } = hashPassword(defaultPassword);
-  const demoMusicians = [
-    {
-      id: "m1",
-      email: "davide@bandmate.it",
-      name: "Davide De Luca",
-      username: "davidedeluca",
-      age: 26,
-      gender: "Uomo",
-      city: "Milano (MI)",
-      region: "Lombardia",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-      bio: "Chitarrista e polistrumentista. Suono da oltre 10 anni tra rock alternativo, indie e blues. Amo le jam improvvisate e cerco sempre gente motivata per progetti seri o birre e sala prove!",
-      instruments: [
-        { name: "Chitarra Elettrica", level: "Avanzato", isPrimary: true },
-        { name: "Chitarra Acustica", level: "Avanzato" },
-        { name: "Voce", level: "Intermedio" }
-      ],
-      genres: ["Indie Rock", "Blues", "Alternative", "Post-Punk"],
-      availability: "Disponibile per Jam",
-      experienceYears: 10,
-      phoneOrContact: "davide.deluca@musicmail.it",
-      socialLinks: {
-        instagram: "@davide_guitar_lab",
-        spotify: "Davide DL Solo"
-      }
-    },
-    {
-      id: "m2",
-      email: "giulia@bandmate.it",
-      name: "Giulia Moretti",
-      username: "giuliabass",
-      age: 24,
-      gender: "Donna",
-      city: "Bologna (BO)",
-      region: "Emilia-Romagna",
-      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
-      bio: "Bassista con un debole per i bassline funk e neo-soul. Precisione sul tempo e tanto groove. Ho strumentazione professionale e auto propria per spostamenti.",
-      instruments: [
-        { name: "Basso Elettrico", level: "Professionista", isPrimary: true },
-        { name: "Contrabbasso", level: "Intermedio" }
-      ],
-      genres: ["Funk", "Neo-Soul", "Jazz Fusion", "R&B"],
-      availability: "Cerco Band fissa",
-      experienceYears: 8,
-      phoneOrContact: "giulia.bassgroove@gmail.com",
-      socialLinks: {
-        instagram: "@giuliabass_groove"
-      }
-    },
-    {
-      id: "m3",
-      email: "marco@bandmate.it",
-      name: "Marco Bianchi",
-      username: "marcodrums",
-      age: 29,
-      gender: "Uomo",
-      city: "Milano (MI)",
-      region: "Lombardia",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
-      bio: "Batterista energico e con esperienza live su palchi di festival e club. Cerco progetti rock/hard rock o sessioni studio. Batteria acustica Yamaha e trigger se necessari.",
-      instruments: [
-        { name: "Batteria", level: "Professionista", isPrimary: true },
-        { name: "Percussioni", level: "Avanzato" }
-      ],
-      genres: ["Hard Rock", "Classic Rock", "Grunge", "Progressive"],
-      availability: "Disponibile per serate/live",
-      experienceYears: 14,
-      phoneOrContact: "marco.bianchi.drums@gmail.com",
-      socialLinks: {
-        instagram: "@marcobianchi_drums"
-      }
-    },
-    {
-      id: "m4",
-      email: "chiara@bandmate.it",
-      name: "Chiara Romano",
-      username: "chiaravoice",
-      age: 23,
-      gender: "Donna",
-      city: "Roma (RM)",
-      region: "Lazio",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
-      bio: "Cantante e cantautrice soul/pop. Studio canto al conservatorio. Mi piace comporre melodie ed armonizzare. Cerco musicisti per completare un repertorio inedito e cover acustiche.",
-      instruments: [
-        { name: "Voce", level: "Professionista", isPrimary: true },
-        { name: "Tastiere/Pianoforte", level: "Intermedio" }
-      ],
-      genres: ["Soul", "Pop", "Acoustic", "Jazz"],
-      availability: "Cerco Band fissa",
-      experienceYears: 7,
-      phoneOrContact: "chiara.romano.singer@outlook.com",
-      socialLinks: {
-        instagram: "@chiara_romano_vocal"
-      }
-    },
-    {
-      id: "m5",
-      email: "samuele@bandmate.it",
-      name: "Samuele Ferraro",
-      username: "samukeys",
-      age: 28,
-      gender: "Uomo",
-      city: "Torino (TO)",
-      region: "Piemonte",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
-      bio: "Pianista jazz e tastierista synth-wave / fusion. Uso Nord Stage e synth analogici. Sempre pronto per scambiare due accordi di nona e sperimentare sonorit\xE0 ambientali.",
-      instruments: [
-        { name: "Tastiere/Pianoforte", level: "Avanzato", isPrimary: true },
-        { name: "Sintetizzatori", level: "Avanzato" }
-      ],
-      genres: ["Jazz", "Synthwave", "Funk", "Elettronica"],
-      availability: "Disponibile per Jam",
-      experienceYears: 12,
-      phoneOrContact: "samuele.keys@live.it",
-      socialLinks: {
-        instagram: "@samu_keys_station"
-      }
-    }
-  ];
-  const insertUser = db.prepare(`
-    INSERT INTO users (id, email, password_hash, salt, created_at)
-    VALUES (?, ?, ?, ?, ?)
-  `);
-  const insertMusician = db.prepare(`
-    INSERT INTO musicians (
-      id, user_id, name, username, age, gender, city, region,
-      avatar, bio, availability, experience_years, phone_or_contact,
-      instruments_json, genres_json, social_links_json, created_at
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-  const now = (/* @__PURE__ */ new Date()).toISOString();
-  for (const m of demoMusicians) {
-    const userId = "u_" + m.id;
-    insertUser.run(userId, m.email, hash, salt, now);
-    insertMusician.run(
-      m.id,
-      userId,
-      m.name,
-      m.username,
-      m.age,
-      m.gender,
-      m.city,
-      m.region,
-      m.avatar,
-      m.bio,
-      m.availability,
-      m.experienceYears,
-      m.phoneOrContact,
-      JSON.stringify(m.instruments),
-      JSON.stringify(m.genres),
-      JSON.stringify(m.socialLinks),
-      now
-    );
-  }
-  const insertEvent = db.prepare(`
-    INSERT INTO events (
-      id, organizer_id, title, description, type, date, time,
-      location_name, address, city, genres_json, slots_json, equipment_notes, created_at
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-  const demoEvents = [
-    {
-      id: "e1",
-      organizer_id: "m3",
-      title: "Milano Funk & Soul Open Jam Session",
-      description: "Serata jam a ruota libera basata su standard funk, soul e groove anni 70. Suoniamo su turni di 3-4 brani concordati sul momento. Amplificatori chitarra/basso e batteria completa gi\xE0 in sala!",
-      type: "Jam Session",
-      date: "2026-09-22",
-      time: "21:00",
-      location_name: "SoundLab Rehearsal Studios - Sala A",
-      address: "Via Tortona 32",
-      city: "Milano (MI)",
-      genres: ["Funk", "Soul", "Groove", "R&B"],
-      slots: [
-        {
-          id: "s1",
-          instrument: "Batteria",
-          maxCount: 1,
-          assignedMusicians: [
-            {
-              musicianId: "m3",
-              musicianName: "Marco Bianchi",
-              musicianAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
-              joinedAt: "2026-09-10"
-            }
-          ]
-        },
-        { id: "s2", instrument: "Basso Elettrico", maxCount: 1, assignedMusicians: [] },
-        {
-          id: "s3",
-          instrument: "Chitarra Elettrica",
-          maxCount: 2,
-          assignedMusicians: [
-            {
-              musicianId: "m1",
-              musicianName: "Davide De Luca",
-              musicianAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-              joinedAt: "2026-09-10"
-            }
-          ]
-        },
-        { id: "s4", instrument: "Tastiere/Pianoforte", maxCount: 1, assignedMusicians: [] },
-        { id: "s5", instrument: "Voce", maxCount: 1, assignedMusicians: [] }
-      ],
-      equipment_notes: "Batteria Yamaha, ampli Fender Twin Reverb e Markbass presenti sul posto. Portare solo jack e bacchette."
-    },
-    {
-      id: "e2",
-      organizer_id: "m4",
-      title: "Rock 70s & 90s Jam & Prove Aperte",
-      description: "Ci vediamo per suonare grandi classici (Led Zeppelin, Pink Floyd, Nirvana, Foo Fighters, Pearl Jam). L\u2019obiettivo \xE8 divertirsi insieme ed eventualmente formare un gruppo per serate live invernali.",
-      type: "Prove di Gruppo",
-      date: "2026-09-25",
-      time: "20:30",
-      location_name: "Circolo Rock Garage Roma",
-      address: "Via Casilina 114",
-      city: "Roma (RM)",
-      genres: ["Hard Rock", "Grunge", "Classic Rock"],
-      slots: [
-        {
-          id: "s7",
-          instrument: "Voce",
-          maxCount: 1,
-          assignedMusicians: [
-            {
-              musicianId: "m4",
-              musicianName: "Chiara Romano",
-              musicianAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
-              joinedAt: "2026-09-09"
-            }
-          ]
-        },
-        { id: "s8", instrument: "Chitarra Elettrica", maxCount: 2, assignedMusicians: [] },
-        { id: "s9", instrument: "Basso Elettrico", maxCount: 1, assignedMusicians: [] },
-        { id: "s10", instrument: "Batteria", maxCount: 1, assignedMusicians: [] }
-      ],
-      equipment_notes: "Impianto voce e microfoni Shure SM58 inclusi. Sala climatizzata."
-    }
-  ];
-  for (const ev of demoEvents) {
-    insertEvent.run(
-      ev.id,
-      ev.organizer_id,
-      ev.title,
-      ev.description,
-      ev.type,
-      ev.date,
-      ev.time,
-      ev.location_name,
-      ev.address,
-      ev.city,
-      JSON.stringify(ev.genres),
-      JSON.stringify(ev.slots),
-      ev.equipment_notes,
-      now
-    );
-  }
-  const insertPost = db.prepare(`
-    INSERT INTO posts (
-      id, author_id, category, title, content, city,
-      target_instruments_json, genres_json, likes_json, comments_json, created_at
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-  const demoPosts = [
-    {
-      id: "p1",
-      author_id: "m2",
-      category: "cercasi-band",
-      title: "Bassista funk/soul cerca gruppo a Bologna per serate live",
-      content: "Ciao a tutti! Suono il basso elettrico da 8 anni con esperienza sia in studio che sul palco. Cerco un progetto avviato o musicisti con cui fondare una band stile Vulfpeck, Bruno Mars, Stevie Wonder o sonorit\xE0 Neo-Soul. Massima seriet\xE0 e sala prove settimanale!",
-      city: "Bologna (BO)",
-      target_instruments: ["Batteria", "Chitarra Elettrica", "Tastiere/Pianoforte", "Voce"],
-      genres: ["Funk", "Soul", "R&B"],
-      likes: ["m1", "m3", "m5"],
-      comments: [
-        {
-          id: "c1",
-          authorId: "m5",
-          authorName: "Samuele Ferraro",
-          authorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
-          authorInstrument: "Tastiere/Pianoforte",
-          content: "Ciao Giulia! Io sono a Torino ma vengo spesso a Bologna per lavoro. Adoro Vulfpeck! Se organizzi una jam fammi sapere!",
-          createdAt: (/* @__PURE__ */ new Date()).toISOString()
+      {
+        id: "m2",
+        email: "giulia@bandmate.it",
+        name: "Giulia Moretti",
+        username: "giuliabass",
+        age: 24,
+        gender: "Donna",
+        city: "Bologna (BO)",
+        region: "Emilia-Romagna",
+        avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
+        bio: "Bassista con un debole per i bassline funk e neo-soul. Precisione sul tempo e tanto groove. Ho strumentazione professionale e auto propria per spostamenti.",
+        instruments: [
+          { name: "Basso Elettrico", level: "Professionista", isPrimary: true },
+          { name: "Contrabbasso", level: "Intermedio" }
+        ],
+        genres: ["Funk", "Neo-Soul", "Jazz Fusion", "R&B"],
+        availability: "Cerco Band fissa",
+        experienceYears: 8,
+        phoneOrContact: "giulia.bassgroove@gmail.com",
+        socialLinks: {
+          instagram: "@giuliabass_groove"
         }
-      ]
-    },
-    {
-      id: "p2",
-      author_id: "m3",
-      category: "cercasi-musicista",
-      title: "Cercasi chitarrista solista e cantante rock a Milano",
-      content: "Band gi\xE0 formata da batterista e bassista con sala prove fissa zona Lambrate cerca cantante rock carismatico e chitarrista solista. Repertorio rock alternativo anni 90/2000 (Soundgarden, Foo Fighters, Muse, Queens of the Stone Age) pi\xF9 qualche pezzo inedito.",
-      city: "Milano (MI)",
-      target_instruments: ["Chitarra Elettrica", "Voce"],
-      genres: ["Alternative Rock", "Hard Rock", "Grunge"],
-      likes: ["m1"],
-      comments: [
-        {
-          id: "c2",
-          authorId: "m1",
-          authorName: "Davide De Luca",
-          authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-          authorInstrument: "Chitarra Elettrica",
-          content: "Ciao Marco! Mi candido volentieri come chitarra solista. Conosco benissimo il repertorio dei Muse e QOTSA!",
-          createdAt: (/* @__PURE__ */ new Date()).toISOString()
+      },
+      {
+        id: "m3",
+        email: "marco@bandmate.it",
+        name: "Marco Bianchi",
+        username: "marcodrums",
+        age: 29,
+        gender: "Uomo",
+        city: "Milano (MI)",
+        region: "Lombardia",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+        bio: "Batterista energico e con esperienza live su palchi di festival e club. Cerco progetti rock/hard rock o sessioni studio. Batteria acustica Yamaha e trigger se necessari.",
+        instruments: [
+          { name: "Batteria", level: "Professionista", isPrimary: true },
+          { name: "Percussioni", level: "Avanzato" }
+        ],
+        genres: ["Hard Rock", "Classic Rock", "Grunge", "Progressive"],
+        availability: "Disponibile per serate/live",
+        experienceYears: 14,
+        phoneOrContact: "marco.bianchi.drums@gmail.com",
+        socialLinks: {
+          instagram: "@marcobianchi_drums"
         }
-      ]
+      },
+      {
+        id: "m4",
+        email: "chiara@bandmate.it",
+        name: "Chiara Romano",
+        username: "chiaravoice",
+        age: 23,
+        gender: "Donna",
+        city: "Roma (RM)",
+        region: "Lazio",
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+        bio: "Cantante e cantautrice soul/pop. Studio canto al conservatorio. Mi piace comporre melodie ed armonizzare. Cerco musicisti per completare un repertorio inedito e cover acustiche.",
+        instruments: [
+          { name: "Voce", level: "Professionista", isPrimary: true },
+          { name: "Tastiere/Pianoforte", level: "Intermedio" }
+        ],
+        genres: ["Soul", "Pop", "Acoustic", "Jazz"],
+        availability: "Cerco Band fissa",
+        experienceYears: 7,
+        phoneOrContact: "chiara.romano.singer@outlook.com",
+        socialLinks: {
+          instagram: "@chiara_romano_vocal"
+        }
+      },
+      {
+        id: "m5",
+        email: "samuele@bandmate.it",
+        name: "Samuele Ferraro",
+        username: "samukeys",
+        age: 28,
+        gender: "Uomo",
+        city: "Torino (TO)",
+        region: "Piemonte",
+        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+        bio: "Pianista jazz e tastierista synth-wave / fusion. Uso Nord Stage e synth analogici. Sempre pronto per scambiare due accordi di nona e sperimentare sonorit\xE0 ambientali.",
+        instruments: [
+          { name: "Tastiere/Pianoforte", level: "Avanzato", isPrimary: true },
+          { name: "Sintetizzatori", level: "Avanzato" }
+        ],
+        genres: ["Jazz", "Synthwave", "Funk", "Elettronica"],
+        availability: "Disponibile per Jam",
+        experienceYears: 12,
+        phoneOrContact: "samuele.keys@live.it",
+        socialLinks: {
+          instagram: "@samu_keys_station"
+        }
+      }
+    ];
+    for (const m of demoMusicians) {
+      const userId = "u_" + m.id;
+      await User.create({
+        _id: userId,
+        email: m.email,
+        passwordHash: hash,
+        salt,
+        createdAt: now
+      });
+      await Musician.create({
+        _id: m.id,
+        userId,
+        name: m.name,
+        username: m.username,
+        age: m.age,
+        gender: m.gender,
+        city: m.city,
+        region: m.region,
+        avatar: m.avatar,
+        bio: m.bio,
+        availability: m.availability,
+        experienceYears: m.experienceYears,
+        phoneOrContact: m.phoneOrContact,
+        instruments: m.instruments,
+        genres: m.genres,
+        socialLinks: m.socialLinks,
+        createdAt: now
+      });
     }
-  ];
-  for (const p of demoPosts) {
-    insertPost.run(
-      p.id,
-      p.author_id,
-      p.category,
-      p.title,
-      p.content,
-      p.city,
-      JSON.stringify(p.target_instruments),
-      JSON.stringify(p.genres),
-      JSON.stringify(p.likes),
-      JSON.stringify(p.comments),
-      now
-    );
+    const demoEvents = [
+      {
+        _id: "e1",
+        organizerId: "m3",
+        title: "Milano Funk & Soul Open Jam Session",
+        description: "Serata jam a ruota libera basata su standard funk, soul e groove anni 70. Suoniamo su turni di 3-4 brani concordati sul momento. Amplificatori chitarra/basso e batteria completa gi\xE0 in sala!",
+        type: "Jam Session",
+        date: "2026-09-22",
+        time: "21:00",
+        locationName: "SoundLab Rehearsal Studios - Sala A",
+        address: "Via Tortona 32",
+        city: "Milano (MI)",
+        genres: ["Funk", "Soul", "Groove", "R&B"],
+        slots: [
+          {
+            id: "s1",
+            instrument: "Batteria",
+            maxCount: 1,
+            assignedMusicians: [
+              {
+                musicianId: "m3",
+                musicianName: "Marco Bianchi",
+                musicianAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+                joinedAt: "2026-09-10"
+              }
+            ]
+          },
+          { id: "s2", instrument: "Basso Elettrico", maxCount: 1, assignedMusicians: [] },
+          {
+            id: "s3",
+            instrument: "Chitarra Elettrica",
+            maxCount: 2,
+            assignedMusicians: [
+              {
+                musicianId: "m1",
+                musicianName: "Davide De Luca",
+                musicianAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+                joinedAt: "2026-09-10"
+              }
+            ]
+          },
+          { id: "s4", instrument: "Tastiere/Pianoforte", maxCount: 1, assignedMusicians: [] },
+          { id: "s5", instrument: "Voce", maxCount: 1, assignedMusicians: [] }
+        ],
+        equipmentNotes: "Batteria Yamaha, ampli Fender Twin Reverb e Markbass presenti sul posto. Portare solo jack e bacchette.",
+        createdAt: now
+      },
+      {
+        _id: "e2",
+        organizerId: "m4",
+        title: "Rock 70s & 90s Jam & Prove Aperte",
+        description: "Ci vediamo per suonare grandi classici (Led Zeppelin, Pink Floyd, Nirvana, Foo Fighters, Pearl Jam). L\u2019obiettivo \xE8 divertirsi insieme ed eventualmente formare un gruppo per serate live invernali.",
+        type: "Prove di Gruppo",
+        date: "2026-09-25",
+        time: "20:30",
+        locationName: "Circolo Rock Garage Roma",
+        address: "Via Casilina 114",
+        city: "Roma (RM)",
+        genres: ["Hard Rock", "Grunge", "Classic Rock"],
+        slots: [
+          {
+            id: "s7",
+            instrument: "Voce",
+            maxCount: 1,
+            assignedMusicians: [
+              {
+                musicianId: "m4",
+                musicianName: "Chiara Romano",
+                musicianAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+                joinedAt: "2026-09-09"
+              }
+            ]
+          },
+          { id: "s8", instrument: "Chitarra Elettrica", maxCount: 2, assignedMusicians: [] },
+          { id: "s9", instrument: "Basso Elettrico", maxCount: 1, assignedMusicians: [] },
+          { id: "s10", instrument: "Batteria", maxCount: 1, assignedMusicians: [] }
+        ],
+        equipmentNotes: "Impianto voce e microfoni Shure SM58 inclusi. Sala climatizzata.",
+        createdAt: now
+      }
+    ];
+    for (const ev of demoEvents) {
+      await Event.create(ev);
+    }
+    const demoPosts = [
+      {
+        _id: "p1",
+        authorId: "m2",
+        category: "cercasi-band",
+        title: "Bassista funk/soul cerca gruppo a Bologna per serate live",
+        content: "Ciao a tutti! Suono il basso elettrico da 8 anni con esperienza sia in studio che sul palco. Cerco un progetto avviato o musicisti con cui fondare una band stile Vulfpeck, Bruno Mars, Stevie Wonder o sonorit\xE0 Neo-Soul. Massima seriet\xE0 e sala prove settimanale!",
+        city: "Bologna (BO)",
+        targetInstruments: ["Batteria", "Chitarra Elettrica", "Tastiere/Pianoforte", "Voce"],
+        genres: ["Funk", "Soul", "R&B"],
+        likes: ["m1", "m3", "m5"],
+        comments: [
+          {
+            id: "c1",
+            authorId: "m5",
+            authorName: "Samuele Ferraro",
+            authorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+            authorInstrument: "Tastiere/Pianoforte",
+            content: "Ciao Giulia! Io sono a Torino ma vengo spesso a Bologna per lavoro. Adoro Vulfpeck! Se organizzi una jam fammi sapere!",
+            createdAt: now
+          }
+        ],
+        createdAt: now
+      },
+      {
+        _id: "p2",
+        authorId: "m3",
+        category: "cercasi-musicista",
+        title: "Cercasi chitarrista solista e cantante rock a Milano",
+        content: "Band gi\xE0 formata da batterista e bassista con sala prove fissa zona Lambrate cerca cantante rock carismatico e chitarrista solista. Repertorio rock alternativo anni 90/2000 (Soundgarden, Foo Fighters, Muse, Queens of the Stone Age) pi\xF9 qualche pezzo inedito.",
+        city: "Milano (MI)",
+        targetInstruments: ["Chitarra Elettrica", "Voce"],
+        genres: ["Alternative Rock", "Hard Rock", "Grunge"],
+        likes: ["m1"],
+        comments: [
+          {
+            id: "c2",
+            authorId: "m1",
+            authorName: "Davide De Luca",
+            authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+            authorInstrument: "Chitarra Elettrica",
+            content: "Ciao Marco! Mi candido volentieri come chitarra solista. Conosco benissimo il repertorio dei Muse e QOTSA!",
+            createdAt: now
+          }
+        ],
+        createdAt: now
+      }
+    ];
+    for (const p of demoPosts) {
+      await Post.create(p);
+    }
+    console.log("\u2705 MongoDB database seeded successfully!");
+  } catch (err) {
+    console.error("Seed check error:", err);
   }
-  console.log("\u2705 BandMate database initialized and seeded successfully.");
 }
-function formatMusicianRow(row) {
-  if (!row) return null;
-  return {
-    id: row.id,
-    userId: row.user_id,
-    name: row.name,
-    username: row.username,
-    age: row.age,
-    gender: row.gender,
-    city: row.city,
-    region: row.region,
-    avatar: row.avatar,
-    bio: row.bio,
-    availability: row.availability,
-    experienceYears: row.experience_years,
-    phoneOrContact: row.phone_or_contact,
-    instruments: JSON.parse(row.instruments_json || "[]"),
-    genres: JSON.parse(row.genres_json || "[]"),
-    socialLinks: JSON.parse(row.social_links_json || "{}"),
-    createdAt: row.created_at
-  };
-}
-function formatEventRow(row) {
-  if (!row) return null;
-  return {
-    id: row.id,
-    organizerId: row.organizer_id,
-    title: row.title,
-    description: row.description,
-    type: row.type,
-    date: row.date,
-    time: row.time,
-    locationName: row.location_name,
-    address: row.address,
-    city: row.city,
-    genres: JSON.parse(row.genres_json || "[]"),
-    slots: JSON.parse(row.slots_json || "[]"),
-    equipmentNotes: row.equipment_notes,
-    createdAt: row.created_at
-  };
-}
-function formatPostRow(row) {
-  if (!row) return null;
-  return {
-    id: row.id,
-    authorId: row.author_id,
-    category: row.category,
-    title: row.title,
-    content: row.content,
-    city: row.city,
-    targetInstruments: JSON.parse(row.target_instruments_json || "[]"),
-    genres: JSON.parse(row.genres_json || "[]"),
-    likes: JSON.parse(row.likes_json || "[]"),
-    comments: JSON.parse(row.comments_json || "[]"),
-    createdAt: row.created_at
-  };
-}
-initDatabase();
 
 // server/routes/authRoutes.ts
+var import_express = __toESM(require_express2(), 1);
 var authRouter = (0, import_express.Router)();
 authRouter.get("/demo-accounts", (_req, res) => {
   const demoUsers = [
@@ -25133,476 +24918,496 @@ authRouter.get("/demo-accounts", (_req, res) => {
   ];
   res.json({ demoAccounts: demoUsers, defaultPassword: "password123" });
 });
-authRouter.post("/register", (req, res) => {
-  const {
-    email,
-    password,
-    name,
-    age,
-    gender,
-    city,
-    region,
-    instruments,
-    genres,
-    bio,
-    availability,
-    experienceYears,
-    phoneOrContact,
-    avatar
-  } = req.body;
-  if (!email || !password || !name || !age || !gender || !city) {
-    res.status(400).json({ error: "Compila tutti i campi obbligatori (Email, Password, Nome, Et\xE0, Sesso, Citt\xE0)." });
-    return;
+authRouter.post("/register", async (req, res) => {
+  try {
+    const {
+      email,
+      password,
+      name,
+      age,
+      gender,
+      city,
+      region,
+      instruments,
+      genres,
+      bio,
+      availability,
+      experienceYears,
+      phoneOrContact,
+      avatar
+    } = req.body;
+    if (!email || !password || !name || !age || !gender || !city) {
+      res.status(400).json({ error: "Compila tutti i campi obbligatori (Email, Password, Nome, Et\xE0, Sesso, Citt\xE0)." });
+      return;
+    }
+    if (password.length < 6) {
+      res.status(400).json({ error: "La password deve contenere almeno 6 caratteri." });
+      return;
+    }
+    const normalizedEmail = email.toLowerCase().trim();
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      res.status(400).json({ error: "Esiste gi\xE0 un account registrato con questa email." });
+      return;
+    }
+    const userId = "u_" + Date.now();
+    const musicianId = "m_" + Date.now();
+    const username = (name.toLowerCase().replace(/[^a-z0-9]/g, "") + "_" + Math.floor(Math.random() * 1e3)).slice(0, 20);
+    const { hash, salt } = hashPassword(password);
+    const now = (/* @__PURE__ */ new Date()).toISOString();
+    await User.create({
+      _id: userId,
+      email: normalizedEmail,
+      passwordHash: hash,
+      salt,
+      createdAt: now
+    });
+    const chosenAvatar = avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80";
+    const musician = await Musician.create({
+      _id: musicianId,
+      userId,
+      name: name.trim(),
+      username,
+      age: parseInt(age) || 20,
+      gender,
+      city: city.trim(),
+      region: region || "",
+      avatar: chosenAvatar,
+      bio: bio || "",
+      availability: availability || "Disponibile per Jam",
+      experienceYears: parseInt(experienceYears) || 3,
+      phoneOrContact: phoneOrContact || email,
+      instruments: instruments || [{ name: "Chitarra Elettrica", level: "Intermedio", isPrimary: true }],
+      genres: genres || ["Rock"],
+      socialLinks: {},
+      createdAt: now
+    });
+    const token = generateToken();
+    await Session.create({
+      token,
+      userId,
+      createdAt: now
+    });
+    res.status(201).json({
+      token,
+      user: { id: userId, email: normalizedEmail },
+      musician
+    });
+  } catch (err) {
+    console.error("Registration error:", err);
+    res.status(500).json({ error: "Errore durante la registrazione: " + err.message });
   }
-  if (password.length < 6) {
-    res.status(400).json({ error: "La password deve contenere almeno 6 caratteri." });
-    return;
-  }
-  const existingUser = db.prepare("SELECT id FROM users WHERE email = ?").get(email.toLowerCase().trim());
-  if (existingUser) {
-    res.status(400).json({ error: "Esiste gi\xE0 un account registrato con questa email." });
-    return;
-  }
-  const userId = "u_" + Date.now();
-  const musicianId = "m_" + Date.now();
-  const username = (name.toLowerCase().replace(/[^a-z0-9]/g, "") + "_" + Math.floor(Math.random() * 1e3)).slice(0, 20);
-  const { hash, salt } = hashPassword(password);
-  const now = (/* @__PURE__ */ new Date()).toISOString();
-  db.prepare(`
-    INSERT INTO users (id, email, password_hash, salt, created_at)
-    VALUES (?, ?, ?, ?, ?)
-  `).run(userId, email.toLowerCase().trim(), hash, salt, now);
-  const chosenAvatar = avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80";
-  db.prepare(`
-    INSERT INTO musicians (
-      id, user_id, name, username, age, gender, city, region,
-      avatar, bio, availability, experience_years, phone_or_contact,
-      instruments_json, genres_json, social_links_json, created_at
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
-    musicianId,
-    userId,
-    name.trim(),
-    username,
-    parseInt(age) || 20,
-    gender,
-    city,
-    region || "",
-    chosenAvatar,
-    bio || "",
-    availability || "Disponibile per Jam",
-    parseInt(experienceYears) || 3,
-    phoneOrContact || email,
-    JSON.stringify(instruments || [{ name: "Chitarra Elettrica", level: "Intermedio", isPrimary: true }]),
-    JSON.stringify(genres || ["Rock"]),
-    JSON.stringify({}),
-    now
-  );
-  const token = generateToken();
-  db.prepare(`
-    INSERT INTO sessions (token, user_id, created_at)
-    VALUES (?, ?, ?)
-  `).run(token, userId, now);
-  const musicianRow = db.prepare("SELECT * FROM musicians WHERE id = ?").get(musicianId);
-  res.status(201).json({
-    token,
-    user: { id: userId, email: email.toLowerCase().trim() },
-    musician: formatMusicianRow(musicianRow)
-  });
 });
-authRouter.post("/login", (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400).json({ error: "Inserisci email e password." });
-    return;
+authRouter.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      res.status(400).json({ error: "Inserisci email e password." });
+      return;
+    }
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      res.status(401).json({ error: "Credenziali non valide o utente non trovato." });
+      return;
+    }
+    const isValid = verifyPassword(password, user.passwordHash, user.salt);
+    if (!isValid) {
+      res.status(401).json({ error: "Password non corretta." });
+      return;
+    }
+    const token = generateToken();
+    const now = (/* @__PURE__ */ new Date()).toISOString();
+    await Session.create({
+      token,
+      userId: user._id,
+      createdAt: now
+    });
+    const musician = await Musician.findOne({ userId: user._id });
+    res.json({
+      token,
+      user: { id: user._id, email: user.email },
+      musician
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: "Errore durante il login: " + err.message });
   }
-  const user = db.prepare("SELECT * FROM users WHERE email = ?").get(email.toLowerCase().trim());
-  if (!user) {
-    res.status(401).json({ error: "Credenziali non valide o utente non trovato." });
-    return;
-  }
-  const isValid = verifyPassword(password, user.password_hash, user.salt);
-  if (!isValid) {
-    res.status(401).json({ error: "Password non corretta." });
-    return;
-  }
-  const token = generateToken();
-  const now = (/* @__PURE__ */ new Date()).toISOString();
-  db.prepare(`
-    INSERT INTO sessions (token, user_id, created_at)
-    VALUES (?, ?, ?)
-  `).run(token, user.id, now);
-  const musicianRow = db.prepare("SELECT * FROM musicians WHERE user_id = ?").get(user.id);
-  res.json({
-    token,
-    user: { id: user.id, email: user.email },
-    musician: formatMusicianRow(musicianRow)
-  });
 });
-authRouter.get("/me", requireAuth, (req, res) => {
-  const musicianRow = db.prepare("SELECT * FROM musicians WHERE user_id = ?").get(req.user.id);
-  res.json({
-    user: req.user,
-    musician: formatMusicianRow(musicianRow)
-  });
-});
-authRouter.post("/logout", (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.substring(7);
-    db.prepare("DELETE FROM sessions WHERE token = ?").run(token);
+authRouter.get("/me", requireAuth, async (req, res) => {
+  try {
+    const musician = await Musician.findOne({ userId: req.user.id });
+    res.json({
+      user: req.user,
+      musician
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Errore durante il recupero del profilo: " + err.message });
   }
-  res.json({ success: true });
+});
+authRouter.post("/logout", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.substring(7);
+      await Session.deleteOne({ token });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Errore durante il logout: " + err.message });
+  }
 });
 
 // server/routes/musiciansRoutes.ts
 var import_express2 = __toESM(require_express2(), 1);
 var musiciansRouter = (0, import_express2.Router)();
-musiciansRouter.get("/", (req, res) => {
-  const { search, instrument, city, genre } = req.query;
-  const rows = db.prepare("SELECT * FROM musicians ORDER BY created_at DESC").all();
-  let list = rows.map(formatMusicianRow);
-  if (search && typeof search === "string") {
-    const q = search.toLowerCase();
-    list = list.filter(
-      (m) => m.name.toLowerCase().includes(q) || m.bio.toLowerCase().includes(q) || m.instruments.some((i) => i.name.toLowerCase().includes(q))
-    );
+musiciansRouter.get("/", async (req, res) => {
+  try {
+    const { search, instrument, city, genre } = req.query;
+    let musicians = await Musician.find().sort({ createdAt: -1 });
+    if (search && typeof search === "string") {
+      const q = search.toLowerCase();
+      musicians = musicians.filter(
+        (m) => m.name.toLowerCase().includes(q) || m.bio && m.bio.toLowerCase().includes(q) || m.instruments.some((i) => i.name.toLowerCase().includes(q))
+      );
+    }
+    if (instrument && typeof instrument === "string" && instrument !== "all") {
+      const target = instrument.toLowerCase();
+      musicians = musicians.filter(
+        (m) => m.instruments.some((i) => i.name.toLowerCase() === target)
+      );
+    }
+    if (city && typeof city === "string" && city !== "all") {
+      const target = city.toLowerCase();
+      musicians = musicians.filter((m) => m.city.toLowerCase().includes(target));
+    }
+    if (genre && typeof genre === "string" && genre !== "all") {
+      const target = genre.toLowerCase();
+      musicians = musicians.filter(
+        (m) => m.genres.some((g) => g.toLowerCase() === target)
+      );
+    }
+    res.json({ musicians });
+  } catch (err) {
+    console.error("Error fetching musicians:", err);
+    res.status(500).json({ error: "Errore durante il recupero dei musicisti: " + err.message });
   }
-  if (instrument && typeof instrument === "string" && instrument !== "all") {
-    const target = instrument.toLowerCase();
-    list = list.filter(
-      (m) => m.instruments.some((i) => i.name.toLowerCase() === target)
-    );
-  }
-  if (city && typeof city === "string" && city !== "all") {
-    const target = city.toLowerCase();
-    list = list.filter((m) => m.city.toLowerCase().includes(target));
-  }
-  if (genre && typeof genre === "string" && genre !== "all") {
-    const target = genre.toLowerCase();
-    list = list.filter(
-      (m) => m.genres.some((g) => g.toLowerCase() === target)
-    );
-  }
-  res.json({ musicians: list });
 });
-musiciansRouter.get("/:id", (req, res) => {
-  const row = db.prepare("SELECT * FROM musicians WHERE id = ?").get(req.params.id);
-  if (!row) {
-    res.status(404).json({ error: "Musicista non trovato." });
-    return;
+musiciansRouter.get("/:id", async (req, res) => {
+  try {
+    const musician = await Musician.findById(req.params.id);
+    if (!musician) {
+      res.status(404).json({ error: "Musicista non trovato." });
+      return;
+    }
+    res.json({ musician });
+  } catch (err) {
+    res.status(500).json({ error: "Errore durante il recupero del musicista: " + err.message });
   }
-  res.json({ musician: formatMusicianRow(row) });
 });
-musiciansRouter.put("/:id", requireAuth, (req, res) => {
-  const musicianId = req.params.id;
-  const existing = db.prepare("SELECT * FROM musicians WHERE id = ?").get(musicianId);
-  if (!existing) {
-    res.status(404).json({ error: "Musicista non trovato." });
-    return;
+musiciansRouter.put("/:id", requireAuth, async (req, res) => {
+  try {
+    const musicianId = req.params.id;
+    const existing = await Musician.findById(musicianId);
+    if (!existing) {
+      res.status(404).json({ error: "Musicista non trovato." });
+      return;
+    }
+    if (existing.userId !== req.user.id) {
+      res.status(403).json({ error: "Non hai i permessi per modificare questo profilo." });
+      return;
+    }
+    const {
+      name,
+      age,
+      gender,
+      city,
+      region,
+      avatar,
+      bio,
+      availability,
+      experienceYears,
+      phoneOrContact,
+      instruments,
+      genres,
+      socialLinks
+    } = req.body;
+    if (name) existing.name = name.trim();
+    if (age) existing.age = parseInt(age);
+    if (gender) existing.gender = gender;
+    if (city) existing.city = city.trim();
+    if (region !== void 0) existing.region = region;
+    if (avatar) existing.avatar = avatar;
+    if (bio !== void 0) existing.bio = bio;
+    if (availability) existing.availability = availability;
+    if (experienceYears) existing.experienceYears = parseInt(experienceYears);
+    if (phoneOrContact !== void 0) existing.phoneOrContact = phoneOrContact;
+    if (instruments) existing.instruments = instruments;
+    if (genres) existing.genres = genres;
+    if (socialLinks) existing.socialLinks = socialLinks;
+    await existing.save();
+    res.json({ musician: existing });
+  } catch (err) {
+    console.error("Error updating musician:", err);
+    res.status(500).json({ error: "Errore durante l'aggiornamento del profilo: " + err.message });
   }
-  if (existing.user_id !== req.user.id) {
-    res.status(403).json({ error: "Non hai i permessi per modificare questo profilo." });
-    return;
-  }
-  const {
-    name,
-    age,
-    gender,
-    city,
-    region,
-    avatar,
-    bio,
-    availability,
-    experienceYears,
-    phoneOrContact,
-    instruments,
-    genres,
-    socialLinks
-  } = req.body;
-  db.prepare(`
-    UPDATE musicians SET
-      name = COALESCE(?, name),
-      age = COALESCE(?, age),
-      gender = COALESCE(?, gender),
-      city = COALESCE(?, city),
-      region = COALESCE(?, region),
-      avatar = COALESCE(?, avatar),
-      bio = COALESCE(?, bio),
-      availability = COALESCE(?, availability),
-      experience_years = COALESCE(?, experience_years),
-      phone_or_contact = COALESCE(?, phone_or_contact),
-      instruments_json = COALESCE(?, instruments_json),
-      genres_json = COALESCE(?, genres_json),
-      social_links_json = COALESCE(?, social_links_json)
-    WHERE id = ?
-  `).run(
-    name ? name.trim() : null,
-    age ? parseInt(age) : null,
-    gender || null,
-    city || null,
-    region || null,
-    avatar || null,
-    bio !== void 0 ? bio : null,
-    availability || null,
-    experienceYears ? parseInt(experienceYears) : null,
-    phoneOrContact !== void 0 ? phoneOrContact : null,
-    instruments ? JSON.stringify(instruments) : null,
-    genres ? JSON.stringify(genres) : null,
-    socialLinks ? JSON.stringify(socialLinks) : null,
-    musicianId
-  );
-  const updatedRow = db.prepare("SELECT * FROM musicians WHERE id = ?").get(musicianId);
-  res.json({ musician: formatMusicianRow(updatedRow) });
 });
 
 // server/routes/eventsRoutes.ts
 var import_express3 = __toESM(require_express2(), 1);
 var eventsRouter = (0, import_express3.Router)();
-eventsRouter.get("/", (req, res) => {
-  const { city, type } = req.query;
-  const rows = db.prepare("SELECT * FROM events ORDER BY date ASC, time ASC").all();
-  let list = rows.map(formatEventRow);
-  if (city && typeof city === "string" && city !== "all") {
-    const target = city.toLowerCase();
-    list = list.filter((e) => e.city.toLowerCase().includes(target));
-  }
-  if (type && typeof type === "string" && type !== "all") {
-    list = list.filter((e) => e.type === type);
-  }
-  res.json({ events: list });
-});
-eventsRouter.post("/", requireAuth, (req, res) => {
-  const {
-    title,
-    description,
-    type,
-    date,
-    time,
-    locationName,
-    address,
-    city,
-    genres,
-    slots,
-    equipmentNotes
-  } = req.body;
-  if (!title || !date || !time || !locationName || !city) {
-    res.status(400).json({ error: "Compila tutti i campi obbligatori dell'evento." });
-    return;
-  }
-  if (!slots || !Array.isArray(slots) || slots.length === 0) {
-    res.status(400).json({ error: "Specifica almeno uno strumento ricercato per la jam." });
-    return;
-  }
-  const eventId = "e_" + Date.now();
-  const now = (/* @__PURE__ */ new Date()).toISOString();
-  const formattedSlots = slots.map((s, idx) => ({
-    id: `slot_${Date.now()}_${idx}`,
-    instrument: s.instrument,
-    maxCount: parseInt(s.maxCount) || 1,
-    assignedMusicians: []
-  }));
-  db.prepare(`
-    INSERT INTO events (
-      id, organizer_id, title, description, type, date, time,
-      location_name, address, city, genres_json, slots_json, equipment_notes, created_at
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
-    eventId,
-    req.musician.id,
-    title.trim(),
-    description || "",
-    type || "Jam Session",
-    date,
-    time,
-    locationName.trim(),
-    address || "",
-    city,
-    JSON.stringify(genres || ["Rock"]),
-    JSON.stringify(formattedSlots),
-    equipmentNotes || "",
-    now
-  );
-  const newRow = db.prepare("SELECT * FROM events WHERE id = ?").get(eventId);
-  res.status(201).json({ event: formatEventRow(newRow) });
-});
-eventsRouter.post("/:id/join", requireAuth, (req, res) => {
-  const eventId = req.params.id;
-  const { slotId } = req.body;
-  const eventRow = db.prepare("SELECT * FROM events WHERE id = ?").get(eventId);
-  if (!eventRow) {
-    res.status(404).json({ error: "Evento non trovato." });
-    return;
-  }
-  const event = formatEventRow(eventRow);
-  const currentMusicianId = req.musician.id;
-  const alreadyInEvent = event.slots.some(
-    (s) => s.assignedMusicians.some((m) => m.musicianId === currentMusicianId)
-  );
-  if (alreadyInEvent) {
-    res.status(400).json({ error: "Sei gi\xE0 registrato a questa jam in uno slot." });
-    return;
-  }
-  let slotFound = false;
-  const updatedSlots = event.slots.map((s) => {
-    if (s.id !== slotId) return s;
-    slotFound = true;
-    if (s.assignedMusicians.length >= s.maxCount) {
-      return s;
+eventsRouter.get("/", async (req, res) => {
+  try {
+    const { city, type } = req.query;
+    let events = await Event.find().sort({ date: 1, time: 1 });
+    if (city && typeof city === "string" && city !== "all") {
+      const target = city.toLowerCase();
+      events = events.filter((e) => e.city.toLowerCase().includes(target));
     }
-    return {
-      ...s,
-      assignedMusicians: [
-        ...s.assignedMusicians,
-        {
-          musicianId: currentMusicianId,
-          musicianName: req.musician.name,
-          musicianAvatar: req.musician.avatar,
-          joinedAt: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
-        }
-      ]
-    };
-  });
-  if (!slotFound) {
-    res.status(404).json({ error: "Slot strumento non trovato." });
-    return;
+    if (type && typeof type === "string" && type !== "all") {
+      events = events.filter((e) => e.type === type);
+    }
+    res.json({ events });
+  } catch (err) {
+    console.error("Error fetching events:", err);
+    res.status(500).json({ error: "Errore durante il recupero degli eventi: " + err.message });
   }
-  db.prepare("UPDATE events SET slots_json = ? WHERE id = ?").run(
-    JSON.stringify(updatedSlots),
-    eventId
-  );
-  const updatedRow = db.prepare("SELECT * FROM events WHERE id = ?").get(eventId);
-  res.json({ event: formatEventRow(updatedRow) });
 });
-eventsRouter.post("/:id/leave", requireAuth, (req, res) => {
-  const eventId = req.params.id;
-  const { slotId } = req.body;
-  const eventRow = db.prepare("SELECT * FROM events WHERE id = ?").get(eventId);
-  if (!eventRow) {
-    res.status(404).json({ error: "Evento non trovato." });
-    return;
+eventsRouter.post("/", requireAuth, async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      type,
+      date,
+      time,
+      locationName,
+      address,
+      city,
+      genres,
+      slots,
+      equipmentNotes
+    } = req.body;
+    if (!title || !date || !time || !locationName || !city) {
+      res.status(400).json({ error: "Compila tutti i campi obbligatori dell'evento." });
+      return;
+    }
+    if (!slots || !Array.isArray(slots) || slots.length === 0) {
+      res.status(400).json({ error: "Specifica almeno uno strumento ricercato per la jam." });
+      return;
+    }
+    const eventId = "e_" + Date.now();
+    const now = (/* @__PURE__ */ new Date()).toISOString();
+    const formattedSlots = slots.map((s, idx) => ({
+      id: `slot_${Date.now()}_${idx}`,
+      instrument: s.instrument,
+      maxCount: parseInt(s.maxCount) || 1,
+      assignedMusicians: []
+    }));
+    const newEvent = await Event.create({
+      _id: eventId,
+      organizerId: req.musician.id,
+      title: title.trim(),
+      description: description || "",
+      type: type || "Jam Session",
+      date,
+      time,
+      locationName: locationName.trim(),
+      address: address || "",
+      city: city.trim(),
+      genres: genres || ["Rock"],
+      slots: formattedSlots,
+      equipmentNotes: equipmentNotes || "",
+      createdAt: now
+    });
+    res.status(201).json({ event: newEvent });
+  } catch (err) {
+    console.error("Error creating event:", err);
+    res.status(500).json({ error: "Errore durante la creazione dell'evento: " + err.message });
   }
-  const event = formatEventRow(eventRow);
-  const currentMusicianId = req.musician.id;
-  const updatedSlots = event.slots.map((s) => {
-    if (s.id !== slotId) return s;
-    return {
-      ...s,
-      assignedMusicians: s.assignedMusicians.filter(
-        (m) => m.musicianId !== currentMusicianId
-      )
-    };
-  });
-  db.prepare("UPDATE events SET slots_json = ? WHERE id = ?").run(
-    JSON.stringify(updatedSlots),
-    eventId
-  );
-  const updatedRow = db.prepare("SELECT * FROM events WHERE id = ?").get(eventId);
-  res.json({ event: formatEventRow(updatedRow) });
+});
+eventsRouter.post("/:id/join", requireAuth, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { slotId } = req.body;
+    const event = await Event.findById(eventId);
+    if (!event) {
+      res.status(404).json({ error: "Evento non trovato." });
+      return;
+    }
+    const currentMusicianId = req.musician.id;
+    const alreadyInEvent = event.slots.some(
+      (s) => s.assignedMusicians.some((m) => m.musicianId === currentMusicianId)
+    );
+    if (alreadyInEvent) {
+      res.status(400).json({ error: "Sei gi\xE0 registrato a questa jam in uno slot." });
+      return;
+    }
+    let slotFound = false;
+    for (const slot of event.slots) {
+      if (slot.id === slotId) {
+        slotFound = true;
+        if (slot.assignedMusicians.length < slot.maxCount) {
+          slot.assignedMusicians.push({
+            musicianId: currentMusicianId,
+            musicianName: req.musician.name,
+            musicianAvatar: req.musician.avatar || "",
+            joinedAt: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+          });
+        }
+        break;
+      }
+    }
+    if (!slotFound) {
+      res.status(404).json({ error: "Slot strumento non trovato." });
+      return;
+    }
+    await event.save();
+    res.json({ event });
+  } catch (err) {
+    console.error("Error joining event slot:", err);
+    res.status(500).json({ error: "Errore durante l'iscrizione allo slot: " + err.message });
+  }
+});
+eventsRouter.post("/:id/leave", requireAuth, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { slotId } = req.body;
+    const event = await Event.findById(eventId);
+    if (!event) {
+      res.status(404).json({ error: "Evento non trovato." });
+      return;
+    }
+    const currentMusicianId = req.musician.id;
+    for (const slot of event.slots) {
+      if (slot.id === slotId) {
+        slot.assignedMusicians = slot.assignedMusicians.filter(
+          (m) => m.musicianId !== currentMusicianId
+        );
+      }
+    }
+    await event.save();
+    res.json({ event });
+  } catch (err) {
+    console.error("Error leaving event slot:", err);
+    res.status(500).json({ error: "Errore durante la disiscrizione dallo slot: " + err.message });
+  }
 });
 
 // server/routes/postsRoutes.ts
 var import_express4 = __toESM(require_express2(), 1);
 var postsRouter = (0, import_express4.Router)();
-postsRouter.get("/", (req, res) => {
-  const { category } = req.query;
-  const rows = db.prepare("SELECT * FROM posts ORDER BY created_at DESC").all();
-  let list = rows.map(formatPostRow);
-  if (category && typeof category === "string" && category !== "all") {
-    list = list.filter((p) => p.category === category);
+postsRouter.get("/", async (req, res) => {
+  try {
+    const { category } = req.query;
+    let posts = await Post.find().sort({ createdAt: -1 });
+    if (category && typeof category === "string" && category !== "all") {
+      posts = posts.filter((p) => p.category === category);
+    }
+    res.json({ posts });
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ error: "Errore durante il recupero degli annunci: " + err.message });
   }
-  res.json({ posts: list });
 });
-postsRouter.post("/", requireAuth, (req, res) => {
-  const { category, title, content, city, targetInstruments, genres } = req.body;
-  if (!title || !content || !city) {
-    res.status(400).json({ error: "Titolo, testo e citt\xE0 sono obbligatori per l'annuncio." });
-    return;
+postsRouter.post("/", requireAuth, async (req, res) => {
+  try {
+    const { category, title, content, city, targetInstruments, genres } = req.body;
+    if (!title || !content || !city) {
+      res.status(400).json({ error: "Titolo, testo e citt\xE0 sono obbligatori per l'annuncio." });
+      return;
+    }
+    const postId = "p_" + Date.now();
+    const now = (/* @__PURE__ */ new Date()).toISOString();
+    const post = await Post.create({
+      _id: postId,
+      authorId: req.musician.id,
+      category: category || "cercasi-musicista",
+      title: title.trim(),
+      content: content.trim(),
+      city: city.trim(),
+      targetInstruments: targetInstruments || [],
+      genres: genres || [],
+      likes: [],
+      comments: [],
+      createdAt: now
+    });
+    res.status(201).json({ post });
+  } catch (err) {
+    console.error("Error creating post:", err);
+    res.status(500).json({ error: "Errore durante la pubblicazione dell'annuncio: " + err.message });
   }
-  const postId = "p_" + Date.now();
-  const now = (/* @__PURE__ */ new Date()).toISOString();
-  db.prepare(`
-    INSERT INTO posts (
-      id, author_id, category, title, content, city,
-      target_instruments_json, genres_json, likes_json, comments_json, created_at
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
-    postId,
-    req.musician.id,
-    category || "cercasi-musicista",
-    title.trim(),
-    content.trim(),
-    city,
-    JSON.stringify(targetInstruments || []),
-    JSON.stringify(genres || []),
-    JSON.stringify([]),
-    JSON.stringify([]),
-    now
-  );
-  const newRow = db.prepare("SELECT * FROM posts WHERE id = ?").get(postId);
-  res.status(201).json({ post: formatPostRow(newRow) });
 });
-postsRouter.post("/:id/like", requireAuth, (req, res) => {
-  const postId = req.params.id;
-  const postRow = db.prepare("SELECT * FROM posts WHERE id = ?").get(postId);
-  if (!postRow) {
-    res.status(404).json({ error: "Annuncio non trovato." });
-    return;
+postsRouter.post("/:id/like", requireAuth, async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const post = await Post.findById(postId);
+    if (!post) {
+      res.status(404).json({ error: "Annuncio non trovato." });
+      return;
+    }
+    const currentMusicianId = req.musician.id;
+    const hasLiked = post.likes.includes(currentMusicianId);
+    if (hasLiked) {
+      post.likes = post.likes.filter((id) => id !== currentMusicianId);
+    } else {
+      post.likes.push(currentMusicianId);
+    }
+    await post.save();
+    res.json({ post });
+  } catch (err) {
+    console.error("Error liking post:", err);
+    res.status(500).json({ error: "Errore durante l'aggiunta del like: " + err.message });
   }
-  const post = formatPostRow(postRow);
-  const currentMusicianId = req.musician.id;
-  const hasLiked = post.likes.includes(currentMusicianId);
-  const updatedLikes = hasLiked ? post.likes.filter((id) => id !== currentMusicianId) : [...post.likes, currentMusicianId];
-  db.prepare("UPDATE posts SET likes_json = ? WHERE id = ?").run(
-    JSON.stringify(updatedLikes),
-    postId
-  );
-  const updatedRow = db.prepare("SELECT * FROM posts WHERE id = ?").get(postId);
-  res.json({ post: formatPostRow(updatedRow) });
 });
-postsRouter.post("/:id/comments", requireAuth, (req, res) => {
-  const postId = req.params.id;
-  const { content } = req.body;
-  if (!content || !content.trim()) {
-    res.status(400).json({ error: "Il testo della risposta non pu\xF2 essere vuoto." });
-    return;
+postsRouter.post("/:id/comments", requireAuth, async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const { content } = req.body;
+    if (!content || !content.trim()) {
+      res.status(400).json({ error: "Il testo della risposta non pu\xF2 essere vuoto." });
+      return;
+    }
+    const post = await Post.findById(postId);
+    if (!post) {
+      res.status(404).json({ error: "Annuncio non trovato." });
+      return;
+    }
+    const musician = await Musician.findById(req.musician.id);
+    const primaryInst = musician?.instruments.find((i) => i.isPrimary) || musician?.instruments[0];
+    const newComment = {
+      id: "c_" + Date.now(),
+      authorId: req.musician.id,
+      authorName: req.musician.name,
+      authorAvatar: req.musician.avatar || "",
+      authorInstrument: primaryInst ? primaryInst.name : "Musicista",
+      content: content.trim(),
+      createdAt: (/* @__PURE__ */ new Date()).toISOString()
+    };
+    post.comments.push(newComment);
+    await post.save();
+    res.status(201).json({ post });
+  } catch (err) {
+    console.error("Error adding comment:", err);
+    res.status(500).json({ error: "Errore durante l'invio del commento: " + err.message });
   }
-  const postRow = db.prepare("SELECT * FROM posts WHERE id = ?").get(postId);
-  if (!postRow) {
-    res.status(404).json({ error: "Annuncio non trovato." });
-    return;
-  }
-  const post = formatPostRow(postRow);
-  const musicianRow = db.prepare("SELECT instruments_json FROM musicians WHERE id = ?").get(req.musician.id);
-  const instruments = JSON.parse(musicianRow?.instruments_json || "[]");
-  const primaryInst = instruments.find((i) => i.isPrimary) || instruments[0];
-  const newComment = {
-    id: "c_" + Date.now(),
-    authorId: req.musician.id,
-    authorName: req.musician.name,
-    authorAvatar: req.musician.avatar,
-    authorInstrument: primaryInst ? primaryInst.name : "Musicista",
-    content: content.trim(),
-    createdAt: (/* @__PURE__ */ new Date()).toISOString()
-  };
-  const updatedComments = [...post.comments, newComment];
-  db.prepare("UPDATE posts SET comments_json = ? WHERE id = ?").run(
-    JSON.stringify(updatedComments),
-    postId
-  );
-  const updatedRow = db.prepare("SELECT * FROM posts WHERE id = ?").get(postId);
-  res.status(201).json({ post: formatPostRow(updatedRow) });
 });
 
 // server/app.ts
 var app = (0, import_express5.default)();
 app.use((0, import_cors.default)());
 app.use(import_express5.default.json());
+app.use(async (_req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+    res.status(500).json({ error: "Errore di connessione al database: " + err.message });
+  }
+});
 app.get(["/api/health", "/health", "/api", "/"], (_req, res) => {
-  res.json({ status: "ok", service: "BandMate API", timestamp: (/* @__PURE__ */ new Date()).toISOString() });
+  res.json({ status: "ok", service: "BandMate API (MongoDB)", timestamp: (/* @__PURE__ */ new Date()).toISOString() });
 });
 app.use("/api/auth", authRouter);
 app.use("/auth", authRouter);
