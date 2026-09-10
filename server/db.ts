@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { hashPassword } from './auth.ts';
+
 
 // In-Memory Database Fallback for serverless runtimes without native node:sqlite
 class InMemoryDatabase {
@@ -276,13 +278,16 @@ if (!fs.existsSync(dataDir)) {
 
 const dbPath = path.join(dataDir, 'bandmate.db');
 
+const requireModule = createRequire(import.meta.url);
+
 let DatabaseSyncClass: any = null;
 try {
-  const sqliteModule = await import('node:sqlite');
+  const sqliteModule = requireModule('node:sqlite');
   DatabaseSyncClass = sqliteModule.DatabaseSync;
 } catch {
   // node:sqlite not supported on older runtimes
 }
+
 
 let databaseInstance: any = null;
 if (DatabaseSyncClass) {

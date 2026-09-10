@@ -24325,6 +24325,7 @@ var import_express = __toESM(require_express2(), 1);
 // server/db.ts
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
 
 // server/auth.ts
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
@@ -24623,9 +24624,10 @@ if (!fs.existsSync(dataDir)) {
   }
 }
 var dbPath = path.join(dataDir, "bandmate.db");
+var requireModule = createRequire(import.meta.url);
 var DatabaseSyncClass = null;
 try {
-  const sqliteModule = await import("node:sqlite");
+  const sqliteModule = requireModule("node:sqlite");
   DatabaseSyncClass = sqliteModule.DatabaseSync;
 } catch {
 }
