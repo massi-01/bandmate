@@ -32,7 +32,8 @@ export async function connectDB(): Promise<typeof mongoose> {
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 10000
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000
     }).then((m) => {
       console.log('✅ Connected to MongoDB Atlas database (bandmate)');
       return m;

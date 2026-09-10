@@ -18,9 +18,12 @@ app.use(async (_req, res, next) => {
     next();
   } catch (err: any) {
     console.error('MongoDB connection error:', err);
-    res.status(500).json({ error: 'Errore di connessione al database: ' + err.message });
+    res.status(500).json({ 
+      error: `Errore connessione MongoDB Atlas: ${err.message}. Verifica in MongoDB Atlas -> Network Access che l'IP 0.0.0.0/0 sia autorizzato.` 
+    });
   }
 });
+
 
 // Health check
 app.get(['/api/health', '/health', '/api', '/'], (_req, res) => {

@@ -24590,7 +24590,8 @@ async function connectDB() {
   if (!cached.promise) {
     cached.promise = mongoose6.connect(MONGODB_URI, {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 1e4
+      serverSelectionTimeoutMS: 5e3,
+      connectTimeoutMS: 5e3
     }).then((m) => {
       console.log("\u2705 Connected to MongoDB Atlas database (bandmate)");
       return m;
@@ -25403,7 +25404,9 @@ app.use(async (_req, res, next) => {
     next();
   } catch (err) {
     console.error("MongoDB connection error:", err);
-    res.status(500).json({ error: "Errore di connessione al database: " + err.message });
+    res.status(500).json({
+      error: `Errore connessione MongoDB Atlas: ${err.message}. Verifica in MongoDB Atlas -> Network Access che l'IP 0.0.0.0/0 sia autorizzato.`
+    });
   }
 });
 app.get(["/api/health", "/health", "/api", "/"], (_req, res) => {
