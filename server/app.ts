@@ -28,3 +28,6 @@ app.use('/events', eventsRouter);
 app.use('/api/posts', postsRouter);
 app.use('/posts', postsRouter);
 
+export default app;
+
+

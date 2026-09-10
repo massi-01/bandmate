@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "vite",
     "server": "node --experimental-strip-types server/index.ts",
-    "build": "tsc -b && vite build",
+    "build:server": "esbuild server/app.ts --bundle --platform=node --format=esm --target=node20 --outfile=api/index.js --external:node:sqlite",
+    "build": "tsc -b && vite build && npm run build:server",
     "lint": "oxlint",
     "preview": "vite preview"
   },
@@ -27,6 +28,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",
+    "esbuild": "^0.28.2",
     "oxlint": "^1.79.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.2"

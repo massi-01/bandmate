@@ -1,7 +1,266 @@
-import { DatabaseSync } from 'node:sqlite';
 import fs from 'node:fs';
 import path from 'node:path';
 import { hashPassword } from './auth.ts';
+
+// In-Memory Database Fallback for serverless runtimes without native node:sqlite
+class InMemoryDatabase {
+  users = new Map<string, any>();
+  sessions = new Map<string, any>();
+  musicians = new Map<string, any>();
+  events = new Map<string, any>();
+  posts = new Map<string, any>();
+
+  exec(_sql: string) {
+    // Schema creation no-op
+  }
+
+  prepare(sql: string) {
+    const clean = sql.trim().replace(/\s+/g, ' ');
+
+    if (clean.includes('COUNT(*) as count FROM users')) {
+      return { get: () => ({ count: this.users.size }) };
+    }
+
+    if (clean.startsWith('INSERT INTO users')) {
+      return {
+        run: (id: string, email: string, password_hash: string, salt: string, created_at: string) => {
+          this.users.set(id, { id, email, password_hash, salt, created_at });
+        }
+      };
+    }
+
+    if (clean.startsWith('SELECT id FROM users WHERE email = ?')) {
+      return {
+        get: (email: string) => {
+          const u = Array.from(this.users.values()).find(x => x.email.toLowerCase() === email.toLowerCase());
+          return u ? { id: u.id } : undefined;
+        }
+      };
+    }
+
+    if (clean.startsWith('SELECT * FROM users WHERE email = ?')) {
+      return {
+        get: (email: string) => {
+          return Array.from(this.users.values()).find(x => x.email.toLowerCase() === email.toLowerCase());
+        }
+      };
+    }
+
+    if (clean.startsWith('INSERT INTO sessions')) {
+      return {
+        run: (token: string, user_id: string, created_at: string) => {
+          this.sessions.set(token, { token, user_id, created_at });
+        }
+      };
+    }
+
+    if (clean.includes('FROM sessions s') && clean.includes('WHERE s.token = ?')) {
+      return {
+        get: (token: string) => {
+          const sess = this.sessions.get(token);
+          if (!sess) return undefined;
+          const user = this.users.get(sess.user_id);
+          if (!user) return undefined;
+          const musician = Array.from(this.musicians.values()).find(m => m.user_id === user.id);
+          return {
+            token: sess.token,
+            user_id: user.id,
+            email: user.email,
+            musician_id: musician ? musician.id : null,
+            musician_name: musician ? musician.name : null,
+            musician_avatar: musician ? musician.avatar : null
+          };
+        }
+      };
+    }
+
+    if (clean.startsWith('DELETE FROM sessions WHERE token = ?')) {
+      return {
+        run: (token: string) => {
+          this.sessions.delete(token);
+        }
+      };
+    }
+
+    if (clean.startsWith('INSERT INTO musicians')) {
+      return {
+        run: (...params: any[]) => {
+          this.musicians.set(params[0], {
+            id: params[0],
+            user_id: params[1],
+            name: params[2],
+            username: params[3],
+            age: params[4],
+            gender: params[5],
+            city: params[6],
+            region: params[7],
+            avatar: params[8],
+            bio: params[9],
+            availability: params[10],
+            experience_years: params[11],
+            phone_or_contact: params[12],
+            instruments_json: params[13],
+            genres_json: params[14],
+            social_links_json: params[15],
+            created_at: params[16]
+          });
+        }
+      };
+    }
+
+    if (clean.startsWith('SELECT * FROM musicians ORDER BY created_at DESC')) {
+      return {
+        all: () => Array.from(this.musicians.values()).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+      };
+    }
+
+    if (clean.startsWith('SELECT * FROM musicians WHERE id = ?')) {
+      return {
+        get: (id: string) => this.musicians.get(id)
+      };
+    }
+
+    if (clean.startsWith('SELECT * FROM musicians WHERE user_id = ?')) {
+      return {
+        get: (userId: string) => Array.from(this.musicians.values()).find(m => m.user_id === userId)
+      };
+    }
+
+    if (clean.startsWith('SELECT instruments_json FROM musicians WHERE id = ?')) {
+      return {
+        get: (id: string) => {
+          const m = this.musicians.get(id);
+          return m ? { instruments_json: m.instruments_json } : undefined;
+        }
+      };
+    }
+
+    if (clean.startsWith('UPDATE musicians SET')) {
+      return {
+        run: (...params: any[]) => {
+          const id = params[params.length - 1];
+          const m = this.musicians.get(id);
+          if (m) {
+            m.name = params[0];
+            m.age = params[1];
+            m.gender = params[2];
+            m.city = params[3];
+            m.region = params[4];
+            m.avatar = params[5];
+            m.bio = params[6];
+            m.availability = params[7];
+            m.experience_years = params[8];
+            m.phone_or_contact = params[9];
+            m.instruments_json = params[10];
+            m.genres_json = params[11];
+            m.social_links_json = params[12];
+          }
+        }
+      };
+    }
+
+    if (clean.startsWith('INSERT INTO events')) {
+      return {
+        run: (...params: any[]) => {
+          this.events.set(params[0], {
+            id: params[0],
+            organizer_id: params[1],
+            title: params[2],
+            description: params[3],
+            type: params[4],
+            date: params[5],
+            time: params[6],
+            location_name: params[7],
+            address: params[8],
+            city: params[9],
+            genres_json: params[10],
+            slots_json: params[11],
+            equipment_notes: params[12],
+            created_at: params[13]
+          });
+        }
+      };
+    }
+
+    if (clean.startsWith('SELECT * FROM events ORDER BY date ASC, time ASC')) {
+      return {
+        all: () => Array.from(this.events.values()).sort((a, b) => ((a.date || '') + (a.time || '')).localeCompare((b.date || '') + (b.time || '')))
+      };
+    }
+
+    if (clean.startsWith('SELECT * FROM events WHERE id = ?')) {
+      return {
+        get: (id: string) => this.events.get(id)
+      };
+    }
+
+    if (clean.startsWith('UPDATE events SET slots_json = ? WHERE id = ?')) {
+      return {
+        run: (slots_json: string, id: string) => {
+          const ev = this.events.get(id);
+          if (ev) ev.slots_json = slots_json;
+        }
+      };
+    }
+
+    if (clean.startsWith('INSERT INTO posts')) {
+      return {
+        run: (...params: any[]) => {
+          this.posts.set(params[0], {
+            id: params[0],
+            author_id: params[1],
+            category: params[2],
+            title: params[3],
+            content: params[4],
+            city: params[5],
+            target_instruments_json: params[6],
+            genres_json: params[7],
+            likes_json: params[8],
+            comments_json: params[9],
+            created_at: params[10]
+          });
+        }
+      };
+    }
+
+    if (clean.startsWith('SELECT * FROM posts ORDER BY created_at DESC')) {
+      return {
+        all: () => Array.from(this.posts.values()).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+      };
+    }
+
+    if (clean.startsWith('SELECT * FROM posts WHERE id = ?')) {
+      return {
+        get: (id: string) => this.posts.get(id)
+      };
+    }
+
+    if (clean.startsWith('UPDATE posts SET likes_json = ? WHERE id = ?')) {
+      return {
+        run: (likes_json: string, id: string) => {
+          const p = this.posts.get(id);
+          if (p) p.likes_json = likes_json;
+        }
+      };
+    }
+
+    if (clean.startsWith('UPDATE posts SET comments_json = ? WHERE id = ?')) {
+      return {
+        run: (comments_json: string, id: string) => {
+          const p = this.posts.get(id);
+          if (p) p.comments_json = comments_json;
+        }
+      };
+    }
+
+    console.warn('Unhandled SQL in InMemoryDatabase:', clean);
+    return {
+      run: () => {},
+      get: () => undefined,
+      all: () => []
+    };
+  }
+}
 
 // Ensure data folder exists (use /tmp on Vercel/serverless environments)
 const isVercel = process.env.VERCEL === '1' || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
@@ -16,15 +275,35 @@ if (!fs.existsSync(dataDir)) {
 }
 
 const dbPath = path.join(dataDir, 'bandmate.db');
-let databaseInstance: DatabaseSync;
+
+let DatabaseSyncClass: any = null;
 try {
-  databaseInstance = new DatabaseSync(dbPath);
-} catch (err) {
-  console.warn('Falling back to in-memory SQLite database:', err);
-  databaseInstance = new DatabaseSync(':memory:');
+  const sqliteModule = await import('node:sqlite');
+  DatabaseSyncClass = sqliteModule.DatabaseSync;
+} catch {
+  // node:sqlite not supported on older runtimes
+}
+
+let databaseInstance: any = null;
+if (DatabaseSyncClass) {
+  try {
+    databaseInstance = new DatabaseSyncClass(dbPath);
+  } catch (err) {
+    console.warn('Falling back to in-memory SQLite database:', err);
+    try {
+      databaseInstance = new DatabaseSyncClass(':memory:');
+    } catch {
+      databaseInstance = null;
+    }
+  }
+}
+
+if (!databaseInstance) {
+  databaseInstance = new InMemoryDatabase();
 }
 
 export const db = databaseInstance;
+
 
 // Initialize Tables
 export function initDatabase() {
