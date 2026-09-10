@@ -30,10 +30,19 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers
   });
 
-  const data = await response.json();
+  const text = await response.text();
+  let data: any = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    if (!response.ok) {
+      throw new Error(`Errore dal server (${response.status}): ${text.slice(0, 120)}`);
+    }
+    throw new Error(`Risposta non valida dal server: ${text.slice(0, 120)}`);
+  }
 
   if (!response.ok) {
-    throw new Error(data.error || `Errore richiesta API: ${response.statusText}`);
+    throw new Error(data.error || `Errore richiesta API (${response.status}): ${response.statusText}`);
   }
 
   return data as T;

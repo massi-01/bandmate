@@ -3,14 +3,28 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { hashPassword } from './auth.ts';
 
-// Ensure data folder exists
-const dataDir = path.resolve(process.cwd(), 'data');
+// Ensure data folder exists (use /tmp on Vercel/serverless environments)
+const isVercel = process.env.VERCEL === '1' || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+const dataDir = isVercel ? '/tmp' : path.resolve(process.cwd(), 'data');
+
 if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+  try {
+    fs.mkdirSync(dataDir, { recursive: true });
+  } catch (err) {
+    console.error('Error creating data directory:', err);
+  }
 }
 
 const dbPath = path.join(dataDir, 'bandmate.db');
-export const db = new DatabaseSync(dbPath);
+let databaseInstance: DatabaseSync;
+try {
+  databaseInstance = new DatabaseSync(dbPath);
+} catch (err) {
+  console.warn('Falling back to in-memory SQLite database:', err);
+  databaseInstance = new DatabaseSync(':memory:');
+}
+
+export const db = databaseInstance;
 
 // Initialize Tables
 export function initDatabase() {

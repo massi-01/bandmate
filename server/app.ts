@@ -11,12 +11,20 @@ app.use(cors());
 app.use(express.json());
 
 // Health check
-app.get('/api/health', (_req, res) => {
+app.get(['/api/health', '/health', '/api', '/'], (_req, res) => {
   res.json({ status: 'ok', service: 'BandMate API', timestamp: new Date().toISOString() });
 });
 
-// Mount Routes
+// Mount Routes for both /api/* and root /* (for Vercel rewrites flexibility)
 app.use('/api/auth', authRouter);
+app.use('/auth', authRouter);
+
 app.use('/api/musicians', musiciansRouter);
+app.use('/musicians', musiciansRouter);
+
 app.use('/api/events', eventsRouter);
+app.use('/events', eventsRouter);
+
 app.use('/api/posts', postsRouter);
+app.use('/posts', postsRouter);
+
