@@ -96,4 +96,33 @@ export interface Post {
   createdAt: string;
 }
 
-export type ActiveTab = 'musicians' | 'events' | 'feed';
+export interface BandMember {
+  musicianId: string;
+  musicianName: string;
+  musicianAvatar: string;
+  role: string;
+  joinedAt: string;
+}
+
+export interface BandSocialLinks {
+  instagram?: string;
+  spotify?: string;
+  youtube?: string;
+  website?: string;
+}
+
+export interface Band {
+  id: string;
+  name: string;
+  bio: string;
+  city: string;
+  avatar: string;
+  genres: string[];
+  leaderId: string;
+  members: BandMember[];
+  lookingFor: string[];
+  socialLinks?: BandSocialLinks;
+  createdAt: string;
+}
+
+export type ActiveTab = 'musicians' | 'bands' | 'events' | 'feed';

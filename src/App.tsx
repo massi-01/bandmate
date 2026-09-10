@@ -2,15 +2,18 @@ import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/Navbar';
 import { MusiciansView } from './components/MusiciansView';
+import { BandsView } from './components/BandsView';
 import { EventsView } from './components/EventsView';
 import { FeedView } from './components/FeedView';
 import { ProfileModal } from './components/ProfileModal';
 import { AuthModal } from './components/AuthModal';
+import { BandDetailsModal } from './components/BandDetailsModal';
+import { CreateBandModal } from './components/CreateBandModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Music, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
-  const { activeTab, notification, musicians, events, posts } = useApp();
+  const { activeTab, notification, musicians, bands, events, posts } = useApp();
 
   return (
     <div className="app-container">
@@ -18,6 +21,7 @@ const MainAppContent: React.FC = () => {
 
       <main className="main-content">
         {activeTab === 'musicians' && <MusiciansView />}
+        {activeTab === 'bands' && <BandsView />}
         {activeTab === 'events' && <EventsView />}
         {activeTab === 'feed' && <FeedView />}
       </main>
@@ -25,6 +29,8 @@ const MainAppContent: React.FC = () => {
       <MobileBottomNav />
       <ProfileModal />
       <AuthModal />
+      <BandDetailsModal />
+      <CreateBandModal />
 
       {/* Notification Toast */}
       {notification && (
@@ -56,8 +62,9 @@ const MainAppContent: React.FC = () => {
 
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', justifyContent: 'center', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
             <span>🎸 <strong>{musicians.length}</strong> Musicisti Iscritti</span>
-            <span>⚡ <strong>{events.length}</strong> Jam & Eventi Attivi</span>
-            <span>💬 <strong>{posts.length}</strong> Annunci in Bacheca</span>
+            <span>📻 <strong>{bands.length}</strong> Band Attive</span>
+            <span>⚡ <strong>{events.length}</strong> Jam & Eventi</span>
+            <span>💬 <strong>{posts.length}</strong> Annunci Bacheca</span>
           </div>
 
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>

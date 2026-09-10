@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Users, Calendar, MessageSquare } from 'lucide-react';
+import { Users, Radio, Calendar, MessageSquare } from 'lucide-react';
 
 export const MobileBottomNav: React.FC = () => {
   const { activeTab, setActiveTab } = useApp();
@@ -18,11 +18,20 @@ export const MobileBottomNav: React.FC = () => {
 
       <button
         type="button"
+        className={`mobile-nav-btn ${activeTab === 'bands' ? 'active' : ''}`}
+        onClick={() => setActiveTab('bands')}
+      >
+        <Radio size={20} />
+        <span>Band</span>
+      </button>
+
+      <button
+        type="button"
         className={`mobile-nav-btn ${activeTab === 'events' ? 'active' : ''}`}
         onClick={() => setActiveTab('events')}
       >
         <Calendar size={20} />
-        <span>Eventi & Jam</span>
+        <span>Eventi</span>
       </button>
 
       <button

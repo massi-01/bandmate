@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { 
   Music, 
   Users, 
+  Radio,
   Calendar, 
   MessageSquare, 
   ChevronDown, 
@@ -71,6 +72,13 @@ export const Navbar: React.FC = () => {
           >
             <Users size={18} />
             <span>Musicisti</span>
+          </button>
+          <button
+            className={`nav-tab-btn ${activeTab === 'bands' ? 'active' : ''}`}
+            onClick={() => setActiveTab('bands')}
+          >
+            <Radio size={18} />
+            <span>Band</span>
           </button>
           <button
             className={`nav-tab-btn ${activeTab === 'events' ? 'active' : ''}`}

@@ -5,6 +5,7 @@ import { authRouter } from './routes/authRoutes.ts';
 import { musiciansRouter } from './routes/musiciansRoutes.ts';
 import { eventsRouter } from './routes/eventsRoutes.ts';
 import { postsRouter } from './routes/postsRoutes.ts';
+import { bandsRouter } from './routes/bandsRoutes.ts';
 
 export const app = express();
 
@@ -42,5 +43,8 @@ app.use('/events', eventsRouter);
 
 app.use('/api/posts', postsRouter);
 app.use('/posts', postsRouter);
+
+app.use('/api/bands', bandsRouter);
+app.use('/bands', bandsRouter);
 
 export default app;

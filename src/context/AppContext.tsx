@@ -3,6 +3,7 @@ import type {
   MusicianProfile,
   JamEvent,
   Post,
+  Band,
   ActiveTab
 } from '../types';
 import { 
@@ -10,6 +11,7 @@ import {
   musiciansApi, 
   eventsApi, 
   postsApi, 
+  bandsApi,
   getAuthToken, 
   setAuthToken 
 } from '../services/api';
@@ -36,11 +38,21 @@ interface AppContextType {
   joinEventSlot: (eventId: string, slotId: string) => Promise<boolean>;
   leaveEventSlot: (eventId: string, slotId: string) => Promise<void>;
 
+  // Posts
   posts: Post[];
   refreshPosts: () => Promise<void>;
   createPost: (postData: any) => Promise<void>;
   togglePostLike: (postId: string) => Promise<void>;
   addPostComment: (postId: string, content: string) => Promise<void>;
+
+  // Bands
+  bands: Band[];
+  refreshBands: () => Promise<void>;
+  createBand: (bandData: any) => Promise<Band | null>;
+  updateBand: (bandId: string, data: any) => Promise<void>;
+  addBandMember: (bandId: string, musicianId: string, role: string) => Promise<boolean>;
+  removeBandMember: (bandId: string, memberId: string) => Promise<boolean>;
+  deleteBand: (bandId: string) => Promise<boolean>;
 
   // Navigation & UI state
   activeTab: ActiveTab;
@@ -48,12 +60,16 @@ interface AppContextType {
 
   selectedMusicianForModal: MusicianProfile | null;
   setSelectedMusicianForModal: (m: MusicianProfile | null) => void;
+  selectedBandForModal: Band | null;
+  setSelectedBandForModal: (b: Band | null) => void;
   isEditProfileOpen: boolean;
   setIsEditProfileOpen: (open: boolean) => void;
   isCreateEventOpen: boolean;
   setIsCreateEventOpen: (open: boolean) => void;
   isCreatePostOpen: boolean;
   setIsCreatePostOpen: (open: boolean) => void;
+  isCreateBandOpen: boolean;
+  setIsCreateBandOpen: (open: boolean) => void;
 
   notification: { message: string; type: 'success' | 'info' | 'error' } | null;
   showNotification: (message: string, type?: 'success' | 'info' | 'error') => void;
@@ -67,14 +83,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const [musicians, setMusicians] = useState<MusicianProfile[]>([]);
+  const [bands, setBands] = useState<Band[]>([]);
   const [events, setEvents] = useState<JamEvent[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('musicians');
   const [selectedMusicianForModal, setSelectedMusicianForModal] = useState<MusicianProfile | null>(null);
+  const [selectedBandForModal, setSelectedBandForModal] = useState<Band | null>(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+  const [isCreateBandOpen, setIsCreateBandOpen] = useState(false);
 
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
 
@@ -92,6 +111,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setMusicians(data);
     } catch (err: any) {
       console.error('Failed to load musicians:', err);
+    }
+  }, []);
+
+  const refreshBands = useCallback(async () => {
+    try {
+      const data = await bandsApi.getAll();
+      setBands(data);
+    } catch (err: any) {
+      console.error('Failed to load bands:', err);
     }
   }, []);
 
@@ -115,8 +143,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // 2. Initial Auth & Data Load
   useEffect(() => {
-    // Initial fetch of data from SQLite backend API
+    // Initial fetch of data from backend API
     refreshMusicians();
+    refreshBands();
     refreshEvents();
     refreshPosts();
 
@@ -134,7 +163,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           setCurrentMusician(null);
         });
     }
-  }, [refreshMusicians, refreshEvents, refreshPosts]);
+  }, [refreshMusicians, refreshBands, refreshEvents, refreshPosts]);
 
   // 3. Auth Actions
   const login = async (email: string, password: string) => {
@@ -261,6 +290,82 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  // 7. Bands actions
+  const createBand = async (bandData: any): Promise<Band | null> => {
+    if (!currentMusician) {
+      showNotification('Accedi o registrati per creare una band!', 'info');
+      setIsAuthModalOpen(true);
+      return null;
+    }
+    try {
+      const newBand = await bandsApi.create(bandData);
+      setBands(prev => [newBand, ...prev]);
+      showNotification('Band fondata con successo!', 'success');
+      return newBand;
+    } catch (err: any) {
+      showNotification(err.message || 'Errore durante la creazione della band', 'error');
+      return null;
+    }
+  };
+
+  const updateBand = async (bandId: string, data: any) => {
+    try {
+      const updated = await bandsApi.update(bandId, data);
+      setBands(prev => prev.map(b => b.id === updated.id ? updated : b));
+      if (selectedBandForModal?.id === updated.id) {
+        setSelectedBandForModal(updated);
+      }
+      showNotification('Informazioni band aggiornate!', 'success');
+    } catch (err: any) {
+      showNotification(err.message || 'Errore durante l\'aggiornamento della band', 'error');
+    }
+  };
+
+  const addBandMember = async (bandId: string, musicianId: string, role: string): Promise<boolean> => {
+    try {
+      const updated = await bandsApi.addMember(bandId, { musicianId, role });
+      setBands(prev => prev.map(b => b.id === updated.id ? updated : b));
+      if (selectedBandForModal?.id === updated.id) {
+        setSelectedBandForModal(updated);
+      }
+      showNotification('Nuovo membro aggiunto alla band!', 'success');
+      return true;
+    } catch (err: any) {
+      showNotification(err.message || 'Impossibile aggiungere il membro', 'error');
+      return false;
+    }
+  };
+
+  const removeBandMember = async (bandId: string, memberId: string): Promise<boolean> => {
+    try {
+      const updated = await bandsApi.removeMember(bandId, memberId);
+      setBands(prev => prev.map(b => b.id === updated.id ? updated : b));
+      if (selectedBandForModal?.id === updated.id) {
+        setSelectedBandForModal(updated);
+      }
+      showNotification('Membro rimosso dalla band.', 'info');
+      return true;
+    } catch (err: any) {
+      showNotification(err.message || 'Impossibile rimuovere il membro', 'error');
+      return false;
+    }
+  };
+
+  const deleteBand = async (bandId: string): Promise<boolean> => {
+    try {
+      await bandsApi.delete(bandId);
+      setBands(prev => prev.filter(b => b.id !== bandId));
+      if (selectedBandForModal?.id === bandId) {
+        setSelectedBandForModal(null);
+      }
+      showNotification('Band eliminata.', 'info');
+      return true;
+    } catch (err: any) {
+      showNotification(err.message || 'Impossibile eliminare la band', 'error');
+      return false;
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -289,17 +394,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         togglePostLike,
         addPostComment,
 
+        bands,
+        refreshBands,
+        createBand,
+        updateBand,
+        addBandMember,
+        removeBandMember,
+        deleteBand,
+
         activeTab,
         setActiveTab,
 
         selectedMusicianForModal,
         setSelectedMusicianForModal,
+        selectedBandForModal,
+        setSelectedBandForModal,
         isEditProfileOpen,
         setIsEditProfileOpen,
         isCreateEventOpen,
         setIsCreateEventOpen,
         isCreatePostOpen,
         setIsCreatePostOpen,
+        isCreateBandOpen,
+        setIsCreateBandOpen,
 
         notification,
         showNotification

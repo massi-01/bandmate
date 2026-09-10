@@ -1,4 +1,4 @@
-import type { MusicianProfile, JamEvent, Post } from '../types';
+import type { MusicianProfile, JamEvent, Post, Band } from '../types';
 
 const TOKEN_KEY = 'bandmate_session_token';
 
@@ -232,3 +232,71 @@ export const postsApi = {
     return data.post;
   }
 };
+
+// 5. Bands API
+export const bandsApi = {
+  async getAll(params?: { search?: string; city?: string; genre?: string; lookingForOnly?: boolean }) {
+    const query = new URLSearchParams();
+    if (params?.search) query.set('search', params.search);
+    if (params?.city && params.city !== 'all') query.set('city', params.city);
+    if (params?.genre && params.genre !== 'all') query.set('genre', params.genre);
+    if (params?.lookingForOnly) query.set('lookingForOnly', 'true');
+
+    const queryString = query.toString();
+    const endpoint = `/api/bands${queryString ? `?${queryString}` : ''}`;
+    const data = await request<{ bands: Band[] }>(endpoint);
+    return data.bands;
+  },
+
+  async getById(id: string) {
+    const data = await request<{ band: Band }>(`/api/bands/${id}`);
+    return data.band;
+  },
+
+  async create(payload: {
+    name: string;
+    bio?: string;
+    city: string;
+    avatar?: string;
+    genres: string[];
+    leaderRole?: string;
+    lookingFor?: string[];
+    socialLinks?: any;
+  }) {
+    const data = await request<{ band: Band }>('/api/bands', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    return data.band;
+  },
+
+  async update(id: string, payload: Partial<Band>) {
+    const data = await request<{ band: Band }>(`/api/bands/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(payload)
+    });
+    return data.band;
+  },
+
+  async addMember(bandId: string, payload: { musicianId: string; role: string }) {
+    const data = await request<{ band: Band; addedMember: any }>(`/api/bands/${bandId}/members`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    return data.band;
+  },
+
+  async removeMember(bandId: string, memberId: string) {
+    const data = await request<{ band: Band }>(`/api/bands/${bandId}/members/${memberId}`, {
+      method: 'DELETE'
+    });
+    return data.band;
+  },
+
+  async delete(id: string) {
+    return await request<{ message: string }>(`/api/bands/${id}`, {
+      method: 'DELETE'
+    });
+  }
+};
+

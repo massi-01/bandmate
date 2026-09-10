@@ -3,6 +3,7 @@ import { User } from './models/User.ts';
 import { Musician } from './models/Musician.ts';
 import { Event } from './models/Event.ts';
 import { Post } from './models/Post.ts';
+import { Band } from './models/Band.ts';
 import { hashPassword } from './auth.ts';
 
 // MongoDB Atlas connection string (environment variable or Atlas URI)
@@ -58,9 +59,8 @@ async function seedInitialDataIfNeeded() {
 
   try {
     const userCount = await User.countDocuments();
-    if (userCount > 0) return;
-
-    console.log('🌱 Seeding MongoDB with demo musicians, events, and posts...');
+    if (userCount === 0) {
+      console.log('🌱 Seeding MongoDB with demo musicians, events, and posts...');
     const defaultPassword = 'password123';
     const { hash, salt } = hashPassword(defaultPassword);
     const now = new Date().toISOString();
@@ -356,7 +356,99 @@ async function seedInitialDataIfNeeded() {
     }
 
     console.log('✅ MongoDB database seeded successfully!');
+    }
+
+    // Check and seed demo bands if none exist
+    await seedDemoBandsIfNeeded();
   } catch (err) {
     console.error('Seed check error:', err);
+  }
+}
+
+async function seedDemoBandsIfNeeded() {
+  try {
+    const bandCount = await Band.countDocuments();
+    if (bandCount > 0) return;
+
+    console.log('🌱 Seeding demo bands in MongoDB...');
+    const now = new Date().toISOString();
+
+    const demoBands = [
+      {
+        _id: 'b1',
+        name: 'The Velvet Groove',
+        bio: 'Progetto neo-soul e funk nato a Milano nel 2024. Suoniamo cover riarrangiate e pezzi inediti carichi di groove e buone vibrazioni. Prove settimanali e date live nei club.',
+        city: 'Milano (MI)',
+        avatar: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80',
+        genres: ['Funk', 'Soul', 'Indie Pop'],
+        leaderId: 'm1',
+        members: [
+          {
+            musicianId: 'm1',
+            musicianName: 'Davide De Luca',
+            musicianAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+            role: 'Chitarra & Voce',
+            joinedAt: now
+          },
+          {
+            musicianId: 'm2',
+            musicianName: 'Giulia Moretti',
+            musicianAvatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+            role: 'Basso Elettrico',
+            joinedAt: now
+          },
+          {
+            musicianId: 'm3',
+            musicianName: 'Marco Bellini',
+            musicianAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+            role: 'Batteria',
+            joinedAt: now
+          }
+        ],
+        lookingFor: ['Tastiere/Pianoforte', 'Sax'],
+        socialLinks: {
+          instagram: '@thevelvetgroove_mi',
+          spotify: 'The Velvet Groove'
+        },
+        createdAt: now
+      },
+      {
+        _id: 'b2',
+        name: 'Lunar Echoes',
+        bio: 'Quartetto alternative rock ispirato a Interpol, The National e Arctic Monkeys. All\'attivo un EP registrato e date live a Roma e nel centro Italia.',
+        city: 'Roma (RM)',
+        avatar: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=600&q=80',
+        genres: ['Alternative Rock', 'Post-Punk', 'Indie Rock'],
+        leaderId: 'm4',
+        members: [
+          {
+            musicianId: 'm4',
+            musicianName: 'Elena Russo',
+            musicianAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80',
+            role: 'Voce & Testi',
+            joinedAt: now
+          },
+          {
+            musicianId: 'm6',
+            musicianName: 'Samuele Ferraro',
+            musicianAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
+            role: 'Tastiere & Synth',
+            joinedAt: now
+          }
+        ],
+        lookingFor: ['Chitarra Solista', 'Basso Elettrico'],
+        socialLinks: {
+          instagram: '@lunarechoes_band'
+        },
+        createdAt: now
+      }
+    ];
+
+    for (const b of demoBands) {
+      await Band.create(b);
+    }
+    console.log('✅ Demo bands seeded successfully!');
+  } catch (err) {
+    console.error('Error seeding demo bands:', err);
   }
 }

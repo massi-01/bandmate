@@ -20852,11 +20852,11 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router5;
+    module.exports = Router6;
     module.exports.Route = Route;
-    function Router5(options) {
-      if (!(this instanceof Router5)) {
-        return new Router5(options);
+    function Router6(options) {
+      if (!(this instanceof Router6)) {
+        return new Router6(options);
       }
       const opts = options || {};
       function router(req, res, next) {
@@ -20870,9 +20870,9 @@ var require_router = __commonJS({
       router.stack = [];
       return router;
     }
-    Router5.prototype = function() {
+    Router6.prototype = function() {
     };
-    Router5.prototype.param = function param(name, fn) {
+    Router6.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20892,7 +20892,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router5.prototype.handle = function handle(req, res, callback) {
+    Router6.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -21019,7 +21019,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router5.prototype.use = function use(handler) {
+    Router6.prototype.use = function use(handler) {
       let offset = 0;
       let path = "/";
       if (typeof handler !== "function") {
@@ -21052,7 +21052,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router5.prototype.route = function route(path) {
+    Router6.prototype.route = function route(path) {
       const route2 = new Route(path);
       const layer = new Layer(path, {
         sensitive: this.caseSensitive,
@@ -21067,7 +21067,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router5.prototype[method] = function(path) {
+      Router6.prototype[method] = function(path) {
         const route = this.route(path);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -21250,7 +21250,7 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router5 = require_router();
+    var Router6 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
@@ -21266,7 +21266,7 @@ var require_application = __commonJS({
         enumerable: true,
         get: function getrouter() {
           if (router === null) {
-            router = new Router5({
+            router = new Router6({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
@@ -23998,7 +23998,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router5 = require_router();
+    var Router6 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -24020,8 +24020,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router5.Route;
-    exports.Router = Router5;
+    exports.Route = Router6.Route;
+    exports.Router = Router6;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -62985,7 +62985,7 @@ var require_document2 = __commonJS({
     var ObjectParameterError = require_objectParameter();
     var ParallelValidateError = require_parallelValidate();
     var PathTrie = require_pathTrie();
-    var Schema6 = require_schema2();
+    var Schema7 = require_schema2();
     var StrictModeError = require_strict();
     var ValidationError = require_validation();
     var ValidatorError = require_validator();
@@ -63046,7 +63046,7 @@ var require_document2 = __commonJS({
       let skipId = options.skipId;
       this.$__ = new InternalCache();
       if (this.$__schema == null) {
-        const _schema = utils.isObject(fields) && !fields.instanceOfSchema ? new Schema6(fields) : fields;
+        const _schema = utils.isObject(fields) && !fields.instanceOfSchema ? new Schema7(fields) : fields;
         this.$__setSchema(_schema);
         fields = options;
         skipId = options.skipId;
@@ -72878,7 +72878,7 @@ var require_map2 = __commonJS({
     var SchemaMapOptions = require_schemaMapOptions();
     var SchemaType = require_schemaType();
     var MongooseError = require_mongooseError();
-    var Schema6 = require_schema2();
+    var Schema7 = require_schema2();
     var utils = require_utils6();
     var SchemaMap = class extends SchemaType {
       /**
@@ -72998,7 +72998,7 @@ var require_map2 = __commonJS({
       if (utils.hasUserDefinedProperty(obj, "of")) {
         const isInlineSchema = utils.isPOJO(obj.of) && utils.hasOwnKeys(obj.of) && !utils.hasUserDefinedProperty(obj.of, schema.options.typeKey);
         if (isInlineSchema) {
-          _mapType = { [schema.options.typeKey]: new Schema6(obj.of) };
+          _mapType = { [schema.options.typeKey]: new Schema7(obj.of) };
         } else if (utils.isPOJO(obj.of)) {
           _mapType = Object.assign({}, obj.of);
         } else {
@@ -73867,9 +73867,9 @@ var require_schema2 = __commonJS({
     var isPOJO = utils.isPOJO;
     var id = 0;
     var numberRE = /^\d+$/;
-    function Schema6(obj, options) {
-      if (!(this instanceof Schema6)) {
-        return new Schema6(obj, options);
+    function Schema7(obj, options) {
+      if (!(this instanceof Schema7)) {
+        return new Schema7(obj, options);
       }
       this.obj = obj;
       this.paths = {};
@@ -73979,37 +73979,37 @@ var require_schema2 = __commonJS({
         })(prop));
       }
     }
-    Schema6.prototype = Object.create(EventEmitter.prototype);
-    Schema6.prototype.constructor = Schema6;
-    Schema6.prototype.instanceOfSchema = true;
-    Object.defineProperty(Schema6.prototype, "$schemaType", {
+    Schema7.prototype = Object.create(EventEmitter.prototype);
+    Schema7.prototype.constructor = Schema7;
+    Schema7.prototype.instanceOfSchema = true;
+    Object.defineProperty(Schema7.prototype, "$schemaType", {
       configurable: false,
       enumerable: false,
       writable: true
     });
-    Object.defineProperty(Schema6.prototype, "childSchemas", {
+    Object.defineProperty(Schema7.prototype, "childSchemas", {
       configurable: false,
       enumerable: true,
       writable: true
     });
-    Object.defineProperty(Schema6.prototype, "virtuals", {
+    Object.defineProperty(Schema7.prototype, "virtuals", {
       configurable: false,
       enumerable: true,
       writable: true
     });
-    Schema6.prototype.obj;
-    Schema6.prototype.paths;
-    Schema6.prototype.tree;
-    Schema6.create = function create(definition, options) {
-      return new Schema6(definition, options);
+    Schema7.prototype.obj;
+    Schema7.prototype.paths;
+    Schema7.prototype.tree;
+    Schema7.create = function create(definition, options) {
+      return new Schema7(definition, options);
     };
-    Schema6.prototype.clone = function() {
+    Schema7.prototype.clone = function() {
       const s = this._clone();
       s.on("init", (v) => this.emit("init", v));
       return s;
     };
-    Schema6.prototype._clone = function _clone(Constructor) {
-      Constructor = Constructor || (this.base == null ? Schema6 : this.base.Schema);
+    Schema7.prototype._clone = function _clone(Constructor) {
+      Constructor = Constructor || (this.base == null ? Schema7 : this.base.Schema);
       const s = new Constructor({}, this._userProvidedOptions);
       s.base = this.base;
       s.obj = this.obj;
@@ -74077,8 +74077,8 @@ var require_schema2 = __commonJS({
       s.encryptedFields = clone(this.encryptedFields);
       return s;
     };
-    Schema6.prototype.pick = function(paths, options) {
-      const newSchema = new Schema6({}, options || this.options);
+    Schema7.prototype.pick = function(paths, options) {
+      const newSchema = new Schema7({}, options || this.options);
       if (!Array.isArray(paths)) {
         throw new MongooseError('Schema#pick() only accepts an array argument, got "' + typeof paths + '"');
       }
@@ -74107,8 +74107,8 @@ var require_schema2 = __commonJS({
       }
       return newSchema;
     };
-    Schema6.prototype.omit = function(paths, options) {
-      const newSchema = new Schema6(this, options || this.options);
+    Schema7.prototype.omit = function(paths, options) {
+      const newSchema = new Schema7(this, options || this.options);
       if (!Array.isArray(paths)) {
         throw new MongooseError(
           'Schema#omit() only accepts an array argument, got "' + typeof paths + '"'
@@ -74122,7 +74122,7 @@ var require_schema2 = __commonJS({
       }
       return newSchema;
     };
-    Schema6.prototype.defaultOptions = function(options) {
+    Schema7.prototype.defaultOptions = function(options) {
       this._userProvidedOptions = options == null ? {} : clone(options);
       const baseOptions = this.base?.options || {};
       const defaultStrict = baseOptions.strict ?? true;
@@ -74170,12 +74170,12 @@ var require_schema2 = __commonJS({
       }
       return options;
     };
-    Schema6.prototype.discriminator = function(name, schema, options) {
+    Schema7.prototype.discriminator = function(name, schema, options) {
       this._applyDiscriminators = this._applyDiscriminators || /* @__PURE__ */ new Map();
       this._applyDiscriminators.set(name, { schema, options });
       return this;
     };
-    Schema6.prototype._getDocumentMiddleware = function _getDocumentMiddleware() {
+    Schema7.prototype._getDocumentMiddleware = function _getDocumentMiddleware() {
       return this.s.hooks.filter((hook) => {
         if (hook.name === "updateOne" || hook.name === "deleteOne") {
           return !!hook["document"];
@@ -74194,7 +74194,7 @@ var require_schema2 = __commonJS({
         return true;
       });
     };
-    Schema6.prototype._defaultToObjectOptions = function(json) {
+    Schema7.prototype._defaultToObjectOptions = function(json) {
       const path = json ? "toJSON" : "toObject";
       if (this._defaultToObjectOptionsMap && path in this._defaultToObjectOptionsMap) {
         return this._defaultToObjectOptionsMap[path];
@@ -74206,7 +74206,7 @@ var require_schema2 = __commonJS({
       this._defaultToObjectOptionsMap[path] = utils.hasOwnKeys(defaultOptions) ? defaultOptions : null;
       return defaultOptions;
     };
-    Schema6.prototype.encryptionType = function encryptionType(encryptionType) {
+    Schema7.prototype.encryptionType = function encryptionType(encryptionType) {
       if (arguments.length === 0) {
         return this.options.encryptionType;
       }
@@ -74215,8 +74215,8 @@ var require_schema2 = __commonJS({
       }
       this.options.encryptionType = encryptionType;
     };
-    Schema6.prototype.add = function add(obj, prefix) {
-      if (obj instanceof Schema6 || obj?.instanceOfSchema) {
+    Schema7.prototype.add = function add(obj, prefix) {
+      if (obj instanceof Schema7 || obj?.instanceOfSchema) {
         merge(this, obj);
         return this;
       }
@@ -74243,7 +74243,7 @@ var require_schema2 = __commonJS({
         }
         let isMongooseTypeString = false;
         if (typeof val === "string") {
-          const MongooseTypes2 = this.base?.Schema.Types ?? Schema6.Types;
+          const MongooseTypes2 = this.base?.Schema.Types ?? Schema7.Types;
           const upperVal = val.charAt(0).toUpperCase() + val.substring(1);
           isMongooseTypeString = MongooseTypes2[upperVal] != null;
         }
@@ -74295,7 +74295,7 @@ var require_schema2 = __commonJS({
             if (this._userProvidedOptions.toJSON != null) {
               childSchemaOptions.toJSON = utils.omit(this._userProvidedOptions.toJSON, ["transform"]);
             }
-            const _schema = new Schema6(_typeDef, childSchemaOptions);
+            const _schema = new Schema7(_typeDef, childSchemaOptions);
             _schema.$implicitlyCreated = true;
             const schemaWrappedPath = Object.assign({}, val, { [typeKey]: _schema });
             this.path(prefix + key, schemaWrappedPath);
@@ -74336,23 +74336,23 @@ var require_schema2 = __commonJS({
       aliasFields(this, aliasObj);
       return this;
     };
-    Schema6.prototype._addEncryptedField = function _addEncryptedField(path, fieldConfig) {
+    Schema7.prototype._addEncryptedField = function _addEncryptedField(path, fieldConfig) {
       const type = this.path(path).autoEncryptionType();
       if (type == null) {
         throw new MongooseError(`Invalid BSON type for FLE field: '${path}'`);
       }
       this.encryptedFields[path] = clone(fieldConfig);
     };
-    Schema6.prototype._removeEncryptedField = function _removeEncryptedField(path) {
+    Schema7.prototype._removeEncryptedField = function _removeEncryptedField(path) {
       delete this.encryptedFields[path];
     };
-    Schema6.prototype._hasEncryptedFields = function _hasEncryptedFields() {
+    Schema7.prototype._hasEncryptedFields = function _hasEncryptedFields() {
       return utils.hasOwnKeys(this.encryptedFields);
     };
-    Schema6.prototype._hasEncryptedField = function _hasEncryptedField(path) {
+    Schema7.prototype._hasEncryptedField = function _hasEncryptedField(path) {
       return path in this.encryptedFields;
     };
-    Schema6.prototype._buildEncryptedFields = function() {
+    Schema7.prototype._buildEncryptedFields = function() {
       const fields = Object.entries(this.encryptedFields).map(
         ([path, config]) => {
           const bsonType = this.path(path).autoEncryptionType();
@@ -74361,7 +74361,7 @@ var require_schema2 = __commonJS({
       );
       return { fields };
     };
-    Schema6.prototype._buildSchemaMap = function() {
+    Schema7.prototype._buildSchemaMap = function() {
       function buildNestedPath(path, object, value) {
         let i = 0, component = path[i];
         for (; i < path.length - 1; ++i, component = path[i]) {
@@ -74389,11 +74389,11 @@ var require_schema2 = __commonJS({
         properties
       };
     };
-    Schema6.prototype.alias = function alias(path, alias) {
+    Schema7.prototype.alias = function alias(path, alias) {
       aliasFields(this, { [path]: alias });
       return this;
     };
-    Schema6.prototype.removeIndex = function removeIndex(index) {
+    Schema7.prototype.removeIndex = function removeIndex(index) {
       if (arguments.length > 1) {
         throw new MongooseError("removeIndex() takes only 1 argument");
       }
@@ -74415,22 +74415,22 @@ var require_schema2 = __commonJS({
       }
       return this;
     };
-    Schema6.prototype.clearIndexes = function clearIndexes() {
+    Schema7.prototype.clearIndexes = function clearIndexes() {
       this._indexes.length = 0;
       return this;
     };
-    Schema6.prototype.searchIndex = function searchIndex(description) {
+    Schema7.prototype.searchIndex = function searchIndex(description) {
       this._searchIndexes.push(description);
       return this;
     };
-    Schema6.reserved = /* @__PURE__ */ Object.create(null);
-    Schema6.prototype.reserved = Schema6.reserved;
-    var reserved = Schema6.reserved;
+    Schema7.reserved = /* @__PURE__ */ Object.create(null);
+    Schema7.prototype.reserved = Schema7.reserved;
+    var reserved = Schema7.reserved;
     reserved["prototype"] = // EventEmitter
     reserved.emit = reserved.listeners = reserved.removeListener = // document properties and functions
     reserved.collection = reserved.errors = reserved.get = reserved.init = reserved.isModified = reserved.isNew = reserved.populated = reserved.remove = reserved.save = reserved.toObject = reserved.validate = 1;
     reserved.collection = 1;
-    Schema6.prototype.path = function(path, obj) {
+    Schema7.prototype.path = function(path, obj) {
       if (obj === void 0) {
         if (Object.hasOwn(this.paths, path)) {
           return this.paths[path];
@@ -74575,7 +74575,7 @@ var require_schema2 = __commonJS({
       }
       return this;
     };
-    Schema6.prototype._gatherChildSchemas = function _gatherChildSchemas() {
+    Schema7.prototype._gatherChildSchemas = function _gatherChildSchemas() {
       const childSchemas = [];
       for (const path of Object.keys(this.paths)) {
         if (typeof path !== "string") {
@@ -74650,13 +74650,13 @@ var require_schema2 = __commonJS({
       }
       return null;
     }
-    Object.defineProperty(Schema6.prototype, "base", {
+    Object.defineProperty(Schema7.prototype, "base", {
       configurable: true,
       enumerable: false,
       writable: true,
       value: null
     });
-    Schema6.prototype.interpretAsType = function(path, obj, options) {
+    Schema7.prototype.interpretAsType = function(path, obj, options) {
       if (obj instanceof SchemaType) {
         if (obj.path === path) {
           return obj;
@@ -74665,7 +74665,7 @@ var require_schema2 = __commonJS({
         clone2.path = path;
         return clone2;
       }
-      const MongooseTypes2 = this.base?.Schema.Types ?? Schema6.Types;
+      const MongooseTypes2 = this.base?.Schema.Types ?? Schema7.Types;
       const Types = this.base?.Types ?? require_types();
       if (!utils.isPOJO(obj) && !(obj instanceof SchemaTypeOptions)) {
         const constructorName = utils.getFunctionName(obj.constructor);
@@ -74691,9 +74691,9 @@ var require_schema2 = __commonJS({
       if (Array.isArray(type) || type === Array || type === "array" || type === MongooseTypes2.Array) {
         let cast = type === Array || type === "array" ? obj.cast || obj.of : type[0];
         if (cast?.instanceOfSchema) {
-          if (!(cast instanceof Schema6)) {
+          if (!(cast instanceof Schema7)) {
             if (this.options._isMerging) {
-              cast = new Schema6(cast);
+              cast = new Schema7(cast);
             } else {
               throw new TypeError("Schema for array path `" + path + `\` is from a different copy of the Mongoose module. Please make sure you're using the same version of Mongoose everywhere with \`npm list mongoose\`. If you are still getting this error, please add \`new Schema()\` around the path: ${path}: new Schema(...)`);
             }
@@ -74701,9 +74701,9 @@ var require_schema2 = __commonJS({
           return new MongooseTypes2.DocumentArray(path, cast, obj, null, this);
         }
         if (cast && cast[options.typeKey] && cast[options.typeKey].instanceOfSchema) {
-          if (!(cast[options.typeKey] instanceof Schema6)) {
+          if (!(cast[options.typeKey] instanceof Schema7)) {
             if (this.options._isMerging) {
-              cast[options.typeKey] = new Schema6(cast[options.typeKey]);
+              cast[options.typeKey] = new Schema7(cast[options.typeKey]);
             } else {
               throw new TypeError("Schema for array path `" + path + `\` is from a different copy of the Mongoose module. Please make sure you're using the same version of Mongoose everywhere with \`npm list mongoose\`. If you are still getting this error, please add \`new Schema()\` around the path: ${path}: new Schema(...)`);
             }
@@ -74741,10 +74741,10 @@ var require_schema2 = __commonJS({
             }
             if (Object.hasOwn(this._userProvidedOptions, "_id")) {
               childSchemaOptions._id = this._userProvidedOptions._id;
-            } else if (Schema6.Types.DocumentArray.defaultOptions._id != null) {
-              childSchemaOptions._id = Schema6.Types.DocumentArray.defaultOptions._id;
+            } else if (Schema7.Types.DocumentArray.defaultOptions._id != null) {
+              childSchemaOptions._id = Schema7.Types.DocumentArray.defaultOptions._id;
             }
-            const childSchema = new Schema6(castFromTypeKey, childSchemaOptions);
+            const childSchema = new Schema7(castFromTypeKey, childSchemaOptions);
             childSchema.$implicitlyCreated = true;
             return new MongooseTypes2.DocumentArray(path, childSchema, obj, null, this);
           } else {
@@ -74804,7 +74804,7 @@ var require_schema2 = __commonJS({
       const schemaType = new MongooseTypes2[name](path, obj, options, this);
       return schemaType;
     };
-    Schema6.prototype.eachPath = function(fn) {
+    Schema7.prototype.eachPath = function(fn) {
       const keys = Object.keys(this.paths);
       const len = keys.length;
       for (let i = 0; i < len; ++i) {
@@ -74812,7 +74812,7 @@ var require_schema2 = __commonJS({
       }
       return this;
     };
-    Schema6.prototype.requiredPaths = function requiredPaths(invalidate) {
+    Schema7.prototype.requiredPaths = function requiredPaths(invalidate) {
       if (this._requiredpaths && !invalidate) {
         return this._requiredpaths;
       }
@@ -74828,7 +74828,7 @@ var require_schema2 = __commonJS({
       this._requiredpaths = ret;
       return this._requiredpaths;
     };
-    Schema6.prototype.pathsWithTransforms = function pathsWithTransforms(invalidate) {
+    Schema7.prototype.pathsWithTransforms = function pathsWithTransforms(invalidate) {
       if (this._pathsWithTransforms !== void 0 && !invalidate) {
         return this._pathsWithTransforms;
       }
@@ -74845,14 +74845,14 @@ var require_schema2 = __commonJS({
       this._pathsWithTransforms = ret.length ? ret : null;
       return this._pathsWithTransforms;
     };
-    Schema6.prototype.indexedPaths = function indexedPaths() {
+    Schema7.prototype.indexedPaths = function indexedPaths() {
       if (this._indexedpaths) {
         return this._indexedpaths;
       }
       this._indexedpaths = this.indexes();
       return this._indexedpaths;
     };
-    Schema6.prototype.pathType = function(path) {
+    Schema7.prototype.pathType = function(path) {
       if (Object.hasOwn(this.paths, path)) {
         return "real";
       }
@@ -74879,7 +74879,7 @@ var require_schema2 = __commonJS({
       }
       return "adhocOrUndefined";
     };
-    Schema6.prototype.hasMixedParent = function(path) {
+    Schema7.prototype.hasMixedParent = function(path) {
       const subpaths = path.split(/\./g);
       path = "";
       for (let i = 0; i < subpaths.length; ++i) {
@@ -74890,7 +74890,7 @@ var require_schema2 = __commonJS({
       }
       return null;
     };
-    Schema6.prototype.setupTimestamp = function(timestamps) {
+    Schema7.prototype.setupTimestamp = function(timestamps) {
       return setupTimestamps(this, timestamps);
     };
     function getPositionalPathType(self2, path, cleanPath) {
@@ -74944,11 +74944,11 @@ var require_schema2 = __commonJS({
       getPositionalPathType(self2, path, cleanPath);
       return self2.subpaths[cleanPath];
     }
-    Schema6.prototype.queue = function(name, args) {
+    Schema7.prototype.queue = function(name, args) {
       this.callQueue.push([name, args]);
       return this;
     };
-    Schema6.prototype.pre = function(name) {
+    Schema7.prototype.pre = function(name) {
       if (name instanceof RegExp) {
         const remainingArgs = Array.prototype.slice.call(arguments, 1);
         for (const fn of hookNames) {
@@ -74968,7 +74968,7 @@ var require_schema2 = __commonJS({
       this.s.hooks.pre.apply(this.s.hooks, arguments);
       return this;
     };
-    Schema6.prototype.post = function(name) {
+    Schema7.prototype.post = function(name) {
       if (name instanceof RegExp) {
         const remainingArgs = Array.prototype.slice.call(arguments, 1);
         for (const fn of hookNames) {
@@ -74988,7 +74988,7 @@ var require_schema2 = __commonJS({
       this.s.hooks.post.apply(this.s.hooks, arguments);
       return this;
     };
-    Schema6.prototype.plugin = function(fn, opts) {
+    Schema7.prototype.plugin = function(fn, opts) {
       if (typeof fn !== "function") {
         throw new MongooseError('First param to `schema.plugin()` must be a function, got "' + typeof fn + '"');
       }
@@ -75003,7 +75003,7 @@ var require_schema2 = __commonJS({
       fn(this, opts);
       return this;
     };
-    Schema6.prototype.method = function(name, fn, options) {
+    Schema7.prototype.method = function(name, fn, options) {
       if (typeof name !== "string") {
         for (const i in name) {
           this.methods[i] = name[i];
@@ -75015,7 +75015,7 @@ var require_schema2 = __commonJS({
       }
       return this;
     };
-    Schema6.prototype.static = function(name, fn) {
+    Schema7.prototype.static = function(name, fn) {
       if (typeof name !== "string") {
         for (const i in name) {
           this.statics[i] = name[i];
@@ -75025,7 +75025,7 @@ var require_schema2 = __commonJS({
       }
       return this;
     };
-    Schema6.prototype.index = function(fields, options) {
+    Schema7.prototype.index = function(fields, options) {
       fields || (fields = {});
       options || (options = {});
       if (options.expires) {
@@ -75046,7 +75046,7 @@ var require_schema2 = __commonJS({
       this._indexes.push([fields, options]);
       return this;
     };
-    Schema6.prototype.set = function(key, value, tags) {
+    Schema7.prototype.set = function(key, value, tags) {
       if (arguments.length === 1) {
         return this.options[key];
       }
@@ -75110,11 +75110,11 @@ var require_schema2 = __commonJS({
         _propagateOptionsToImplicitlyCreatedSchemas(schema, options);
       }
     }
-    Schema6.prototype.get = function(key) {
+    Schema7.prototype.get = function(key) {
       return this.options[key];
     };
     var indexTypes = "2d 2dsphere hashed text".split(" ");
-    Object.defineProperty(Schema6, "indexTypes", {
+    Object.defineProperty(Schema7, "indexTypes", {
       get: function() {
         return indexTypes;
       },
@@ -75122,10 +75122,10 @@ var require_schema2 = __commonJS({
         throw new MongooseError("Cannot overwrite Schema.indexTypes");
       }
     });
-    Schema6.prototype.indexes = function() {
+    Schema7.prototype.indexes = function() {
       return getIndexes(this);
     };
-    Schema6.prototype.virtual = function(name, options) {
+    Schema7.prototype.virtual = function(name, options) {
       if (name instanceof VirtualType || getConstructorName(name) === "VirtualType") {
         return this.virtual(name.path, name.options);
       }
@@ -75226,10 +75226,10 @@ var require_schema2 = __commonJS({
       }
       return virtuals[name];
     };
-    Schema6.prototype.virtualpath = function(name) {
+    Schema7.prototype.virtualpath = function(name) {
       return Object.hasOwn(this.virtuals, name) ? this.virtuals[name] : null;
     };
-    Schema6.prototype.remove = function(path) {
+    Schema7.prototype.remove = function(path) {
       if (typeof path === "string") {
         path = [path];
       }
@@ -75281,7 +75281,7 @@ var require_schema2 = __commonJS({
       }
       delete branch[last];
     }
-    Schema6.prototype.removeVirtual = function(path) {
+    Schema7.prototype.removeVirtual = function(path) {
       if (typeof path === "string") {
         path = [path];
       }
@@ -75303,7 +75303,7 @@ var require_schema2 = __commonJS({
       }
       return this;
     };
-    Schema6.prototype.loadClass = function(model, virtualsOnly) {
+    Schema7.prototype.loadClass = function(model, virtualsOnly) {
       if (model === Object.prototype || model === Function.prototype || Object.hasOwn(model.prototype, "$isMongooseModelPrototype") || Object.hasOwn(model.prototype, "$isMongooseDocumentPrototype")) {
         return this;
       }
@@ -75344,7 +75344,7 @@ var require_schema2 = __commonJS({
       }, this);
       return this;
     };
-    Schema6.prototype._getSchema = function(path) {
+    Schema7.prototype._getSchema = function(path) {
       const _this = this;
       const pathschema = _this.path(path);
       const resultPath = [];
@@ -75420,7 +75420,7 @@ var require_schema2 = __commonJS({
       }
       return search(parts, _this);
     };
-    Schema6.prototype._getPathType = function(path) {
+    Schema7.prototype._getPathType = function(path) {
       const _this = this;
       const pathschema = _this.path(path);
       if (pathschema) {
@@ -75459,7 +75459,7 @@ var require_schema2 = __commonJS({
       }
       return search(path.split("."), _this);
     };
-    Schema6.prototype._transformDuplicateKeyError = function _transformDuplicateKeyError(error) {
+    Schema7.prototype._transformDuplicateKeyError = function _transformDuplicateKeyError(error) {
       if (!this._duplicateKeyErrorMessagesByPath) {
         return error;
       }
@@ -75483,7 +75483,7 @@ var require_schema2 = __commonJS({
     function isArrayFilter(piece) {
       return piece.startsWith("$[") && piece.endsWith("]");
     }
-    Schema6.prototype._preCompile = function _preCompile() {
+    Schema7.prototype._preCompile = function _preCompile() {
       this.plugin(idGetter, { deduplicate: true });
       _precomputeOptimisticConcurrency(this);
       this.pathsWithTransforms();
@@ -75499,7 +75499,7 @@ var require_schema2 = __commonJS({
         schema.options._optimisticConcurrencyExcludeTrie = new PathTrie(opt.exclude);
       }
     }
-    Schema6.prototype.toJSONSchema = function toJSONSchema(options) {
+    Schema7.prototype.toJSONSchema = function toJSONSchema(options) {
       const useBsonType = options?.useBsonType ?? false;
       const result = useBsonType ? { required: [], properties: {} } : { type: "object", required: [], properties: {} };
       for (const path of Object.keys(this.paths)) {
@@ -75543,8 +75543,8 @@ var require_schema2 = __commonJS({
       }
       return result;
     };
-    module.exports = exports = Schema6;
-    Schema6.Types = MongooseTypes = require_schema();
+    module.exports = exports = Schema7;
+    Schema7.Types = MongooseTypes = require_schema();
     exports.ObjectId = MongooseTypes.ObjectId;
   }
 });
@@ -76852,7 +76852,7 @@ var require_connection2 = __commonJS({
     "use strict";
     var ChangeStream = require_changeStream();
     var EventEmitter = __require("events").EventEmitter;
-    var Schema6 = require_schema2();
+    var Schema7 = require_schema2();
     var STATES = require_connectionState();
     var MongooseBulkWriteError = require_bulkWriteError();
     var MongooseError = require_error2();
@@ -77160,10 +77160,10 @@ var require_connection2 = __commonJS({
         });
       });
     };
-    async function _wrapUserTransaction(fn, session, mongoose7) {
+    async function _wrapUserTransaction(fn, session, mongoose8) {
       try {
-        const res = mongoose7.transactionAsyncLocalStorage == null ? await fn(session) : await new Promise((resolve) => {
-          mongoose7.transactionAsyncLocalStorage.run(
+        const res = mongoose8.transactionAsyncLocalStorage == null ? await fn(session) : await new Promise((resolve) => {
+          mongoose8.transactionAsyncLocalStorage.run(
             { session },
             () => resolve(fn(session))
           );
@@ -77514,7 +77514,7 @@ var require_connection2 = __commonJS({
       }
       if (utils.isObject(schema)) {
         if (!schema.instanceOfSchema) {
-          schema = new Schema6(schema);
+          schema = new Schema7(schema);
         } else if (!(schema instanceof this.base.Schema)) {
           schema = schema._clone(this.base.Schema);
         }
@@ -77869,7 +77869,7 @@ var require_connection3 = __commonJS({
     var processConnectionOptions = require_processConnectionOptions();
     var setTimeout2 = require_timers().setTimeout;
     var utils = require_utils6();
-    var Schema6 = require_schema2();
+    var Schema7 = require_schema2();
     var Date2 = globalThis.Date;
     function NativeConnection() {
       MongooseConnection.apply(this, arguments);
@@ -78062,7 +78062,7 @@ var require_connection3 = __commonJS({
         const { schema, collection: { collectionName } } = model;
         const namespace = `${this.$dbName}.${collectionName}`;
         const mappings = schema.encryptionType() === "csfle" ? csfleMappings : qeMappings;
-        mappings[namespace] ??= new Schema6({}, { encryptionType: schema.encryptionType() });
+        mappings[namespace] ??= new Schema7({}, { encryptionType: schema.encryptionType() });
         const isNonRootDiscriminator = schema.discriminatorMapping && !schema.discriminatorMapping.isRoot;
         if (isNonRootDiscriminator) {
           const rootSchema = schema._baseSchema;
@@ -87116,7 +87116,7 @@ var require_model = __commonJS({
     var OverwriteModelError = require_overwriteModel();
     var Query = require_query();
     var SaveOptions = require_saveOptions();
-    var Schema6 = require_schema2();
+    var Schema7 = require_schema2();
     var ValidationError = require_validation();
     var VersionError = require_version();
     var ParallelSaveError = require_parallelSave();
@@ -87188,7 +87188,7 @@ var require_model = __commonJS({
       bson: true
     });
     function Model(doc, fields, options) {
-      if (fields instanceof Schema6) {
+      if (fields instanceof Schema7) {
         throw new TypeError("2nd argument to `Model` constructor must be a POJO or string, **not** a schema. Make sure you're calling `mongoose.model()`, not `mongoose.Model()`.");
       }
       if (typeof doc === "string") {
@@ -87610,9 +87610,9 @@ var require_model = __commonJS({
       const overwriteModels = typeof options.overwriteModels === "boolean" ? options.overwriteModels : false;
       _checkContext(this, "discriminator");
       if (utils.isObject(schema) && !schema.instanceOfSchema) {
-        schema = new Schema6(schema);
+        schema = new Schema7(schema);
       }
-      if (schema instanceof Schema6 && clone2) {
+      if (schema instanceof Schema7 && clone2) {
         schema = schema.clone();
       }
       schema = discriminator(this, name, schema, value, mergePlugins, options.mergeHooks, overwriteModels);
@@ -89939,7 +89939,7 @@ var require_mongoose = __commonJS({
     var Document = require_document2();
     var EventEmitter = __require("events").EventEmitter;
     var Kareem = require_kareem();
-    var Schema6 = require_schema2();
+    var Schema7 = require_schema2();
     var SchemaType = require_schemaType();
     var SchemaTypes = require_schema();
     var VirtualType = require_virtualType();
@@ -89990,12 +89990,12 @@ var require_mongoose = __commonJS({
         const _this = this;
         this.Schema = function() {
           this.base = _this;
-          return Schema6.apply(this, arguments);
+          return Schema7.apply(this, arguments);
         };
-        this.Schema.prototype = Object.create(Schema6.prototype);
-        Object.assign(this.Schema, Schema6);
+        this.Schema.prototype = Object.create(Schema7.prototype);
+        Object.assign(this.Schema, Schema7);
         this.Schema.base = this;
-        this.Schema.Types = Object.assign({}, Schema6.Types);
+        this.Schema.Types = Object.assign({}, Schema7.Types);
       } else {
         for (const key of ["Schema", "model"]) {
           this[key] = Mongoose.prototype[key];
@@ -90017,7 +90017,7 @@ var require_mongoose = __commonJS({
     Mongoose.prototype.ConnectionStates = STATES;
     Mongoose.prototype.driver = driver;
     Mongoose.prototype.setDriver = function setDriver(driver2) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       if (_mongoose.__driver === driver2) {
         return _mongoose;
       }
@@ -90035,7 +90035,7 @@ var require_mongoose = __commonJS({
         }
       }
       if (driver2.SchemaTypes != null) {
-        Object.assign(mongoose7.Schema.Types, driver2.SchemaTypes);
+        Object.assign(mongoose8.Schema.Types, driver2.SchemaTypes);
       }
       const Connection = driver2.Connection;
       const oldDefaultConnection = _mongoose.connections[0];
@@ -90053,7 +90053,7 @@ var require_mongoose = __commonJS({
       return _mongoose;
     };
     Mongoose.prototype.set = function getsetOptions(key, value) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       if (key == null) {
         const error2 = new SetOptionError();
         error2.addError(String(key), new SetOptionError.SetOptionInnerError(String(key)));
@@ -90135,7 +90135,7 @@ var require_mongoose = __commonJS({
     };
     Mongoose.prototype.get = Mongoose.prototype.set;
     Mongoose.prototype.createConnection = function createConnection(uri, options) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       const Connection = _mongoose.__driver.Connection;
       const conn = new Connection(_mongoose);
       _mongoose.connections.push(conn);
@@ -90150,7 +90150,7 @@ var require_mongoose = __commonJS({
       if (typeof options === "function" || arguments.length >= 3 && typeof arguments[2] === "function") {
         throw new MongooseError("Mongoose.prototype.connect() no longer accepts a callback");
       }
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       if (_mongoose.connection == null) {
         _createDefaultConnection(_mongoose);
       }
@@ -90161,7 +90161,7 @@ var require_mongoose = __commonJS({
       if (arguments.length >= 1 && typeof arguments[0] === "function") {
         throw new MongooseError("Mongoose.prototype.disconnect() no longer accepts a callback");
       }
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       const remaining = _mongoose.connections.length;
       if (remaining <= 0) {
         return;
@@ -90169,18 +90169,18 @@ var require_mongoose = __commonJS({
       await Promise.all(_mongoose.connections.map((conn) => conn.close()));
     };
     Mongoose.prototype.startSession = function startSession() {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       return _mongoose.connection.startSession.apply(_mongoose.connection, arguments);
     };
     Mongoose.prototype.pluralize = function pluralize(fn) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       if (arguments.length > 0) {
         _mongoose._pluralize = fn;
       }
       return _mongoose._pluralize;
     };
     Mongoose.prototype.model = function model(name, schema, collection, options) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       if (typeof schema === "string") {
         collection = schema;
         schema = false;
@@ -90192,10 +90192,10 @@ var require_mongoose = __commonJS({
         }
         return model3;
       }
-      if (utils.isObject(schema) && !(schema instanceof Schema6)) {
-        schema = new Schema6(schema);
+      if (utils.isObject(schema) && !(schema instanceof Schema7)) {
+        schema = new Schema7(schema);
       }
-      if (schema && !(schema instanceof Schema6)) {
+      if (schema && !(schema instanceof Schema7)) {
         throw new _mongoose.Error("The 2nd parameter to `mongoose.model()` should be a schema or a POJO");
       }
       options = options || {};
@@ -90228,7 +90228,7 @@ var require_mongoose = __commonJS({
       return model2;
     };
     Mongoose.prototype._model = function _model(name, schema, collection, options) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       let model;
       if (typeof name === "function") {
         model = name;
@@ -90267,25 +90267,25 @@ var require_mongoose = __commonJS({
       return model;
     };
     Mongoose.prototype.deleteModel = function deleteModel(name) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       _mongoose.connection.deleteModel(name);
       delete _mongoose.models[name];
       return _mongoose;
     };
     Mongoose.prototype.modelNames = function modelNames() {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       const names = Object.keys(_mongoose.models);
       return names;
     };
     Mongoose.prototype._applyPlugins = function _applyPlugins(schema, options) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       options = options || {};
       options.applyPluginsToDiscriminators = _mongoose.options?.applyPluginsToDiscriminators || false;
       options.applyPluginsToChildSchemas = typeof _mongoose.options?.applyPluginsToChildSchemas === "boolean" ? _mongoose.options.applyPluginsToChildSchemas : true;
       applyPlugins(schema, _mongoose.plugins, options, "$globalPluginsApplied");
     };
     Mongoose.prototype.plugin = function plugin(fn, opts) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       _mongoose.plugins.push([fn, opts]);
       return _mongoose;
     };
@@ -90324,9 +90324,9 @@ var require_mongoose = __commonJS({
     Mongoose.prototype.BaseConnection = require_connection2();
     Mongoose.prototype.version = pkg.version;
     Mongoose.prototype.Mongoose = Mongoose;
-    Mongoose.prototype.Schema = Schema6;
+    Mongoose.prototype.Schema = Schema7;
     Mongoose.prototype.SchemaType = SchemaType;
-    Mongoose.prototype.SchemaTypes = Schema6.Types;
+    Mongoose.prototype.SchemaTypes = Schema7.Types;
     Mongoose.prototype.VirtualType = VirtualType;
     Mongoose.prototype.Types = Types;
     Mongoose.prototype.Query = Query;
@@ -90334,14 +90334,14 @@ var require_mongoose = __commonJS({
     Mongoose.prototype.Document = Document;
     Mongoose.prototype.ObjectId = SchemaTypes.ObjectId;
     Mongoose.prototype.isValidObjectId = function isValidObjectId(v) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       return _mongoose.Types.ObjectId.isValid(v);
     };
     Mongoose.prototype.isObjectIdOrHexString = function isObjectIdOrHexString(v) {
       return isBsonType(v, "ObjectId") || typeof v === "string" && objectIdHexRegexp.test(v);
     };
     Mongoose.prototype.syncIndexes = function syncIndexes(options) {
-      const _mongoose = this instanceof Mongoose ? this : mongoose7;
+      const _mongoose = this instanceof Mongoose ? this : mongoose8;
       return _mongoose.connection.syncIndexes(options);
     };
     Mongoose.prototype.Decimal128 = SchemaTypes.Decimal128;
@@ -90362,15 +90362,15 @@ var require_mongoose = __commonJS({
     Mongoose.prototype.overwriteMiddlewareResult = Kareem.overwriteResult;
     Mongoose.prototype.overwriteMiddlewareArguments = Kareem.overwriteArguments;
     Mongoose.prototype.omitUndefined = require_omitUndefined();
-    function _createDefaultConnection(mongoose8) {
-      if (mongoose8.connection) {
+    function _createDefaultConnection(mongoose9) {
+      if (mongoose9.connection) {
         return;
       }
-      const conn = mongoose8.createConnection();
+      const conn = mongoose9.createConnection();
       conn[defaultConnectionSymbol] = true;
-      conn.models = mongoose8.models;
+      conn.models = mongoose9.models;
     }
-    var mongoose7 = module.exports = exports = new Mongoose({
+    var mongoose8 = module.exports = exports = new Mongoose({
       [defaultMongooseSymbol]: true
     });
   }
@@ -90382,10 +90382,10 @@ var require_lib9 = __commonJS({
     "use strict";
     var mongodbDriver = require_node_mongodb_native();
     require_driver().set(mongodbDriver);
-    var mongoose7 = require_mongoose();
-    mongoose7.setDriver(mongodbDriver);
-    mongoose7.Mongoose.prototype.mongo = require_lib6();
-    module.exports = mongoose7;
+    var mongoose8 = require_mongoose();
+    mongoose8.setDriver(mongodbDriver);
+    mongoose8.Mongoose.prototype.mongo = require_lib6();
+    module.exports = mongoose8;
   }
 });
 
@@ -90393,64 +90393,64 @@ var require_lib9 = __commonJS({
 var require_mongoose2 = __commonJS({
   "node_modules/mongoose/index.js"(exports, module) {
     "use strict";
-    var mongoose7 = require_lib9();
-    module.exports = mongoose7;
-    module.exports.default = mongoose7;
-    module.exports.mongoose = mongoose7;
-    module.exports.cast = mongoose7.cast;
-    module.exports.STATES = mongoose7.STATES;
-    module.exports.setDriver = mongoose7.setDriver;
-    module.exports.set = mongoose7.set;
-    module.exports.get = mongoose7.get;
-    module.exports.createConnection = mongoose7.createConnection;
-    module.exports.connect = mongoose7.connect;
-    module.exports.disconnect = mongoose7.disconnect;
-    module.exports.startSession = mongoose7.startSession;
-    module.exports.pluralize = mongoose7.pluralize;
-    module.exports.model = mongoose7.model;
-    module.exports.deleteModel = mongoose7.deleteModel;
-    module.exports.modelNames = mongoose7.modelNames;
-    module.exports.plugin = mongoose7.plugin;
-    module.exports.connections = mongoose7.connections;
-    module.exports.version = mongoose7.version;
-    module.exports.Aggregate = mongoose7.Aggregate;
-    module.exports.Mongoose = mongoose7.Mongoose;
-    module.exports.Schema = mongoose7.Schema;
-    module.exports.SchemaType = mongoose7.SchemaType;
-    module.exports.SchemaTypes = mongoose7.SchemaTypes;
-    module.exports.VirtualType = mongoose7.VirtualType;
-    module.exports.Types = mongoose7.Types;
-    module.exports.Query = mongoose7.Query;
-    module.exports.Model = mongoose7.Model;
-    module.exports.Document = mongoose7.Document;
-    module.exports.ObjectId = mongoose7.ObjectId;
-    module.exports.isValidObjectId = mongoose7.isValidObjectId;
-    module.exports.isObjectIdOrHexString = mongoose7.isObjectIdOrHexString;
-    module.exports.syncIndexes = mongoose7.syncIndexes;
-    module.exports.Decimal128 = mongoose7.Decimal128;
-    module.exports.Mixed = mongoose7.Mixed;
-    module.exports.Date = mongoose7.Date;
-    module.exports.Number = mongoose7.Number;
-    module.exports.Error = mongoose7.Error;
-    module.exports.MongooseError = mongoose7.MongooseError;
-    module.exports.now = mongoose7.now;
-    module.exports.CastError = mongoose7.CastError;
-    module.exports.SchemaTypeOptions = mongoose7.SchemaTypeOptions;
-    module.exports.mongo = mongoose7.mongo;
-    module.exports.mquery = mongoose7.mquery;
-    module.exports.sanitizeFilter = mongoose7.sanitizeFilter;
-    module.exports.trusted = mongoose7.trusted;
-    module.exports.skipMiddlewareFunction = mongoose7.skipMiddlewareFunction;
-    module.exports.overwriteMiddlewareResult = mongoose7.overwriteMiddlewareResult;
+    var mongoose8 = require_lib9();
+    module.exports = mongoose8;
+    module.exports.default = mongoose8;
+    module.exports.mongoose = mongoose8;
+    module.exports.cast = mongoose8.cast;
+    module.exports.STATES = mongoose8.STATES;
+    module.exports.setDriver = mongoose8.setDriver;
+    module.exports.set = mongoose8.set;
+    module.exports.get = mongoose8.get;
+    module.exports.createConnection = mongoose8.createConnection;
+    module.exports.connect = mongoose8.connect;
+    module.exports.disconnect = mongoose8.disconnect;
+    module.exports.startSession = mongoose8.startSession;
+    module.exports.pluralize = mongoose8.pluralize;
+    module.exports.model = mongoose8.model;
+    module.exports.deleteModel = mongoose8.deleteModel;
+    module.exports.modelNames = mongoose8.modelNames;
+    module.exports.plugin = mongoose8.plugin;
+    module.exports.connections = mongoose8.connections;
+    module.exports.version = mongoose8.version;
+    module.exports.Aggregate = mongoose8.Aggregate;
+    module.exports.Mongoose = mongoose8.Mongoose;
+    module.exports.Schema = mongoose8.Schema;
+    module.exports.SchemaType = mongoose8.SchemaType;
+    module.exports.SchemaTypes = mongoose8.SchemaTypes;
+    module.exports.VirtualType = mongoose8.VirtualType;
+    module.exports.Types = mongoose8.Types;
+    module.exports.Query = mongoose8.Query;
+    module.exports.Model = mongoose8.Model;
+    module.exports.Document = mongoose8.Document;
+    module.exports.ObjectId = mongoose8.ObjectId;
+    module.exports.isValidObjectId = mongoose8.isValidObjectId;
+    module.exports.isObjectIdOrHexString = mongoose8.isObjectIdOrHexString;
+    module.exports.syncIndexes = mongoose8.syncIndexes;
+    module.exports.Decimal128 = mongoose8.Decimal128;
+    module.exports.Mixed = mongoose8.Mixed;
+    module.exports.Date = mongoose8.Date;
+    module.exports.Number = mongoose8.Number;
+    module.exports.Error = mongoose8.Error;
+    module.exports.MongooseError = mongoose8.MongooseError;
+    module.exports.now = mongoose8.now;
+    module.exports.CastError = mongoose8.CastError;
+    module.exports.SchemaTypeOptions = mongoose8.SchemaTypeOptions;
+    module.exports.mongo = mongoose8.mongo;
+    module.exports.mquery = mongoose8.mquery;
+    module.exports.sanitizeFilter = mongoose8.sanitizeFilter;
+    module.exports.trusted = mongoose8.trusted;
+    module.exports.skipMiddlewareFunction = mongoose8.skipMiddlewareFunction;
+    module.exports.overwriteMiddlewareResult = mongoose8.overwriteMiddlewareResult;
   }
 });
 
 // server/app.ts
-var import_express5 = __toESM(require_express2(), 1);
+var import_express6 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 
 // server/db.ts
-var import_mongoose6 = __toESM(require_mongoose2(), 1);
+var import_mongoose7 = __toESM(require_mongoose2(), 1);
 
 // server/models/User.ts
 var import_mongoose = __toESM(require_mongoose2(), 1);
@@ -90622,12 +90622,61 @@ PostSchema.virtual("id").get(function() {
 });
 var Post = import_mongoose4.default.models.Post || import_mongoose4.default.model("Post", PostSchema);
 
+// server/models/Band.ts
+var import_mongoose5 = __toESM(require_mongoose2(), 1);
+var BandSchema = new import_mongoose5.Schema(
+  {
+    _id: { type: String, required: true },
+    name: { type: String, required: true, trim: true },
+    bio: { type: String, default: "" },
+    city: { type: String, required: true, trim: true },
+    avatar: {
+      type: String,
+      default: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80"
+    },
+    genres: [{ type: String }],
+    leaderId: { type: String, required: true, ref: "Musician" },
+    members: [
+      {
+        musicianId: { type: String, required: true },
+        musicianName: { type: String, required: true },
+        musicianAvatar: { type: String, default: "" },
+        role: { type: String, required: true },
+        joinedAt: { type: String, required: true }
+      }
+    ],
+    lookingFor: [{ type: String }],
+    socialLinks: {
+      instagram: { type: String, default: "" },
+      spotify: { type: String, default: "" },
+      youtube: { type: String, default: "" },
+      website: { type: String, default: "" }
+    },
+    createdAt: { type: String, required: true }
+  },
+  {
+    _id: false,
+    timestamps: false,
+    toJSON: {
+      transform(_doc, ret) {
+        ret.id = ret._id;
+        delete ret.__v;
+        return ret;
+      }
+    }
+  }
+);
+BandSchema.virtual("id").get(function() {
+  return this._id;
+});
+var Band = import_mongoose5.default.models.Band || import_mongoose5.default.model("Band", BandSchema);
+
 // server/auth.ts
 import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 
 // server/models/Session.ts
-var import_mongoose5 = __toESM(require_mongoose2(), 1);
-var SessionSchema = new import_mongoose5.Schema(
+var import_mongoose6 = __toESM(require_mongoose2(), 1);
+var SessionSchema = new import_mongoose6.Schema(
   {
     token: { type: String, required: true, unique: true, index: true },
     userId: { type: String, required: true, ref: "User", index: true },
@@ -90643,7 +90692,7 @@ var SessionSchema = new import_mongoose5.Schema(
     }
   }
 );
-var Session = import_mongoose5.default.models.Session || import_mongoose5.default.model("Session", SessionSchema);
+var Session = import_mongoose6.default.models.Session || import_mongoose6.default.model("Session", SessionSchema);
 
 // server/auth.ts
 function hashPassword(password) {
@@ -90714,11 +90763,11 @@ if (!global.mongooseCache) {
   global.mongooseCache = cached;
 }
 async function connectDB() {
-  if (cached.conn && import_mongoose6.default.connection.readyState === 1) {
+  if (cached.conn && import_mongoose7.default.connection.readyState === 1) {
     return cached.conn;
   }
   if (!cached.promise) {
-    cached.promise = import_mongoose6.default.connect(MONGODB_URI, {
+    cached.promise = import_mongoose7.default.connect(MONGODB_URI, {
       bufferCommands: false,
       serverSelectionTimeoutMS: 5e3,
       connectTimeoutMS: 5e3
@@ -90742,297 +90791,383 @@ async function seedInitialDataIfNeeded() {
   hasCheckedSeed = true;
   try {
     const userCount = await User.countDocuments();
-    if (userCount > 0) return;
-    console.log("\u{1F331} Seeding MongoDB with demo musicians, events, and posts...");
-    const defaultPassword = "password123";
-    const { hash, salt } = hashPassword(defaultPassword);
-    const now = (/* @__PURE__ */ new Date()).toISOString();
-    const demoMusicians = [
-      {
-        id: "m1",
-        email: "davide@bandmate.it",
-        name: "Davide De Luca",
-        username: "davidedeluca",
-        age: 26,
-        gender: "Uomo",
-        city: "Milano (MI)",
-        region: "Lombardia",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-        bio: "Chitarrista e polistrumentista. Suono da oltre 10 anni tra rock alternativo, indie e blues. Amo le jam improvvisate e cerco sempre gente motivata per progetti seri o birre e sala prove!",
-        instruments: [
-          { name: "Chitarra Elettrica", level: "Avanzato", isPrimary: true },
-          { name: "Chitarra Acustica", level: "Avanzato" },
-          { name: "Voce", level: "Intermedio" }
-        ],
-        genres: ["Indie Rock", "Blues", "Alternative", "Post-Punk"],
-        availability: "Disponibile per Jam",
-        experienceYears: 10,
-        phoneOrContact: "davide.deluca@musicmail.it",
-        socialLinks: {
-          instagram: "@davide_guitar_lab",
-          spotify: "Davide DL Solo"
-        }
-      },
-      {
-        id: "m2",
-        email: "giulia@bandmate.it",
-        name: "Giulia Moretti",
-        username: "giuliabass",
-        age: 24,
-        gender: "Donna",
-        city: "Bologna (BO)",
-        region: "Emilia-Romagna",
-        avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
-        bio: "Bassista con un debole per i bassline funk e neo-soul. Precisione sul tempo e tanto groove. Ho strumentazione professionale e auto propria per spostamenti.",
-        instruments: [
-          { name: "Basso Elettrico", level: "Professionista", isPrimary: true },
-          { name: "Contrabbasso", level: "Intermedio" }
-        ],
-        genres: ["Funk", "Neo-Soul", "Jazz Fusion", "R&B"],
-        availability: "Cerco Band fissa",
-        experienceYears: 8,
-        phoneOrContact: "giulia.bassgroove@gmail.com",
-        socialLinks: {
-          instagram: "@giuliabass_groove"
-        }
-      },
-      {
-        id: "m3",
-        email: "marco@bandmate.it",
-        name: "Marco Bianchi",
-        username: "marcodrums",
-        age: 29,
-        gender: "Uomo",
-        city: "Milano (MI)",
-        region: "Lombardia",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
-        bio: "Batterista energico e con esperienza live su palchi di festival e club. Cerco progetti rock/hard rock o sessioni studio. Batteria acustica Yamaha e trigger se necessari.",
-        instruments: [
-          { name: "Batteria", level: "Professionista", isPrimary: true },
-          { name: "Percussioni", level: "Avanzato" }
-        ],
-        genres: ["Hard Rock", "Classic Rock", "Grunge", "Progressive"],
-        availability: "Disponibile per serate/live",
-        experienceYears: 14,
-        phoneOrContact: "marco.bianchi.drums@gmail.com",
-        socialLinks: {
-          instagram: "@marcobianchi_drums"
-        }
-      },
-      {
-        id: "m4",
-        email: "chiara@bandmate.it",
-        name: "Chiara Romano",
-        username: "chiaravoice",
-        age: 23,
-        gender: "Donna",
-        city: "Roma (RM)",
-        region: "Lazio",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
-        bio: "Cantante e cantautrice soul/pop. Studio canto al conservatorio. Mi piace comporre melodie ed armonizzare. Cerco musicisti per completare un repertorio inedito e cover acustiche.",
-        instruments: [
-          { name: "Voce", level: "Professionista", isPrimary: true },
-          { name: "Tastiere/Pianoforte", level: "Intermedio" }
-        ],
-        genres: ["Soul", "Pop", "Acoustic", "Jazz"],
-        availability: "Cerco Band fissa",
-        experienceYears: 7,
-        phoneOrContact: "chiara.romano.singer@outlook.com",
-        socialLinks: {
-          instagram: "@chiara_romano_vocal"
-        }
-      },
-      {
-        id: "m5",
-        email: "samuele@bandmate.it",
-        name: "Samuele Ferraro",
-        username: "samukeys",
-        age: 28,
-        gender: "Uomo",
-        city: "Torino (TO)",
-        region: "Piemonte",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
-        bio: "Pianista jazz e tastierista synth-wave / fusion. Uso Nord Stage e synth analogici. Sempre pronto per scambiare due accordi di nona e sperimentare sonorit\xE0 ambientali.",
-        instruments: [
-          { name: "Tastiere/Pianoforte", level: "Avanzato", isPrimary: true },
-          { name: "Sintetizzatori", level: "Avanzato" }
-        ],
-        genres: ["Jazz", "Synthwave", "Funk", "Elettronica"],
-        availability: "Disponibile per Jam",
-        experienceYears: 12,
-        phoneOrContact: "samuele.keys@live.it",
-        socialLinks: {
-          instagram: "@samu_keys_station"
-        }
-      }
-    ];
-    for (const m of demoMusicians) {
-      const userId = "u_" + m.id;
-      await User.create({
-        _id: userId,
-        email: m.email,
-        passwordHash: hash,
-        salt,
-        createdAt: now
-      });
-      await Musician.create({
-        _id: m.id,
-        userId,
-        name: m.name,
-        username: m.username,
-        age: m.age,
-        gender: m.gender,
-        city: m.city,
-        region: m.region,
-        avatar: m.avatar,
-        bio: m.bio,
-        availability: m.availability,
-        experienceYears: m.experienceYears,
-        phoneOrContact: m.phoneOrContact,
-        instruments: m.instruments,
-        genres: m.genres,
-        socialLinks: m.socialLinks,
-        createdAt: now
-      });
-    }
-    const demoEvents = [
-      {
-        _id: "e1",
-        organizerId: "m3",
-        title: "Milano Funk & Soul Open Jam Session",
-        description: "Serata jam a ruota libera basata su standard funk, soul e groove anni 70. Suoniamo su turni di 3-4 brani concordati sul momento. Amplificatori chitarra/basso e batteria completa gi\xE0 in sala!",
-        type: "Jam Session",
-        date: "2026-09-22",
-        time: "21:00",
-        locationName: "SoundLab Rehearsal Studios - Sala A",
-        address: "Via Tortona 32",
-        city: "Milano (MI)",
-        genres: ["Funk", "Soul", "Groove", "R&B"],
-        slots: [
-          {
-            id: "s1",
-            instrument: "Batteria",
-            maxCount: 1,
-            assignedMusicians: [
-              {
-                musicianId: "m3",
-                musicianName: "Marco Bianchi",
-                musicianAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
-                joinedAt: "2026-09-10"
-              }
-            ]
-          },
-          { id: "s2", instrument: "Basso Elettrico", maxCount: 1, assignedMusicians: [] },
-          {
-            id: "s3",
-            instrument: "Chitarra Elettrica",
-            maxCount: 2,
-            assignedMusicians: [
-              {
-                musicianId: "m1",
-                musicianName: "Davide De Luca",
-                musicianAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-                joinedAt: "2026-09-10"
-              }
-            ]
-          },
-          { id: "s4", instrument: "Tastiere/Pianoforte", maxCount: 1, assignedMusicians: [] },
-          { id: "s5", instrument: "Voce", maxCount: 1, assignedMusicians: [] }
-        ],
-        equipmentNotes: "Batteria Yamaha, ampli Fender Twin Reverb e Markbass presenti sul posto. Portare solo jack e bacchette.",
-        createdAt: now
-      },
-      {
-        _id: "e2",
-        organizerId: "m4",
-        title: "Rock 70s & 90s Jam & Prove Aperte",
-        description: "Ci vediamo per suonare grandi classici (Led Zeppelin, Pink Floyd, Nirvana, Foo Fighters, Pearl Jam). L\u2019obiettivo \xE8 divertirsi insieme ed eventualmente formare un gruppo per serate live invernali.",
-        type: "Prove di Gruppo",
-        date: "2026-09-25",
-        time: "20:30",
-        locationName: "Circolo Rock Garage Roma",
-        address: "Via Casilina 114",
-        city: "Roma (RM)",
-        genres: ["Hard Rock", "Grunge", "Classic Rock"],
-        slots: [
-          {
-            id: "s7",
-            instrument: "Voce",
-            maxCount: 1,
-            assignedMusicians: [
-              {
-                musicianId: "m4",
-                musicianName: "Chiara Romano",
-                musicianAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
-                joinedAt: "2026-09-09"
-              }
-            ]
-          },
-          { id: "s8", instrument: "Chitarra Elettrica", maxCount: 2, assignedMusicians: [] },
-          { id: "s9", instrument: "Basso Elettrico", maxCount: 1, assignedMusicians: [] },
-          { id: "s10", instrument: "Batteria", maxCount: 1, assignedMusicians: [] }
-        ],
-        equipmentNotes: "Impianto voce e microfoni Shure SM58 inclusi. Sala climatizzata.",
-        createdAt: now
-      }
-    ];
-    for (const ev of demoEvents) {
-      await Event.create(ev);
-    }
-    const demoPosts = [
-      {
-        _id: "p1",
-        authorId: "m2",
-        category: "cercasi-band",
-        title: "Bassista funk/soul cerca gruppo a Bologna per serate live",
-        content: "Ciao a tutti! Suono il basso elettrico da 8 anni con esperienza sia in studio che sul palco. Cerco un progetto avviato o musicisti con cui fondare una band stile Vulfpeck, Bruno Mars, Stevie Wonder o sonorit\xE0 Neo-Soul. Massima seriet\xE0 e sala prove settimanale!",
-        city: "Bologna (BO)",
-        targetInstruments: ["Batteria", "Chitarra Elettrica", "Tastiere/Pianoforte", "Voce"],
-        genres: ["Funk", "Soul", "R&B"],
-        likes: ["m1", "m3", "m5"],
-        comments: [
-          {
-            id: "c1",
-            authorId: "m5",
-            authorName: "Samuele Ferraro",
-            authorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
-            authorInstrument: "Tastiere/Pianoforte",
-            content: "Ciao Giulia! Io sono a Torino ma vengo spesso a Bologna per lavoro. Adoro Vulfpeck! Se organizzi una jam fammi sapere!",
-            createdAt: now
+    if (userCount === 0) {
+      console.log("\u{1F331} Seeding MongoDB with demo musicians, events, and posts...");
+      const defaultPassword = "password123";
+      const { hash, salt } = hashPassword(defaultPassword);
+      const now = (/* @__PURE__ */ new Date()).toISOString();
+      const demoMusicians = [
+        {
+          id: "m1",
+          email: "davide@bandmate.it",
+          name: "Davide De Luca",
+          username: "davidedeluca",
+          age: 26,
+          gender: "Uomo",
+          city: "Milano (MI)",
+          region: "Lombardia",
+          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+          bio: "Chitarrista e polistrumentista. Suono da oltre 10 anni tra rock alternativo, indie e blues. Amo le jam improvvisate e cerco sempre gente motivata per progetti seri o birre e sala prove!",
+          instruments: [
+            { name: "Chitarra Elettrica", level: "Avanzato", isPrimary: true },
+            { name: "Chitarra Acustica", level: "Avanzato" },
+            { name: "Voce", level: "Intermedio" }
+          ],
+          genres: ["Indie Rock", "Blues", "Alternative", "Post-Punk"],
+          availability: "Disponibile per Jam",
+          experienceYears: 10,
+          phoneOrContact: "davide.deluca@musicmail.it",
+          socialLinks: {
+            instagram: "@davide_guitar_lab",
+            spotify: "Davide DL Solo"
           }
-        ],
-        createdAt: now
-      },
-      {
-        _id: "p2",
-        authorId: "m3",
-        category: "cercasi-musicista",
-        title: "Cercasi chitarrista solista e cantante rock a Milano",
-        content: "Band gi\xE0 formata da batterista e bassista con sala prove fissa zona Lambrate cerca cantante rock carismatico e chitarrista solista. Repertorio rock alternativo anni 90/2000 (Soundgarden, Foo Fighters, Muse, Queens of the Stone Age) pi\xF9 qualche pezzo inedito.",
-        city: "Milano (MI)",
-        targetInstruments: ["Chitarra Elettrica", "Voce"],
-        genres: ["Alternative Rock", "Hard Rock", "Grunge"],
-        likes: ["m1"],
-        comments: [
-          {
-            id: "c2",
-            authorId: "m1",
-            authorName: "Davide De Luca",
-            authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-            authorInstrument: "Chitarra Elettrica",
-            content: "Ciao Marco! Mi candido volentieri come chitarra solista. Conosco benissimo il repertorio dei Muse e QOTSA!",
-            createdAt: now
+        },
+        {
+          id: "m2",
+          email: "giulia@bandmate.it",
+          name: "Giulia Moretti",
+          username: "giuliabass",
+          age: 24,
+          gender: "Donna",
+          city: "Bologna (BO)",
+          region: "Emilia-Romagna",
+          avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
+          bio: "Bassista con un debole per i bassline funk e neo-soul. Precisione sul tempo e tanto groove. Ho strumentazione professionale e auto propria per spostamenti.",
+          instruments: [
+            { name: "Basso Elettrico", level: "Professionista", isPrimary: true },
+            { name: "Contrabbasso", level: "Intermedio" }
+          ],
+          genres: ["Funk", "Neo-Soul", "Jazz Fusion", "R&B"],
+          availability: "Cerco Band fissa",
+          experienceYears: 8,
+          phoneOrContact: "giulia.bassgroove@gmail.com",
+          socialLinks: {
+            instagram: "@giuliabass_groove"
           }
-        ],
-        createdAt: now
+        },
+        {
+          id: "m3",
+          email: "marco@bandmate.it",
+          name: "Marco Bianchi",
+          username: "marcodrums",
+          age: 29,
+          gender: "Uomo",
+          city: "Milano (MI)",
+          region: "Lombardia",
+          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+          bio: "Batterista energico e con esperienza live su palchi di festival e club. Cerco progetti rock/hard rock o sessioni studio. Batteria acustica Yamaha e trigger se necessari.",
+          instruments: [
+            { name: "Batteria", level: "Professionista", isPrimary: true },
+            { name: "Percussioni", level: "Avanzato" }
+          ],
+          genres: ["Hard Rock", "Classic Rock", "Grunge", "Progressive"],
+          availability: "Disponibile per serate/live",
+          experienceYears: 14,
+          phoneOrContact: "marco.bianchi.drums@gmail.com",
+          socialLinks: {
+            instagram: "@marcobianchi_drums"
+          }
+        },
+        {
+          id: "m4",
+          email: "chiara@bandmate.it",
+          name: "Chiara Romano",
+          username: "chiaravoice",
+          age: 23,
+          gender: "Donna",
+          city: "Roma (RM)",
+          region: "Lazio",
+          avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+          bio: "Cantante e cantautrice soul/pop. Studio canto al conservatorio. Mi piace comporre melodie ed armonizzare. Cerco musicisti per completare un repertorio inedito e cover acustiche.",
+          instruments: [
+            { name: "Voce", level: "Professionista", isPrimary: true },
+            { name: "Tastiere/Pianoforte", level: "Intermedio" }
+          ],
+          genres: ["Soul", "Pop", "Acoustic", "Jazz"],
+          availability: "Cerco Band fissa",
+          experienceYears: 7,
+          phoneOrContact: "chiara.romano.singer@outlook.com",
+          socialLinks: {
+            instagram: "@chiara_romano_vocal"
+          }
+        },
+        {
+          id: "m5",
+          email: "samuele@bandmate.it",
+          name: "Samuele Ferraro",
+          username: "samukeys",
+          age: 28,
+          gender: "Uomo",
+          city: "Torino (TO)",
+          region: "Piemonte",
+          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+          bio: "Pianista jazz e tastierista synth-wave / fusion. Uso Nord Stage e synth analogici. Sempre pronto per scambiare due accordi di nona e sperimentare sonorit\xE0 ambientali.",
+          instruments: [
+            { name: "Tastiere/Pianoforte", level: "Avanzato", isPrimary: true },
+            { name: "Sintetizzatori", level: "Avanzato" }
+          ],
+          genres: ["Jazz", "Synthwave", "Funk", "Elettronica"],
+          availability: "Disponibile per Jam",
+          experienceYears: 12,
+          phoneOrContact: "samuele.keys@live.it",
+          socialLinks: {
+            instagram: "@samu_keys_station"
+          }
+        }
+      ];
+      for (const m of demoMusicians) {
+        const userId = "u_" + m.id;
+        await User.create({
+          _id: userId,
+          email: m.email,
+          passwordHash: hash,
+          salt,
+          createdAt: now
+        });
+        await Musician.create({
+          _id: m.id,
+          userId,
+          name: m.name,
+          username: m.username,
+          age: m.age,
+          gender: m.gender,
+          city: m.city,
+          region: m.region,
+          avatar: m.avatar,
+          bio: m.bio,
+          availability: m.availability,
+          experienceYears: m.experienceYears,
+          phoneOrContact: m.phoneOrContact,
+          instruments: m.instruments,
+          genres: m.genres,
+          socialLinks: m.socialLinks,
+          createdAt: now
+        });
       }
-    ];
-    for (const p of demoPosts) {
-      await Post.create(p);
+      const demoEvents = [
+        {
+          _id: "e1",
+          organizerId: "m3",
+          title: "Milano Funk & Soul Open Jam Session",
+          description: "Serata jam a ruota libera basata su standard funk, soul e groove anni 70. Suoniamo su turni di 3-4 brani concordati sul momento. Amplificatori chitarra/basso e batteria completa gi\xE0 in sala!",
+          type: "Jam Session",
+          date: "2026-09-22",
+          time: "21:00",
+          locationName: "SoundLab Rehearsal Studios - Sala A",
+          address: "Via Tortona 32",
+          city: "Milano (MI)",
+          genres: ["Funk", "Soul", "Groove", "R&B"],
+          slots: [
+            {
+              id: "s1",
+              instrument: "Batteria",
+              maxCount: 1,
+              assignedMusicians: [
+                {
+                  musicianId: "m3",
+                  musicianName: "Marco Bianchi",
+                  musicianAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+                  joinedAt: "2026-09-10"
+                }
+              ]
+            },
+            { id: "s2", instrument: "Basso Elettrico", maxCount: 1, assignedMusicians: [] },
+            {
+              id: "s3",
+              instrument: "Chitarra Elettrica",
+              maxCount: 2,
+              assignedMusicians: [
+                {
+                  musicianId: "m1",
+                  musicianName: "Davide De Luca",
+                  musicianAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+                  joinedAt: "2026-09-10"
+                }
+              ]
+            },
+            { id: "s4", instrument: "Tastiere/Pianoforte", maxCount: 1, assignedMusicians: [] },
+            { id: "s5", instrument: "Voce", maxCount: 1, assignedMusicians: [] }
+          ],
+          equipmentNotes: "Batteria Yamaha, ampli Fender Twin Reverb e Markbass presenti sul posto. Portare solo jack e bacchette.",
+          createdAt: now
+        },
+        {
+          _id: "e2",
+          organizerId: "m4",
+          title: "Rock 70s & 90s Jam & Prove Aperte",
+          description: "Ci vediamo per suonare grandi classici (Led Zeppelin, Pink Floyd, Nirvana, Foo Fighters, Pearl Jam). L\u2019obiettivo \xE8 divertirsi insieme ed eventualmente formare un gruppo per serate live invernali.",
+          type: "Prove di Gruppo",
+          date: "2026-09-25",
+          time: "20:30",
+          locationName: "Circolo Rock Garage Roma",
+          address: "Via Casilina 114",
+          city: "Roma (RM)",
+          genres: ["Hard Rock", "Grunge", "Classic Rock"],
+          slots: [
+            {
+              id: "s7",
+              instrument: "Voce",
+              maxCount: 1,
+              assignedMusicians: [
+                {
+                  musicianId: "m4",
+                  musicianName: "Chiara Romano",
+                  musicianAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+                  joinedAt: "2026-09-09"
+                }
+              ]
+            },
+            { id: "s8", instrument: "Chitarra Elettrica", maxCount: 2, assignedMusicians: [] },
+            { id: "s9", instrument: "Basso Elettrico", maxCount: 1, assignedMusicians: [] },
+            { id: "s10", instrument: "Batteria", maxCount: 1, assignedMusicians: [] }
+          ],
+          equipmentNotes: "Impianto voce e microfoni Shure SM58 inclusi. Sala climatizzata.",
+          createdAt: now
+        }
+      ];
+      for (const ev of demoEvents) {
+        await Event.create(ev);
+      }
+      const demoPosts = [
+        {
+          _id: "p1",
+          authorId: "m2",
+          category: "cercasi-band",
+          title: "Bassista funk/soul cerca gruppo a Bologna per serate live",
+          content: "Ciao a tutti! Suono il basso elettrico da 8 anni con esperienza sia in studio che sul palco. Cerco un progetto avviato o musicisti con cui fondare una band stile Vulfpeck, Bruno Mars, Stevie Wonder o sonorit\xE0 Neo-Soul. Massima seriet\xE0 e sala prove settimanale!",
+          city: "Bologna (BO)",
+          targetInstruments: ["Batteria", "Chitarra Elettrica", "Tastiere/Pianoforte", "Voce"],
+          genres: ["Funk", "Soul", "R&B"],
+          likes: ["m1", "m3", "m5"],
+          comments: [
+            {
+              id: "c1",
+              authorId: "m5",
+              authorName: "Samuele Ferraro",
+              authorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+              authorInstrument: "Tastiere/Pianoforte",
+              content: "Ciao Giulia! Io sono a Torino ma vengo spesso a Bologna per lavoro. Adoro Vulfpeck! Se organizzi una jam fammi sapere!",
+              createdAt: now
+            }
+          ],
+          createdAt: now
+        },
+        {
+          _id: "p2",
+          authorId: "m3",
+          category: "cercasi-musicista",
+          title: "Cercasi chitarrista solista e cantante rock a Milano",
+          content: "Band gi\xE0 formata da batterista e bassista con sala prove fissa zona Lambrate cerca cantante rock carismatico e chitarrista solista. Repertorio rock alternativo anni 90/2000 (Soundgarden, Foo Fighters, Muse, Queens of the Stone Age) pi\xF9 qualche pezzo inedito.",
+          city: "Milano (MI)",
+          targetInstruments: ["Chitarra Elettrica", "Voce"],
+          genres: ["Alternative Rock", "Hard Rock", "Grunge"],
+          likes: ["m1"],
+          comments: [
+            {
+              id: "c2",
+              authorId: "m1",
+              authorName: "Davide De Luca",
+              authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+              authorInstrument: "Chitarra Elettrica",
+              content: "Ciao Marco! Mi candido volentieri come chitarra solista. Conosco benissimo il repertorio dei Muse e QOTSA!",
+              createdAt: now
+            }
+          ],
+          createdAt: now
+        }
+      ];
+      for (const p of demoPosts) {
+        await Post.create(p);
+      }
+      console.log("\u2705 MongoDB database seeded successfully!");
     }
-    console.log("\u2705 MongoDB database seeded successfully!");
+    await seedDemoBandsIfNeeded();
   } catch (err) {
     console.error("Seed check error:", err);
+  }
+}
+async function seedDemoBandsIfNeeded() {
+  try {
+    const bandCount = await Band.countDocuments();
+    if (bandCount > 0) return;
+    console.log("\u{1F331} Seeding demo bands in MongoDB...");
+    const now = (/* @__PURE__ */ new Date()).toISOString();
+    const demoBands = [
+      {
+        _id: "b1",
+        name: "The Velvet Groove",
+        bio: "Progetto neo-soul e funk nato a Milano nel 2024. Suoniamo cover riarrangiate e pezzi inediti carichi di groove e buone vibrazioni. Prove settimanali e date live nei club.",
+        city: "Milano (MI)",
+        avatar: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80",
+        genres: ["Funk", "Soul", "Indie Pop"],
+        leaderId: "m1",
+        members: [
+          {
+            musicianId: "m1",
+            musicianName: "Davide De Luca",
+            musicianAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+            role: "Chitarra & Voce",
+            joinedAt: now
+          },
+          {
+            musicianId: "m2",
+            musicianName: "Giulia Moretti",
+            musicianAvatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
+            role: "Basso Elettrico",
+            joinedAt: now
+          },
+          {
+            musicianId: "m3",
+            musicianName: "Marco Bellini",
+            musicianAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+            role: "Batteria",
+            joinedAt: now
+          }
+        ],
+        lookingFor: ["Tastiere/Pianoforte", "Sax"],
+        socialLinks: {
+          instagram: "@thevelvetgroove_mi",
+          spotify: "The Velvet Groove"
+        },
+        createdAt: now
+      },
+      {
+        _id: "b2",
+        name: "Lunar Echoes",
+        bio: "Quartetto alternative rock ispirato a Interpol, The National e Arctic Monkeys. All'attivo un EP registrato e date live a Roma e nel centro Italia.",
+        city: "Roma (RM)",
+        avatar: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=600&q=80",
+        genres: ["Alternative Rock", "Post-Punk", "Indie Rock"],
+        leaderId: "m4",
+        members: [
+          {
+            musicianId: "m4",
+            musicianName: "Elena Russo",
+            musicianAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+            role: "Voce & Testi",
+            joinedAt: now
+          },
+          {
+            musicianId: "m6",
+            musicianName: "Samuele Ferraro",
+            musicianAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+            role: "Tastiere & Synth",
+            joinedAt: now
+          }
+        ],
+        lookingFor: ["Chitarra Solista", "Basso Elettrico"],
+        socialLinks: {
+          instagram: "@lunarechoes_band"
+        },
+        createdAt: now
+      }
+    ];
+    for (const b of demoBands) {
+      await Band.create(b);
+    }
+    console.log("\u2705 Demo bands seeded successfully!");
+  } catch (err) {
+    console.error("Error seeding demo bands:", err);
   }
 }
 
@@ -91524,10 +91659,216 @@ postsRouter.post("/:id/comments", requireAuth, async (req, res) => {
   }
 });
 
+// server/routes/bandsRoutes.ts
+var import_express5 = __toESM(require_express2(), 1);
+var bandsRouter = (0, import_express5.Router)();
+bandsRouter.get("/", async (req, res) => {
+  try {
+    const { search, city, genre, lookingForOnly } = req.query;
+    let bands = await Band.find().sort({ createdAt: -1 });
+    if (search && typeof search === "string") {
+      const q = search.toLowerCase().trim();
+      bands = bands.filter(
+        (b) => b.name.toLowerCase().includes(q) || b.bio.toLowerCase().includes(q) || b.genres.some((g) => g.toLowerCase().includes(q)) || b.members.some((m) => m.musicianName.toLowerCase().includes(q) || m.role.toLowerCase().includes(q))
+      );
+    }
+    if (city && typeof city === "string" && city !== "all") {
+      const target = city.toLowerCase();
+      bands = bands.filter((b) => b.city.toLowerCase().includes(target));
+    }
+    if (genre && typeof genre === "string" && genre !== "all") {
+      bands = bands.filter((b) => b.genres.some((g) => g.toLowerCase() === genre.toLowerCase()));
+    }
+    if (lookingForOnly === "true") {
+      bands = bands.filter((b) => b.lookingFor && b.lookingFor.length > 0);
+    }
+    res.json({ bands });
+  } catch (err) {
+    console.error("Error fetching bands:", err);
+    res.status(500).json({ error: "Errore durante il recupero delle band: " + err.message });
+  }
+});
+bandsRouter.get("/:id", async (req, res) => {
+  try {
+    const band = await Band.findById(req.params.id);
+    if (!band) {
+      res.status(404).json({ error: "Band non trovata" });
+      return;
+    }
+    res.json({ band });
+  } catch (err) {
+    console.error("Error fetching band details:", err);
+    res.status(500).json({ error: "Errore nel recupero della band: " + err.message });
+  }
+});
+bandsRouter.post("/", requireAuth, async (req, res) => {
+  try {
+    const {
+      name,
+      bio,
+      city,
+      avatar,
+      genres,
+      leaderRole,
+      lookingFor,
+      socialLinks
+    } = req.body;
+    if (!name || !name.trim() || !city || !city.trim()) {
+      res.status(400).json({ error: "Nome della band e citt\xE0 sono campi obbligatori." });
+      return;
+    }
+    const currentMusician = req.musician;
+    if (!currentMusician) {
+      res.status(403).json({ error: "Devi avere un profilo musicista attivo per creare una band." });
+      return;
+    }
+    const bandId = "b_" + Date.now();
+    const now = (/* @__PURE__ */ new Date()).toISOString();
+    const initialLeaderRole = leaderRole && leaderRole.trim() || currentMusician.instruments[0]?.name || "Fondatore";
+    const initialMembers = [
+      {
+        musicianId: currentMusician.id,
+        musicianName: currentMusician.name,
+        musicianAvatar: currentMusician.avatar || "",
+        role: initialLeaderRole,
+        joinedAt: now
+      }
+    ];
+    const newBand = await Band.create({
+      _id: bandId,
+      name: name.trim(),
+      bio: bio ? bio.trim() : "",
+      city: city.trim(),
+      avatar: avatar && avatar.trim() ? avatar.trim() : "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80",
+      genres: Array.isArray(genres) ? genres : [],
+      leaderId: currentMusician.id,
+      members: initialMembers,
+      lookingFor: Array.isArray(lookingFor) ? lookingFor.filter(Boolean) : [],
+      socialLinks: socialLinks || {},
+      createdAt: now
+    });
+    res.status(201).json({ band: newBand });
+  } catch (err) {
+    console.error("Error creating band:", err);
+    res.status(500).json({ error: "Errore durante la creazione della band: " + err.message });
+  }
+});
+bandsRouter.put("/:id", requireAuth, async (req, res) => {
+  try {
+    const band = await Band.findById(req.params.id);
+    if (!band) {
+      res.status(404).json({ error: "Band non trovata" });
+      return;
+    }
+    if (band.leaderId !== req.musician.id) {
+      res.status(403).json({ error: "Solo il leader della band pu\xF2 modificare queste informazioni." });
+      return;
+    }
+    const { name, bio, city, avatar, genres, lookingFor, socialLinks } = req.body;
+    if (name) band.name = name.trim();
+    if (bio !== void 0) band.bio = bio.trim();
+    if (city) band.city = city.trim();
+    if (avatar) band.avatar = avatar.trim();
+    if (Array.isArray(genres)) band.genres = genres;
+    if (Array.isArray(lookingFor)) band.lookingFor = lookingFor;
+    if (socialLinks) band.socialLinks = socialLinks;
+    await band.save();
+    res.json({ band });
+  } catch (err) {
+    console.error("Error updating band:", err);
+    res.status(500).json({ error: "Errore durante la modifica della band: " + err.message });
+  }
+});
+bandsRouter.post("/:id/members", requireAuth, async (req, res) => {
+  try {
+    const { musicianId, role } = req.body;
+    if (!musicianId || !role || !role.trim()) {
+      res.status(400).json({ error: "Specifica il musicista da aggiungere e il suo ruolo nella band." });
+      return;
+    }
+    const band = await Band.findById(req.params.id);
+    if (!band) {
+      res.status(404).json({ error: "Band non trovata" });
+      return;
+    }
+    if (band.leaderId !== req.musician.id) {
+      res.status(403).json({ error: "Solo il leader della band pu\xF2 aggiungere nuovi membri." });
+      return;
+    }
+    if (band.members.some((m) => m.musicianId === musicianId)) {
+      res.status(400).json({ error: "Questo musicista fa gi\xE0 parte della band." });
+      return;
+    }
+    const musicianToAdd = await Musician.findById(musicianId);
+    if (!musicianToAdd) {
+      res.status(404).json({ error: "Profilo musicista non trovato." });
+      return;
+    }
+    const newMember = {
+      musicianId: musicianToAdd.id,
+      musicianName: musicianToAdd.name,
+      musicianAvatar: musicianToAdd.avatar || "",
+      role: role.trim(),
+      joinedAt: (/* @__PURE__ */ new Date()).toISOString()
+    };
+    band.members.push(newMember);
+    await band.save();
+    res.status(200).json({ band, addedMember: newMember });
+  } catch (err) {
+    console.error("Error adding band member:", err);
+    res.status(500).json({ error: "Errore nell'aggiunta del membro: " + err.message });
+  }
+});
+bandsRouter.delete("/:id/members/:memberId", requireAuth, async (req, res) => {
+  try {
+    const band = await Band.findById(req.params.id);
+    if (!band) {
+      res.status(404).json({ error: "Band non trovata" });
+      return;
+    }
+    const targetMusicianId = req.params.memberId;
+    const currentMusicianId = req.musician.id;
+    const isLeader = band.leaderId === currentMusicianId;
+    const isSelf = targetMusicianId === currentMusicianId;
+    if (!isLeader && !isSelf) {
+      res.status(403).json({ error: "Non hai i permessi per rimuovere questo membro." });
+      return;
+    }
+    if (isLeader && isSelf && band.members.length > 1) {
+      const remainingMembers = band.members.filter((m) => m.musicianId !== targetMusicianId);
+      band.leaderId = remainingMembers[0].musicianId;
+    }
+    band.members = band.members.filter((m) => m.musicianId !== targetMusicianId);
+    await band.save();
+    res.json({ band, message: "Membro rimosso con successo dalla band." });
+  } catch (err) {
+    console.error("Error removing band member:", err);
+    res.status(500).json({ error: "Errore durante la rimozione del membro: " + err.message });
+  }
+});
+bandsRouter.delete("/:id", requireAuth, async (req, res) => {
+  try {
+    const band = await Band.findById(req.params.id);
+    if (!band) {
+      res.status(404).json({ error: "Band non trovata" });
+      return;
+    }
+    if (band.leaderId !== req.musician.id) {
+      res.status(403).json({ error: "Solo il leader fondatore pu\xF2 eliminare la band." });
+      return;
+    }
+    await Band.findByIdAndDelete(req.params.id);
+    res.json({ message: "Band eliminata con successo." });
+  } catch (err) {
+    console.error("Error deleting band:", err);
+    res.status(500).json({ error: "Errore durante l'eliminazione della band: " + err.message });
+  }
+});
+
 // server/app.ts
-var app = (0, import_express5.default)();
+var app = (0, import_express6.default)();
 app.use((0, import_cors.default)());
-app.use(import_express5.default.json());
+app.use(import_express6.default.json());
 app.use(async (_req, res, next) => {
   try {
     await connectDB();
@@ -91550,6 +91891,8 @@ app.use("/api/events", eventsRouter);
 app.use("/events", eventsRouter);
 app.use("/api/posts", postsRouter);
 app.use("/posts", postsRouter);
+app.use("/api/bands", bandsRouter);
+app.use("/bands", bandsRouter);
 var app_default = app;
 export {
   app,

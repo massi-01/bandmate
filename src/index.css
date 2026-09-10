@@ -555,6 +555,31 @@ button, input, select, textarea {
   font-weight: 500;
 }
 
+.tag-selectable {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.tag-selectable:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tag-selectable.selected {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: var(--accent-purple);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
 .musician-bio {
   font-size: 0.87rem;
   color: var(--text-secondary);
