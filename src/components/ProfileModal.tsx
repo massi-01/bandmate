@@ -8,7 +8,8 @@ import {
   Music, 
   Plus, 
   Trash2,
-  Sparkles
+  Sparkles,
+  ArrowLeft
 } from 'lucide-react';
 import { INSTRUMENT_OPTIONS, GENRE_OPTIONS, CITY_OPTIONS } from '../data/mockData';
 
@@ -16,6 +17,7 @@ export const ProfileModal: React.FC = () => {
   const { 
     selectedMusicianForModal, 
     setSelectedMusicianForModal, 
+    selectedBandForModal,
     isEditProfileOpen, 
     setIsEditProfileOpen, 
     currentMusician, 
@@ -139,7 +141,7 @@ export const ProfileModal: React.FC = () => {
   // 1. Render Edit Profile Modal
   if (isEditProfileOpen) {
     return (
-      <div className="modal-overlay" onClick={() => setIsEditProfileOpen(false)}>
+      <div className="modal-overlay modal-overlay-stacked" onClick={() => setIsEditProfileOpen(false)}>
         <div className="modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: '680px' }}>
           <div className="modal-header">
             <div className="modal-title">Modifica il tuo Profilo Musicista</div>
@@ -425,11 +427,25 @@ export const ProfileModal: React.FC = () => {
     );
 
     return (
-      <div className="modal-overlay" onClick={() => setSelectedMusicianForModal(null)}>
+      <div className="modal-overlay modal-overlay-stacked" onClick={() => setSelectedMusicianForModal(null)}>
         <div className="modal-card" onClick={e => e.stopPropagation()}>
           <div className="modal-header">
-            <div className="modal-title">Scheda Musicista</div>
-            <button className="modal-close-btn" onClick={() => setSelectedMusicianForModal(null)}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {selectedBandForModal && (
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  style={{ padding: '4px 10px', fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '5px' }}
+                  onClick={() => setSelectedMusicianForModal(null)}
+                  title={`Torna a ${selectedBandForModal.name}`}
+                >
+                  <ArrowLeft size={14} />
+                  <span>Torna alla Band</span>
+                </button>
+              )}
+              <div className="modal-title">Scheda Musicista</div>
+            </div>
+            <button className="modal-close-btn" onClick={() => setSelectedMusicianForModal(null)} aria-label="Chiudi">
               <X size={20} />
             </button>
           </div>
@@ -540,25 +556,39 @@ export const ProfileModal: React.FC = () => {
             )}
           </div>
 
-          <div className="modal-footer">
-            {isSelf ? (
+          <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            {selectedBandForModal ? (
               <button 
-                className="btn btn-primary"
-                onClick={() => {
-                  setSelectedMusicianForModal(null);
-                  setIsEditProfileOpen(true);
-                }}
-              >
-                Modifica le tue informazioni
-              </button>
-            ) : (
-              <button 
+                type="button"
                 className="btn btn-secondary"
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                 onClick={() => setSelectedMusicianForModal(null)}
               >
-                Chiudi Scheda
+                <ArrowLeft size={16} />
+                <span>Torna a {selectedBandForModal.name}</span>
               </button>
-            )}
+            ) : <div />}
+
+            <div>
+              {isSelf ? (
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setSelectedMusicianForModal(null);
+                    setIsEditProfileOpen(true);
+                  }}
+                >
+                  Modifica le tue informazioni
+                </button>
+              ) : (
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => setSelectedMusicianForModal(null)}
+                >
+                  Chiudi Scheda
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

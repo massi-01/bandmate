@@ -159,7 +159,7 @@ export const AuthModal: React.FC = () => {
   if (!isAuthModalOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={() => setIsAuthModalOpen(false)}>
+    <div className="modal-overlay modal-overlay-auth" onClick={() => setIsAuthModalOpen(false)}>
       <div className="modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: authMode === 'register' ? '680px' : '480px' }}>
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

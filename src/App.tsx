@@ -27,10 +27,10 @@ const MainAppContent: React.FC = () => {
       </main>
 
       <MobileBottomNav />
-      <ProfileModal />
-      <AuthModal />
       <BandDetailsModal />
       <CreateBandModal />
+      <ProfileModal />
+      <AuthModal />
 
       {/* Notification Toast */}
       {notification && (
