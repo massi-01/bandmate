@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "server": "node --experimental-strip-types server/index.ts",
-    "build:server": "esbuild server/app.ts --bundle --platform=node --format=esm --target=node20 --outfile=api/index.js --external:mongoose",
+    "build:server": "esbuild server/app.ts --bundle --platform=node --format=esm --target=node20 --outfile=api/index.js",
     "build": "tsc -b && vite build && npm run build:server",
     "lint": "oxlint",
     "preview": "vite preview"
