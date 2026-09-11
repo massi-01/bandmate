@@ -37,6 +37,9 @@ interface AppContextType {
   createEvent: (eventData: any) => Promise<void>;
   joinEventSlot: (eventId: string, slotId: string) => Promise<boolean>;
   leaveEventSlot: (eventId: string, slotId: string) => Promise<void>;
+  applyBandToEvent: (eventId: string, bandId: string, message?: string) => Promise<boolean>;
+  withdrawBandFromEvent: (eventId: string, bandId: string) => Promise<boolean>;
+  addEventComment: (eventId: string, content: string) => Promise<boolean>;
 
   // Posts
   posts: Post[];
@@ -246,6 +249,53 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const applyBandToEvent = async (eventId: string, bandId: string, message?: string): Promise<boolean> => {
+    if (!currentMusician) {
+      showNotification('Accedi per candidare la tua band!', 'info');
+      setIsAuthModalOpen(true);
+      return false;
+    }
+    try {
+      const updatedEvent = await eventsApi.applyBand(eventId, { bandId, message });
+      setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+      showNotification('Band candidata con successo all\'evento!', 'success');
+      return true;
+    } catch (err: any) {
+      showNotification(err.message || 'Errore durante la candidatura della band', 'error');
+      return false;
+    }
+  };
+
+  const withdrawBandFromEvent = async (eventId: string, bandId: string): Promise<boolean> => {
+    if (!currentMusician) return false;
+    try {
+      const updatedEvent = await eventsApi.withdrawBand(eventId, bandId);
+      setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+      showNotification('Candidatura della band ritirata.', 'info');
+      return true;
+    } catch (err: any) {
+      showNotification(err.message || 'Errore durante il ritiro della candidatura', 'error');
+      return false;
+    }
+  };
+
+  const addEventComment = async (eventId: string, content: string): Promise<boolean> => {
+    if (!currentMusician) {
+      showNotification('Accedi per fare una domanda o lasciare un commento!', 'info');
+      setIsAuthModalOpen(true);
+      return false;
+    }
+    try {
+      const updatedEvent = await eventsApi.addComment(eventId, content);
+      setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+      showNotification('Commento inviato con successo!', 'success');
+      return true;
+    } catch (err: any) {
+      showNotification(err.message || 'Errore durante l\'invio del commento', 'error');
+      return false;
+    }
+  };
+
   // 6. Posts actions
   const createPost = async (postData: any) => {
     if (!currentMusician) {
@@ -387,6 +437,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         createEvent,
         joinEventSlot,
         leaveEventSlot,
+        applyBandToEvent,
+        withdrawBandFromEvent,
+        addEventComment,
 
         posts,
         refreshPosts,

@@ -14,6 +14,39 @@ export interface IInstrumentSlot {
   assignedMusicians: IAssignedMusician[];
 }
 
+export interface IEventAppliedBand {
+  id: string;
+  bandId: string;
+  bandName: string;
+  bandAvatar: string;
+  city: string;
+  genres: string[];
+  leaderId: string;
+  membersCount: number;
+  message?: string;
+  appliedAt: string;
+}
+
+export interface IEventSong {
+  id: string;
+  title: string;
+  artist: string;
+  bpm?: number | string;
+  key?: string;
+  tutorialUrl?: string;
+  notes?: string;
+}
+
+export interface IEventComment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar: string;
+  authorInstrument?: string;
+  content: string;
+  createdAt: string;
+}
+
 export interface IEvent extends Document {
   _id: string;
   id: string;
@@ -28,6 +61,9 @@ export interface IEvent extends Document {
   city: string;
   genres: string[];
   slots: IInstrumentSlot[];
+  appliedBands: IEventAppliedBand[];
+  setlist: IEventSong[];
+  comments: IEventComment[];
   equipmentNotes?: string;
   createdAt: string;
 }
@@ -58,6 +94,42 @@ const EventSchema = new Schema<IEvent>(
             joinedAt: { type: String, required: true }
           }
         ]
+      }
+    ],
+    appliedBands: [
+      {
+        id: { type: String, required: true },
+        bandId: { type: String, required: true },
+        bandName: { type: String, required: true },
+        bandAvatar: { type: String, default: '' },
+        city: { type: String, default: '' },
+        genres: [{ type: String }],
+        leaderId: { type: String, required: true },
+        membersCount: { type: Number, default: 1 },
+        message: { type: String, default: '' },
+        appliedAt: { type: String, required: true }
+      }
+    ],
+    setlist: [
+      {
+        id: { type: String, required: true },
+        title: { type: String, required: true, trim: true },
+        artist: { type: String, required: true, trim: true },
+        bpm: { type: Schema.Types.Mixed, default: '' },
+        key: { type: String, default: '' },
+        tutorialUrl: { type: String, default: '' },
+        notes: { type: String, default: '' }
+      }
+    ],
+    comments: [
+      {
+        id: { type: String, required: true },
+        authorId: { type: String, required: true },
+        authorName: { type: String, required: true },
+        authorAvatar: { type: String, default: '' },
+        authorInstrument: { type: String, default: 'Musicista' },
+        content: { type: String, required: true },
+        createdAt: { type: String, required: true }
       }
     ],
     equipmentNotes: { type: String, default: '' },

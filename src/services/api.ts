@@ -164,6 +164,7 @@ export const eventsApi = {
     city: string;
     genres: string[];
     slots: { instrument: string; maxCount: number }[];
+    setlist?: { title: string; artist: string; bpm?: number | string; key?: string; tutorialUrl?: string; notes?: string }[];
     equipmentNotes?: string;
   }) {
     const data = await request<{ event: JamEvent }>('/api/events', {
@@ -185,6 +186,30 @@ export const eventsApi = {
     const data = await request<{ event: JamEvent }>(`/api/events/${eventId}/leave`, {
       method: 'POST',
       body: JSON.stringify({ slotId })
+    });
+    return data.event;
+  },
+
+  async applyBand(eventId: string, payload: { bandId: string; message?: string }) {
+    const data = await request<{ event: JamEvent }>(`/api/events/${eventId}/apply-band`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    return data.event;
+  },
+
+  async withdrawBand(eventId: string, bandId: string) {
+    const data = await request<{ event: JamEvent }>(`/api/events/${eventId}/withdraw-band`, {
+      method: 'POST',
+      body: JSON.stringify({ bandId })
+    });
+    return data.event;
+  },
+
+  async addComment(eventId: string, content: string) {
+    const data = await request<{ event: JamEvent }>(`/api/events/${eventId}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ content })
     });
     return data.event;
   }

@@ -90559,6 +90559,42 @@ var EventSchema = new import_mongoose3.Schema(
         ]
       }
     ],
+    appliedBands: [
+      {
+        id: { type: String, required: true },
+        bandId: { type: String, required: true },
+        bandName: { type: String, required: true },
+        bandAvatar: { type: String, default: "" },
+        city: { type: String, default: "" },
+        genres: [{ type: String }],
+        leaderId: { type: String, required: true },
+        membersCount: { type: Number, default: 1 },
+        message: { type: String, default: "" },
+        appliedAt: { type: String, required: true }
+      }
+    ],
+    setlist: [
+      {
+        id: { type: String, required: true },
+        title: { type: String, required: true, trim: true },
+        artist: { type: String, required: true, trim: true },
+        bpm: { type: import_mongoose3.Schema.Types.Mixed, default: "" },
+        key: { type: String, default: "" },
+        tutorialUrl: { type: String, default: "" },
+        notes: { type: String, default: "" }
+      }
+    ],
+    comments: [
+      {
+        id: { type: String, required: true },
+        authorId: { type: String, required: true },
+        authorName: { type: String, required: true },
+        authorAvatar: { type: String, default: "" },
+        authorInstrument: { type: String, default: "Musicista" },
+        content: { type: String, required: true },
+        createdAt: { type: String, required: true }
+      }
+    ],
     equipmentNotes: { type: String, default: "" },
     createdAt: { type: String, required: true, default: () => (/* @__PURE__ */ new Date()).toISOString() }
   },
@@ -90989,6 +91025,69 @@ async function seedInitialDataIfNeeded() {
             { id: "s5", instrument: "Voce", maxCount: 1, assignedMusicians: [] }
           ],
           equipmentNotes: "Batteria Yamaha, ampli Fender Twin Reverb e Markbass presenti sul posto. Portare solo jack e bacchette.",
+          appliedBands: [
+            {
+              id: "ab1",
+              bandId: "b1",
+              bandName: "The Velvet Groove",
+              bandAvatar: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80",
+              city: "Bologna (BO)",
+              genres: ["Funk", "Soul", "Acid Jazz"],
+              leaderId: "m2",
+              membersCount: 2,
+              message: "Ci candidiamo per aprire la jam con un set funky di 3 brani!",
+              appliedAt: "2026-09-10"
+            }
+          ],
+          setlist: [
+            {
+              id: "song_1",
+              title: "Superstition",
+              artist: "Stevie Wonder",
+              bpm: 100,
+              key: "Mib minore (Ebm)",
+              tutorialUrl: "https://www.youtube.com/watch?v=ftdZ363R9kQ",
+              notes: "Riff di clavinet suonato con chitarre/tastiere, stacco unisono sul ritornello."
+            },
+            {
+              id: "song_2",
+              title: "Cissy Strut",
+              artist: "The Meters",
+              bpm: 88,
+              key: "Do (C)",
+              tutorialUrl: "https://www.youtube.com/watch?v=4_iC0MyIykM",
+              notes: "Groove funky di basso e batteria super compatto, giri di assoli aperti per tutti."
+            },
+            {
+              id: "song_3",
+              title: "Pick Up the Pieces",
+              artist: "Average White Band",
+              bpm: 108,
+              key: "Fa minore (Fm)",
+              tutorialUrl: "https://www.youtube.com/watch?v=FnH_weyGucc",
+              notes: "Intro incalzante, assoli di chitarra funky e sax/synth."
+            }
+          ],
+          comments: [
+            {
+              id: "ec1",
+              authorId: "m2",
+              authorName: "Giulia Moretti",
+              authorAvatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
+              authorInstrument: "Basso Elettrico",
+              content: "Ciao Marco! Per il basso c'\xE8 gi\xE0 un amplificatore Markbass o conviene portare la testata propria?",
+              createdAt: "2026-09-10T14:30:00.000Z"
+            },
+            {
+              id: "ec2",
+              authorId: "m3",
+              authorName: "Marco Bianchi",
+              authorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+              authorInstrument: "Batteria",
+              content: "Ciao Giulia! C'\xE8 sia la cassa 4x10 che la testata Little Mark III sul posto, porta solo il basso e i cavi jack!",
+              createdAt: "2026-09-10T14:45:00.000Z"
+            }
+          ],
           createdAt: now
         },
         {
@@ -91022,6 +91121,38 @@ async function seedInitialDataIfNeeded() {
             { id: "s10", instrument: "Batteria", maxCount: 1, assignedMusicians: [] }
           ],
           equipmentNotes: "Impianto voce e microfoni Shure SM58 inclusi. Sala climatizzata.",
+          appliedBands: [],
+          setlist: [
+            {
+              id: "song_4",
+              title: "Comfortably Numb",
+              artist: "Pink Floyd",
+              bpm: 64,
+              key: "Si minore (Bm)",
+              tutorialUrl: "https://www.youtube.com/watch?v=_FrOQC-zEog",
+              notes: "Versione con entrambi gli assoli di chitarra estesi."
+            },
+            {
+              id: "song_5",
+              title: "Everlong",
+              artist: "Foo Fighters",
+              bpm: 158,
+              key: "Re Drop-D (D)",
+              tutorialUrl: "https://www.youtube.com/watch?v=eBG7P-K-r1Y",
+              notes: "Accordo Drop-D per la chitarra ritmica, batteria carica sul chorus."
+            }
+          ],
+          comments: [
+            {
+              id: "ec3",
+              authorId: "m1",
+              authorName: "Davide De Luca",
+              authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+              authorInstrument: "Chitarra Elettrica",
+              content: "Gran bella scaletta! A che ora conviene arrivare per accordare e fare il soundcheck rapido?",
+              createdAt: "2026-09-10T16:00:00.000Z"
+            }
+          ],
           createdAt: now
         }
       ];
@@ -91452,6 +91583,7 @@ eventsRouter.post("/", requireAuth, async (req, res) => {
       city,
       genres,
       slots,
+      setlist,
       equipmentNotes
     } = req.body;
     if (!title || !date || !time || !locationName || !city) {
@@ -91470,6 +91602,15 @@ eventsRouter.post("/", requireAuth, async (req, res) => {
       maxCount: parseInt(s.maxCount) || 1,
       assignedMusicians: []
     }));
+    const formattedSetlist = Array.isArray(setlist) ? setlist.filter((s) => s && s.title && s.title.trim()).map((s, idx) => ({
+      id: `song_${Date.now()}_${idx}`,
+      title: s.title.trim(),
+      artist: s.artist ? s.artist.trim() : "Brano",
+      bpm: s.bpm || "",
+      key: s.key || "",
+      tutorialUrl: s.tutorialUrl || "",
+      notes: s.notes || ""
+    })) : [];
     const newEvent = await Event.create({
       _id: eventId,
       organizerId: req.musician.id,
@@ -91483,6 +91624,9 @@ eventsRouter.post("/", requireAuth, async (req, res) => {
       city: city.trim(),
       genres: genres || ["Rock"],
       slots: formattedSlots,
+      appliedBands: [],
+      setlist: formattedSetlist,
+      comments: [],
       equipmentNotes: equipmentNotes || "",
       createdAt: now
     });
@@ -91557,6 +91701,119 @@ eventsRouter.post("/:id/leave", requireAuth, async (req, res) => {
   } catch (err) {
     console.error("Error leaving event slot:", err);
     res.status(500).json({ error: "Errore durante la disiscrizione dallo slot: " + err.message });
+  }
+});
+eventsRouter.post("/:id/apply-band", requireAuth, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { bandId, message } = req.body;
+    if (!bandId) {
+      res.status(400).json({ error: "Specifica la band da candidare." });
+      return;
+    }
+    const event = await Event.findById(eventId);
+    if (!event) {
+      res.status(404).json({ error: "Evento non trovato." });
+      return;
+    }
+    const band = await Band.findById(bandId);
+    if (!band) {
+      res.status(404).json({ error: "Band non trovata." });
+      return;
+    }
+    const isMemberOrLeader = band.leaderId === req.musician.id || band.members.some((m) => m.musicianId === req.musician.id);
+    if (!isMemberOrLeader) {
+      res.status(403).json({ error: "Devi essere leader o membro di questa band per candidarla." });
+      return;
+    }
+    if (!event.appliedBands) {
+      event.appliedBands = [];
+    }
+    const alreadyApplied = event.appliedBands.some((b) => b.bandId === bandId);
+    if (alreadyApplied) {
+      res.status(400).json({ error: "Questa band \xE8 gi\xE0 candidata all'evento." });
+      return;
+    }
+    const newApplication = {
+      id: "ab_" + Date.now(),
+      bandId: band.id,
+      bandName: band.name,
+      bandAvatar: band.avatar || "",
+      city: band.city || "",
+      genres: band.genres || [],
+      leaderId: band.leaderId,
+      membersCount: band.members.length,
+      message: message ? message.trim() : "",
+      appliedAt: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+    };
+    event.appliedBands.push(newApplication);
+    await event.save();
+    res.json({ event });
+  } catch (err) {
+    console.error("Error applying band to event:", err);
+    res.status(500).json({ error: "Errore durante la candidatura della band: " + err.message });
+  }
+});
+eventsRouter.post("/:id/withdraw-band", requireAuth, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { bandId } = req.body;
+    const event = await Event.findById(eventId);
+    if (!event) {
+      res.status(404).json({ error: "Evento non trovato." });
+      return;
+    }
+    const band = await Band.findById(bandId);
+    if (band) {
+      const isAuthorized = band.leaderId === req.musician.id || band.members.some((m) => m.musicianId === req.musician.id) || event.organizerId === req.musician.id;
+      if (!isAuthorized) {
+        res.status(403).json({ error: "Non hai i permessi per ritirare questa candidatura." });
+        return;
+      }
+    }
+    if (event.appliedBands) {
+      event.appliedBands = event.appliedBands.filter((b) => b.bandId !== bandId);
+      await event.save();
+    }
+    res.json({ event });
+  } catch (err) {
+    console.error("Error withdrawing band from event:", err);
+    res.status(500).json({ error: "Errore durante il ritiro della candidatura: " + err.message });
+  }
+});
+eventsRouter.post("/:id/comments", requireAuth, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { content } = req.body;
+    if (!content || !content.trim()) {
+      res.status(400).json({ error: "Il testo della domanda o commento non pu\xF2 essere vuoto." });
+      return;
+    }
+    const event = await Event.findById(eventId);
+    if (!event) {
+      res.status(404).json({ error: "Evento non trovato." });
+      return;
+    }
+    const musician = await Musician.findById(req.musician.id);
+    const primaryInst = musician?.instruments.find((i) => i.isPrimary) || musician?.instruments[0];
+    if (!event.comments) {
+      event.comments = [];
+    }
+    const newComment = {
+      id: "ec_" + Date.now(),
+      authorId: req.musician.id,
+      authorName: req.musician.name,
+      authorAvatar: req.musician.avatar || "",
+      authorInstrument: primaryInst ? primaryInst.name : "Musicista",
+      content: content.trim(),
+      createdAt: (/* @__PURE__ */ new Date()).toISOString()
+    };
+    event.comments.push(newComment);
+    await event.save();
+    res.status(201).json({ event });
+  } catch (err) {
+    console.error("Error adding comment to event:", err);
+    res.status(500).json({ error: "Errore durante l'invio del commento: " + err.message });
   }
 });
 
@@ -91868,7 +92125,8 @@ bandsRouter.delete("/:id", requireAuth, async (req, res) => {
 // server/app.ts
 var app = (0, import_express6.default)();
 app.use((0, import_cors.default)());
-app.use(import_express6.default.json());
+app.use(import_express6.default.json({ limit: "10mb" }));
+app.use(import_express6.default.urlencoded({ limit: "10mb", extended: true }));
 app.use(async (_req, res, next) => {
   try {
     await connectDB();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import type { MusicianProfile, Gender, SkillLevel, AvailabilityStatus } from '../types';
 import { 
@@ -9,7 +9,10 @@ import {
   Plus, 
   Trash2,
   Sparkles,
-  ArrowLeft
+  ArrowLeft,
+  Upload,
+  Check,
+  RotateCcw
 } from 'lucide-react';
 import { INSTRUMENT_OPTIONS, GENRE_OPTIONS, CITY_OPTIONS } from '../data/mockData';
 
@@ -27,6 +30,10 @@ export const ProfileModal: React.FC = () => {
   } = useApp();
 
   // Edit form state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
+
   const [formData, setFormData] = useState<Partial<MusicianProfile>>(() => ({
     name: currentMusician?.name || '',
     age: currentMusician?.age || 20,
@@ -40,6 +47,54 @@ export const ProfileModal: React.FC = () => {
     instruments: currentMusician ? [...currentMusician.instruments] : [],
     genres: currentMusician ? [...currentMusician.genres] : []
   }));
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Seleziona un formato immagine valido (JPEG, PNG, WebP).');
+      return;
+    }
+
+    setUploadError(null);
+    setIsProcessingImage(true);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Center-crop and scale to max 500x500 square
+        const canvas = document.createElement('canvas');
+        const MAX_DIM = 500;
+        const minDim = Math.min(img.width, img.height);
+        const startX = (img.width - minDim) / 2;
+        const startY = (img.height - minDim) / 2;
+        const targetDim = Math.min(minDim, MAX_DIM);
+
+        canvas.width = targetDim;
+        canvas.height = targetDim;
+
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, targetDim, targetDim);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          setFormData(prev => ({ ...prev, avatar: compressedDataUrl }));
+        }
+        setIsProcessingImage(false);
+      };
+      img.onerror = () => {
+        setUploadError('Impossibile elaborare l\'immagine caricata.');
+        setIsProcessingImage(false);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.onerror = () => {
+      setUploadError('Errore durante la lettura del file dal disco.');
+      setIsProcessingImage(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Helper to sync form data when modal opens
   React.useEffect(() => {
@@ -152,15 +207,101 @@ export const ProfileModal: React.FC = () => {
 
           <form onSubmit={handleSaveProfile}>
             <div className="modal-body">
-              {/* Profile Photo Selector */}
+              {/* Profile Photo Selector with File Upload */}
               <div className="form-group">
-                <label className="form-label">Scegli Avatar o Inserisci URL Foto</label>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
-                  <img
-                    src={formData.avatar}
-                    alt="Preview"
-                    style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--accent-purple)' }}
-                  />
+                <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Foto Profilo Musicista</span>
+                  {isProcessingImage && (
+                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-cyan)' }}>Ottimizzazione immagine in corso...</span>
+                  )}
+                </label>
+
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ position: 'relative' }}>
+                    <img
+                      src={formData.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}
+                      alt="Preview"
+                      style={{ 
+                        width: '74px', 
+                        height: '74px', 
+                        borderRadius: '50%', 
+                        objectFit: 'cover', 
+                        border: '3px solid var(--accent-purple)',
+                        boxShadow: '0 4px 14px rgba(139, 92, 246, 0.35)'
+                      }}
+                    />
+                    {formData.avatar?.startsWith('data:') && (
+                      <span 
+                        style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          right: 0,
+                          background: 'var(--accent-emerald)',
+                          borderRadius: '50%',
+                          width: '22px',
+                          height: '22px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#fff',
+                          border: '2px solid #111726'
+                        }}
+                        title="Foto personalizzata caricata"
+                      >
+                        <Check size={13} />
+                      </span>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minWidth: '220px' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={handleFileUpload}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => fileInputRef.current?.click()}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem' }}
+                      >
+                        <Upload size={14} />
+                        <span>Carica Foto dal Dispositivo</span>
+                      </button>
+
+                      {formData.avatar?.startsWith('data:') && (
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => setFormData({ ...formData, avatar: currentMusician?.avatar || AVATAR_PRESETS[0] })}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem' }}
+                          title="Ripristina foto originale"
+                        >
+                          <RotateCcw size={13} />
+                          <span>Ripristina</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      Supporta JPG, PNG, WebP da PC o fotocamera smartphone. Ritagliata e ottimizzata automaticamente.
+                    </span>
+
+                    {uploadError && (
+                      <span style={{ fontSize: '0.78rem', color: '#f87171', fontWeight: 600 }}>
+                        ⚠️ {uploadError}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '10px' }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                    Oppure scegli un preset rapido:
+                  </div>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     {AVATAR_PRESETS.map((p, idx) => (
                       <img
@@ -169,24 +310,28 @@ export const ProfileModal: React.FC = () => {
                         alt="preset"
                         onClick={() => setFormData({ ...formData, avatar: p })}
                         style={{
-                          width: '38px',
-                          height: '38px',
+                          width: '36px',
+                          height: '36px',
                           borderRadius: '50%',
                           objectFit: 'cover',
                           cursor: 'pointer',
                           border: formData.avatar === p ? '2px solid var(--accent-pink)' : '1px solid var(--border-subtle)',
-                          opacity: formData.avatar === p ? 1 : 0.6
+                          opacity: formData.avatar === p ? 1 : 0.6,
+                          transition: 'all 0.15s ease'
                         }}
+                        title={`Scegli preset ${idx + 1}`}
                       />
                     ))}
                   </div>
                 </div>
+
                 <input
                   type="url"
                   className="form-input"
-                  placeholder="Oppure inserisci URL immagine personalizzata..."
+                  placeholder="Oppure incolla un URL immagine diretto..."
                   value={formData.avatar || ''}
                   onChange={e => setFormData({ ...formData, avatar: e.target.value })}
+                  style={{ fontSize: '0.8rem' }}
                 />
               </div>
 

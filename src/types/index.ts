@@ -53,6 +53,39 @@ export interface InstrumentSlot {
 
 export type EventType = 'Jam Session' | 'Prove di Gruppo' | 'Live / Concerto' | 'Aperitivo Musicale' | 'Workshop';
 
+export interface EventAppliedBand {
+  id: string;
+  bandId: string;
+  bandName: string;
+  bandAvatar: string;
+  city: string;
+  genres: string[];
+  leaderId: string;
+  membersCount: number;
+  message?: string;
+  appliedAt: string;
+}
+
+export interface EventSong {
+  id: string;
+  title: string;
+  artist: string;
+  bpm?: number | string;
+  key?: string;
+  tutorialUrl?: string;
+  notes?: string;
+}
+
+export interface EventComment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar: string;
+  authorInstrument?: string;
+  content: string;
+  createdAt: string;
+}
+
 export interface JamEvent {
   id: string;
   title: string;
@@ -66,6 +99,9 @@ export interface JamEvent {
   genres: string[];
   organizerId: string;
   slots: InstrumentSlot[];
+  appliedBands?: EventAppliedBand[];
+  setlist?: EventSong[];
+  comments?: EventComment[];
   equipmentNotes?: string;
   createdAt: string;
 }

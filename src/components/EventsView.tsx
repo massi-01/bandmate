@@ -6,7 +6,15 @@ import {
   Plus, 
   Music, 
   CheckCircle2, 
-  X
+  X,
+  ExternalLink,
+  Radio,
+  MessageSquare,
+  Send,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Disc3
 } from 'lucide-react';
 import type { EventType } from '../types';
 import { INSTRUMENT_OPTIONS, GENRE_OPTIONS, CITY_OPTIONS } from '../data/mockData';
@@ -18,7 +26,12 @@ export const EventsView: React.FC = () => {
     joinEventSlot, 
     leaveEventSlot, 
     createEvent,
+    applyBandToEvent,
+    withdrawBandFromEvent,
+    addEventComment,
+    bands,
     setSelectedMusicianForModal,
+    setSelectedBandForModal,
     musicians,
     isCreateEventOpen,
     setIsCreateEventOpen,
@@ -48,6 +61,62 @@ export const EventsView: React.FC = () => {
     { instrument: 'Voce', maxCount: 1 }
   ]);
   const [slotToAdd, setSlotToAdd] = useState(INSTRUMENT_OPTIONS[0]);
+
+  // Scaletta / Setlist form state for new event
+  const [newSetlist, setNewSetlist] = useState<{
+    title: string;
+    artist: string;
+    bpm: string;
+    key: string;
+    tutorialUrl: string;
+    notes: string;
+  }[]>([]);
+  const [songTitle, setSongTitle] = useState('');
+  const [songArtist, setSongArtist] = useState('');
+  const [songBpm, setSongBpm] = useState('');
+  const [songKey, setSongKey] = useState('');
+  const [songTutorialUrl, setSongTutorialUrl] = useState('');
+  const [songNotes, setSongNotes] = useState('');
+
+  // Band candidature dialog state
+  const [applyingBandEventId, setApplyingBandEventId] = useState<string | null>(null);
+  const [selectedBandToApply, setSelectedBandToApply] = useState<string>('');
+  const [bandApplyMessage, setBandApplyMessage] = useState<string>('');
+
+  // Interactive accordions and comment inputs per event
+  const [expandedComments, setExpandedComments] = useState<Record<string, boolean>>({});
+  const [expandedSetlists, setExpandedSetlists] = useState<Record<string, boolean>>({});
+  const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
+  const [isSubmittingComment, setIsSubmittingComment] = useState<Record<string, boolean>>({});
+
+  const userBands = bands.filter(b => 
+    currentMusician && (b.leaderId === currentMusician.id || b.members.some(m => m.musicianId === currentMusician.id))
+  );
+
+  const handleAddSongToSetlist = () => {
+    if (!songTitle.trim()) return;
+    setNewSetlist(prev => [
+      ...prev,
+      {
+        title: songTitle.trim(),
+        artist: songArtist.trim() || 'Brano',
+        bpm: songBpm.trim(),
+        key: songKey.trim(),
+        tutorialUrl: songTutorialUrl.trim(),
+        notes: songNotes.trim()
+      }
+    ]);
+    setSongTitle('');
+    setSongArtist('');
+    setSongBpm('');
+    setSongKey('');
+    setSongTutorialUrl('');
+    setSongNotes('');
+  };
+
+  const handleRemoveSongFromSetlist = (index: number) => {
+    setNewSetlist(prev => prev.filter((_, idx) => idx !== index));
+  };
 
   const handleAddCustomSlot = () => {
     if (customSlots.some(s => s.instrument === slotToAdd)) return;
@@ -93,6 +162,7 @@ export const EventsView: React.FC = () => {
       city: newCity,
       genres: newGenres,
       slots: customSlots,
+      setlist: newSetlist,
       equipmentNotes: newNotes.trim()
     });
 
@@ -102,6 +172,7 @@ export const EventsView: React.FC = () => {
     setNewDesc('');
     setNewDate('');
     setNewLocationName('');
+    setNewSetlist([]);
   };
 
   // Filter events
@@ -323,6 +394,305 @@ export const EventsView: React.FC = () => {
                     ℹ️ <em>{event.equipmentNotes}</em>
                   </div>
                 )}
+
+                {/* Scaletta & Brani Accordion */}
+                {event.setlist && event.setlist.length > 0 && (
+                  <div style={{ marginBottom: '14px', background: 'rgba(21, 29, 48, 0.6)', border: '1px solid var(--border-subtle)', borderRadius: '12px', overflow: 'hidden' }}>
+                    <button
+                      type="button"
+                      onClick={() => setExpandedSetlists(prev => ({ ...prev, [event.id]: !prev[event.id] }))}
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        background: 'transparent',
+                        border: 'none',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        color: '#fff'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.88rem' }}>
+                        <Disc3 size={16} color="var(--accent-purple-light)" />
+                        <span>Scaletta Brani della Jam ({event.setlist.length})</span>
+                      </div>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem', color: 'var(--accent-cyan)' }}>
+                        {expandedSetlists[event.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      </span>
+                    </button>
+
+                    {expandedSetlists[event.id] && (
+                      <div style={{ padding: '0 14px 14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {event.setlist.map((song, idx) => (
+                          <div
+                            key={song.id || idx}
+                            style={{
+                              padding: '10px 12px',
+                              borderRadius: '8px',
+                              background: 'rgba(255, 255, 255, 0.03)',
+                              border: '1px solid var(--border-subtle)',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              flexWrap: 'wrap',
+                              gap: '8px'
+                            }}
+                          >
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ color: 'var(--accent-purple-light)', fontWeight: 700, fontSize: '0.85rem' }}>#{idx + 1}</span>
+                                <span style={{ color: '#fff', fontWeight: 700, fontSize: '0.92rem' }}>{song.title}</span>
+                                <span style={{ color: 'var(--text-secondary)', fontSize: '0.84rem' }}>• {song.artist}</span>
+                              </div>
+
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
+                                {song.bpm && (
+                                  <span style={{ fontSize: '0.72rem', background: 'rgba(244, 63, 94, 0.15)', color: '#fb7185', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                                    🥁 {song.bpm} BPM
+                                  </span>
+                                )}
+                                {song.key && (
+                                  <span style={{ fontSize: '0.72rem', background: 'rgba(6, 182, 212, 0.15)', color: '#22d3ee', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                                    🎼 {song.key}
+                                  </span>
+                                )}
+                                {song.notes && (
+                                  <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                                    💬 {song.notes}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {song.tutorialUrl && (
+                              <a
+                                href={song.tutorialUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-outline-accent btn-sm"
+                                style={{ padding: '3px 8px', fontSize: '0.74rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                title="Apri video tutorial o accordi"
+                              >
+                                <span>Tutorial</span>
+                                <ExternalLink size={12} />
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Band Candidate / Partecipanti */}
+                <div style={{ marginBottom: '14px', background: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: '12px', padding: '12px 14px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: (event.appliedBands && event.appliedBands.length > 0) ? '10px' : '0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Radio size={16} color="#fbbf24" />
+                      <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fef08a' }}>
+                        Band Partecipanti / Candidate ({event.appliedBands?.length || 0})
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="btn btn-outline-accent btn-sm"
+                      style={{ padding: '4px 10px', fontSize: '0.76rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                      onClick={() => {
+                        if (!currentMusician) {
+                          setIsAuthModalOpen(true);
+                          return;
+                        }
+                        if (userBands.length === 0) {
+                          alert('Non fai ancora parte di nessuna band. Crea prima la tua band nella scheda "Band" per poterla candidare!');
+                          return;
+                        }
+                        setApplyingBandEventId(event.id);
+                        setSelectedBandToApply(userBands[0].id);
+                        setBandApplyMessage('');
+                      }}
+                    >
+                      <Plus size={13} />
+                      <span>Candida Band</span>
+                    </button>
+                  </div>
+
+                  {event.appliedBands && event.appliedBands.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {event.appliedBands.map(applied => {
+                        const isUserInThisBand = userBands.some(b => b.id === applied.bandId);
+                        return (
+                          <div
+                            key={applied.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              background: 'rgba(21, 29, 48, 0.7)',
+                              border: isUserInThisBand ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid var(--border-subtle)',
+                              padding: '8px 12px',
+                              borderRadius: '8px'
+                            }}
+                          >
+                            <div 
+                              style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', flex: 1, minWidth: 0 }}
+                              onClick={() => {
+                                const found = bands.find(b => b.id === applied.bandId);
+                                if (found) setSelectedBandForModal(found);
+                              }}
+                              title="Vedi scheda della band"
+                            >
+                              <img
+                                src={applied.bandAvatar || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=150&q=80'}
+                                alt={applied.bandName}
+                                style={{ width: '36px', height: '36px', borderRadius: '8px', objectFit: 'cover', border: '1.5px solid #fbbf24' }}
+                              />
+                              <div style={{ minWidth: 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span style={{ fontWeight: 700, color: '#fff', fontSize: '0.88rem' }}>{applied.bandName}</span>
+                                  {isUserInThisBand && (
+                                    <span style={{ fontSize: '0.65rem', background: 'rgba(245, 158, 11, 0.2)', color: '#fef08a', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                                      La tua Band
+                                    </span>
+                                  )}
+                                </div>
+                                <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                                  📍 {applied.city} • 👥 {applied.membersCount} membri
+                                  {applied.message && <span> • <em>"{applied.message}"</em></span>}
+                                </div>
+                              </div>
+                            </div>
+
+                            {isUserInThisBand && (
+                              <button
+                                type="button"
+                                className="btn btn-secondary btn-sm"
+                                style={{ padding: '3px 8px', fontSize: '0.72rem', color: '#f87171', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                                onClick={() => withdrawBandFromEvent(event.id, applied.bandId)}
+                                title="Ritira candidatura della tua band"
+                              >
+                                Ritira
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Domande & Commenti Accordion */}
+                <div style={{ marginBottom: '14px', background: 'rgba(21, 29, 48, 0.4)', border: '1px solid var(--border-subtle)', borderRadius: '12px', overflow: 'hidden' }}>
+                  <button
+                    type="button"
+                    onClick={() => setExpandedComments(prev => ({ ...prev, [event.id]: !prev[event.id] }))}
+                    style={{
+                      width: '100%',
+                      padding: '10px 14px',
+                      background: 'transparent',
+                      border: 'none',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                      color: '#fff'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.86rem' }}>
+                      <MessageSquare size={15} color="var(--accent-cyan)" />
+                      <span>Domande & Commenti sull'Evento ({event.comments?.length || 0})</span>
+                    </div>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem', color: 'var(--accent-cyan)' }}>
+                      {expandedComments[event.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </span>
+                  </button>
+
+                  {expandedComments[event.id] && (
+                    <div style={{ padding: '0 14px 14px' }}>
+                      {event.comments && event.comments.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+                          {event.comments.map(c => (
+                            <div
+                              key={c.id}
+                              style={{
+                                background: 'rgba(255, 255, 255, 0.03)',
+                                border: '1px solid var(--border-subtle)',
+                                borderRadius: '8px',
+                                padding: '8px 12px'
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                <div 
+                                  style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+                                  onClick={() => {
+                                    const found = musicians.find(m => m.id === c.authorId);
+                                    if (found) setSelectedMusicianForModal(found);
+                                  }}
+                                >
+                                  <img
+                                    src={c.authorAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
+                                    alt={c.authorName}
+                                    style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }}
+                                  />
+                                  <span style={{ fontWeight: 700, fontSize: '0.82rem', color: '#fff' }}>{c.authorName}</span>
+                                  {c.authorInstrument && (
+                                    <span style={{ fontSize: '0.68rem', color: 'var(--accent-purple-light)', background: 'rgba(139, 92, 246, 0.15)', padding: '1px 6px', borderRadius: '4px' }}>
+                                      {c.authorInstrument}
+                                    </span>
+                                  )}
+                                </div>
+                                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                                  {new Date(c.createdAt).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                              <p style={{ fontSize: '0.84rem', color: '#e2e8f0', margin: 0, lineHeight: 1.4 }}>
+                                {c.content}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                          Nessuna domanda ancora. Hai dubbi sulla scaletta, strumentazione o orari? Scrivi qui sotto!
+                        </p>
+                      )}
+
+                      <form
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          const text = (commentInputs[event.id] || '').trim();
+                          if (!text) return;
+                          setIsSubmittingComment(prev => ({ ...prev, [event.id]: true }));
+                          const success = await addEventComment(event.id, text);
+                          if (success) {
+                            setCommentInputs(prev => ({ ...prev, [event.id]: '' }));
+                          }
+                          setIsSubmittingComment(prev => ({ ...prev, [event.id]: false }));
+                        }}
+                        style={{ display: 'flex', gap: '8px' }}
+                      >
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="Fai una domanda all'organizzatore..."
+                          value={commentInputs[event.id] || ''}
+                          onChange={e => setCommentInputs({ ...commentInputs, [event.id]: e.target.value })}
+                          style={{ fontSize: '0.82rem', padding: '6px 12px' }}
+                        />
+                        <button
+                          type="submit"
+                          className="btn btn-primary btn-sm"
+                          disabled={isSubmittingComment[event.id] || !commentInputs[event.id]?.trim()}
+                          style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        >
+                          <Send size={13} />
+                          <span>Invia</span>
+                        </button>
+                      </form>
+                    </div>
+                  )}
+                </div>
 
                 {/* Organizer Info & Footer */}
                 <div className="card-footer">
@@ -549,6 +919,108 @@ export const EventsView: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Scaletta Brani Form */}
+                <div className="form-group" style={{ background: 'rgba(139, 92, 246, 0.05)', border: '1px solid rgba(139, 92, 246, 0.2)', padding: '16px', borderRadius: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: 'var(--accent-purple-light)', fontWeight: 700 }}>
+                    <Disc3 size={18} />
+                    <span>Scaletta Brani / Setlist della Jam (Opzionale)</span>
+                  </div>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                    Aggiungi i brani che si suoneranno durante la jam, specificando tonalità, BPM e link tutorial se disponibili.
+                  </p>
+
+                  {newSetlist.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' }}>
+                      {newSetlist.map((song, idx) => (
+                        <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.03)', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+                          <div>
+                            <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.88rem' }}>
+                              {idx + 1}. {song.title} <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>- {song.artist}</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px', flexWrap: 'wrap' }}>
+                              {song.key && <span style={{ color: 'var(--accent-cyan)' }}>🎼 {song.key}</span>}
+                              {song.bpm && <span style={{ color: 'var(--accent-pink)' }}>🥁 {song.bpm} BPM</span>}
+                              {song.tutorialUrl && <span style={{ color: 'var(--accent-purple-light)' }}>🎬 Tutorial</span>}
+                              {song.notes && <span>💬 {song.notes}</span>}
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSongFromSetlist(idx)}
+                            style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', padding: '4px' }}
+                            title="Rimuovi brano"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', marginBottom: '8px' }}>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Titolo Brano *"
+                      value={songTitle}
+                      onChange={e => setSongTitle(e.target.value)}
+                      style={{ fontSize: '0.8rem' }}
+                    />
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Artista originale"
+                      value={songArtist}
+                      onChange={e => setSongArtist(e.target.value)}
+                      style={{ fontSize: '0.8rem' }}
+                    />
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Tonalità (es. Lam, G)"
+                      value={songKey}
+                      onChange={e => setSongKey(e.target.value)}
+                      style={{ fontSize: '0.8rem' }}
+                    />
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="BPM (es. 120)"
+                      value={songBpm}
+                      onChange={e => setSongBpm(e.target.value)}
+                      style={{ fontSize: '0.8rem' }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '8px', alignItems: 'center' }}>
+                    <input
+                      type="url"
+                      className="form-input"
+                      placeholder="Link video tutorial / YouTube (URL)"
+                      value={songTutorialUrl}
+                      onChange={e => setSongTutorialUrl(e.target.value)}
+                      style={{ fontSize: '0.8rem' }}
+                    />
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="Note di esecuzione..."
+                      value={songNotes}
+                      onChange={e => setSongNotes(e.target.value)}
+                      style={{ fontSize: '0.8rem' }}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-outline-accent btn-sm"
+                      onClick={handleAddSongToSetlist}
+                      style={{ padding: '8px 14px', whiteSpace: 'nowrap' }}
+                    >
+                      <Plus size={14} />
+                      <span>Aggiungi</span>
+                    </button>
+                  </div>
+                </div>
+
                 <div className="form-group">
                   <label className="form-label">Note su Strumentazione Presente</label>
                   <input
@@ -567,6 +1039,70 @@ export const EventsView: React.FC = () => {
                 </button>
                 <button type="submit" className="btn btn-primary">
                   Pubblica Evento
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Candidatura Band */}
+      {applyingBandEventId && (
+        <div className="modal-overlay modal-overlay-stacked" onClick={() => setApplyingBandEventId(null)}>
+          <div className="modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: '480px' }}>
+            <div className="modal-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Radio size={18} color="var(--accent-purple-light)" />
+                <div className="modal-title">Candida la tua Band</div>
+              </div>
+              <button className="modal-close-btn" onClick={() => setApplyingBandEventId(null)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              if (!selectedBandToApply) return;
+              const ok = await applyBandToEvent(applyingBandEventId, selectedBandToApply, bandApplyMessage);
+              if (ok) {
+                setApplyingBandEventId(null);
+              }
+            }}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label className="form-label">Scegli quale delle tue band candidare *</label>
+                  <select
+                    className="form-select"
+                    value={selectedBandToApply}
+                    onChange={e => setSelectedBandToApply(e.target.value)}
+                    required
+                  >
+                    {userBands.map(b => (
+                      <option key={b.id} value={b.id}>
+                        {b.name} ({b.city} • {b.members.length} componenti)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Messaggio / Proposta per l'organizzatore (Opzionale)</label>
+                  <textarea
+                    className="form-input"
+                    rows={3}
+                    placeholder="Es. Siamo pronti con un set di 30 min inediti/cover rock, strumentazione nostra completa..."
+                    value={bandApplyMessage}
+                    onChange={e => setBandApplyMessage(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setApplyingBandEventId(null)}>
+                  Annulla
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Conferma Candidatura
                 </button>
               </div>
             </form>

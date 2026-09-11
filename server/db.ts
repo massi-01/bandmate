@@ -261,6 +261,69 @@ async function seedInitialDataIfNeeded() {
           { id: 's5', instrument: 'Voce', maxCount: 1, assignedMusicians: [] }
         ],
         equipmentNotes: 'Batteria Yamaha, ampli Fender Twin Reverb e Markbass presenti sul posto. Portare solo jack e bacchette.',
+        appliedBands: [
+          {
+            id: 'ab1',
+            bandId: 'b1',
+            bandName: 'The Velvet Groove',
+            bandAvatar: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80',
+            city: 'Bologna (BO)',
+            genres: ['Funk', 'Soul', 'Acid Jazz'],
+            leaderId: 'm2',
+            membersCount: 2,
+            message: 'Ci candidiamo per aprire la jam con un set funky di 3 brani!',
+            appliedAt: '2026-09-10'
+          }
+        ],
+        setlist: [
+          {
+            id: 'song_1',
+            title: 'Superstition',
+            artist: 'Stevie Wonder',
+            bpm: 100,
+            key: 'Mib minore (Ebm)',
+            tutorialUrl: 'https://www.youtube.com/watch?v=ftdZ363R9kQ',
+            notes: 'Riff di clavinet suonato con chitarre/tastiere, stacco unisono sul ritornello.'
+          },
+          {
+            id: 'song_2',
+            title: 'Cissy Strut',
+            artist: 'The Meters',
+            bpm: 88,
+            key: 'Do (C)',
+            tutorialUrl: 'https://www.youtube.com/watch?v=4_iC0MyIykM',
+            notes: 'Groove funky di basso e batteria super compatto, giri di assoli aperti per tutti.'
+          },
+          {
+            id: 'song_3',
+            title: 'Pick Up the Pieces',
+            artist: 'Average White Band',
+            bpm: 108,
+            key: 'Fa minore (Fm)',
+            tutorialUrl: 'https://www.youtube.com/watch?v=FnH_weyGucc',
+            notes: 'Intro incalzante, assoli di chitarra funky e sax/synth.'
+          }
+        ],
+        comments: [
+          {
+            id: 'ec1',
+            authorId: 'm2',
+            authorName: 'Giulia Moretti',
+            authorAvatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+            authorInstrument: 'Basso Elettrico',
+            content: 'Ciao Marco! Per il basso c\'è già un amplificatore Markbass o conviene portare la testata propria?',
+            createdAt: '2026-09-10T14:30:00.000Z'
+          },
+          {
+            id: 'ec2',
+            authorId: 'm3',
+            authorName: 'Marco Bianchi',
+            authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+            authorInstrument: 'Batteria',
+            content: 'Ciao Giulia! C\'è sia la cassa 4x10 che la testata Little Mark III sul posto, porta solo il basso e i cavi jack!',
+            createdAt: '2026-09-10T14:45:00.000Z'
+          }
+        ],
         createdAt: now
       },
       {
@@ -294,6 +357,38 @@ async function seedInitialDataIfNeeded() {
           { id: 's10', instrument: 'Batteria', maxCount: 1, assignedMusicians: [] }
         ],
         equipmentNotes: 'Impianto voce e microfoni Shure SM58 inclusi. Sala climatizzata.',
+        appliedBands: [],
+        setlist: [
+          {
+            id: 'song_4',
+            title: 'Comfortably Numb',
+            artist: 'Pink Floyd',
+            bpm: 64,
+            key: 'Si minore (Bm)',
+            tutorialUrl: 'https://www.youtube.com/watch?v=_FrOQC-zEog',
+            notes: 'Versione con entrambi gli assoli di chitarra estesi.'
+          },
+          {
+            id: 'song_5',
+            title: 'Everlong',
+            artist: 'Foo Fighters',
+            bpm: 158,
+            key: 'Re Drop-D (D)',
+            tutorialUrl: 'https://www.youtube.com/watch?v=eBG7P-K-r1Y',
+            notes: 'Accordo Drop-D per la chitarra ritmica, batteria carica sul chorus.'
+          }
+        ],
+        comments: [
+          {
+            id: 'ec3',
+            authorId: 'm1',
+            authorName: 'Davide De Luca',
+            authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+            authorInstrument: 'Chitarra Elettrica',
+            content: 'Gran bella scaletta! A che ora conviene arrivare per accordare e fare il soundcheck rapido?',
+            createdAt: '2026-09-10T16:00:00.000Z'
+          }
+        ],
         createdAt: now
       }
     ];

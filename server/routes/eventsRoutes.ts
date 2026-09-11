@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { Event } from '../models/Event.ts';
+import { Band } from '../models/Band.ts';
+import { Musician } from '../models/Musician.ts';
 import { requireAuth, type AuthenticatedRequest } from '../auth.ts';
 
 export const eventsRouter = Router();
@@ -41,6 +43,7 @@ eventsRouter.post('/', requireAuth, async (req: AuthenticatedRequest, res) => {
       city,
       genres,
       slots,
+      setlist,
       equipmentNotes
     } = req.body;
 
@@ -64,6 +67,20 @@ eventsRouter.post('/', requireAuth, async (req: AuthenticatedRequest, res) => {
       assignedMusicians: []
     }));
 
+    const formattedSetlist = Array.isArray(setlist)
+      ? setlist
+          .filter((s: any) => s && s.title && s.title.trim())
+          .map((s: any, idx: number) => ({
+            id: `song_${Date.now()}_${idx}`,
+            title: s.title.trim(),
+            artist: s.artist ? s.artist.trim() : 'Brano',
+            bpm: s.bpm || '',
+            key: s.key || '',
+            tutorialUrl: s.tutorialUrl || '',
+            notes: s.notes || ''
+          }))
+      : [];
+
     const newEvent = await Event.create({
       _id: eventId,
       organizerId: req.musician.id,
@@ -77,6 +94,9 @@ eventsRouter.post('/', requireAuth, async (req: AuthenticatedRequest, res) => {
       city: city.trim(),
       genres: genres || ['Rock'],
       slots: formattedSlots,
+      appliedBands: [],
+      setlist: formattedSetlist,
+      comments: [],
       equipmentNotes: equipmentNotes || '',
       createdAt: now
     });
@@ -170,3 +190,151 @@ eventsRouter.post('/:id/leave', requireAuth, async (req: AuthenticatedRequest, r
     res.status(500).json({ error: 'Errore durante la disiscrizione dallo slot: ' + err.message });
   }
 });
+
+// POST apply band to an event (Protected)
+eventsRouter.post('/:id/apply-band', requireAuth, async (req: AuthenticatedRequest, res) => {
+  try {
+    const eventId = req.params.id;
+    const { bandId, message } = req.body;
+
+    if (!bandId) {
+      res.status(400).json({ error: 'Specifica la band da candidare.' });
+      return;
+    }
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      res.status(404).json({ error: 'Evento non trovato.' });
+      return;
+    }
+
+    const band = await Band.findById(bandId);
+    if (!band) {
+      res.status(404).json({ error: 'Band non trovata.' });
+      return;
+    }
+
+    // Check if user is leader or member of this band
+    const isMemberOrLeader =
+      band.leaderId === req.musician.id ||
+      band.members.some((m: any) => m.musicianId === req.musician.id);
+
+    if (!isMemberOrLeader) {
+      res.status(403).json({ error: 'Devi essere leader o membro di questa band per candidarla.' });
+      return;
+    }
+
+    if (!event.appliedBands) {
+      event.appliedBands = [];
+    }
+
+    const alreadyApplied = event.appliedBands.some((b: any) => b.bandId === bandId);
+    if (alreadyApplied) {
+      res.status(400).json({ error: 'Questa band è già candidata all\'evento.' });
+      return;
+    }
+
+    const newApplication = {
+      id: 'ab_' + Date.now(),
+      bandId: band.id,
+      bandName: band.name,
+      bandAvatar: band.avatar || '',
+      city: band.city || '',
+      genres: band.genres || [],
+      leaderId: band.leaderId,
+      membersCount: band.members.length,
+      message: message ? message.trim() : '',
+      appliedAt: new Date().toISOString().split('T')[0]
+    };
+
+    event.appliedBands.push(newApplication);
+    await event.save();
+
+    res.json({ event });
+  } catch (err: any) {
+    console.error('Error applying band to event:', err);
+    res.status(500).json({ error: 'Errore durante la candidatura della band: ' + err.message });
+  }
+});
+
+// POST withdraw band from an event (Protected)
+eventsRouter.post('/:id/withdraw-band', requireAuth, async (req: AuthenticatedRequest, res) => {
+  try {
+    const eventId = req.params.id;
+    const { bandId } = req.body;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      res.status(404).json({ error: 'Evento non trovato.' });
+      return;
+    }
+
+    const band = await Band.findById(bandId);
+    if (band) {
+      const isAuthorized =
+        band.leaderId === req.musician.id ||
+        band.members.some((m: any) => m.musicianId === req.musician.id) ||
+        event.organizerId === req.musician.id;
+
+      if (!isAuthorized) {
+        res.status(403).json({ error: 'Non hai i permessi per ritirare questa candidatura.' });
+        return;
+      }
+    }
+
+    if (event.appliedBands) {
+      event.appliedBands = event.appliedBands.filter((b: any) => b.bandId !== bandId);
+      await event.save();
+    }
+
+    res.json({ event });
+  } catch (err: any) {
+    console.error('Error withdrawing band from event:', err);
+    res.status(500).json({ error: 'Errore durante il ritiro della candidatura: ' + err.message });
+  }
+});
+
+// POST comment on an event (Protected)
+eventsRouter.post('/:id/comments', requireAuth, async (req: AuthenticatedRequest, res) => {
+  try {
+    const eventId = req.params.id;
+    const { content } = req.body;
+
+    if (!content || !content.trim()) {
+      res.status(400).json({ error: 'Il testo della domanda o commento non può essere vuoto.' });
+      return;
+    }
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      res.status(404).json({ error: 'Evento non trovato.' });
+      return;
+    }
+
+    const musician = await Musician.findById(req.musician.id);
+    const primaryInst = musician?.instruments.find((i: any) => i.isPrimary) || musician?.instruments[0];
+
+    if (!event.comments) {
+      event.comments = [];
+    }
+
+    const newComment = {
+      id: 'ec_' + Date.now(),
+      authorId: req.musician.id,
+      authorName: req.musician.name,
+      authorAvatar: req.musician.avatar || '',
+      authorInstrument: primaryInst ? primaryInst.name : 'Musicista',
+      content: content.trim(),
+      createdAt: new Date().toISOString()
+    };
+
+    event.comments.push(newComment);
+    await event.save();
+
+    res.status(201).json({ event });
+  } catch (err: any) {
+    console.error('Error adding comment to event:', err);
+    res.status(500).json({ error: 'Errore durante l\'invio del commento: ' + err.message });
+  }
+});
+
