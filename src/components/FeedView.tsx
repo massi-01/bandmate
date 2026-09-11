@@ -6,7 +6,8 @@ import {
   Plus, 
   Flame, 
   X,
-  Radio
+  Radio,
+  Loader2
 } from 'lucide-react';
 import type { PostCategory } from '../types';
 import { INSTRUMENT_OPTIONS, GENRE_OPTIONS, CITY_OPTIONS } from '../data/mockData';
@@ -22,7 +23,8 @@ export const FeedView: React.FC = () => {
     setSelectedMusicianForModal,
     isCreatePostOpen,
     setIsCreatePostOpen,
-    setIsAuthModalOpen
+    setIsAuthModalOpen,
+    isLoadingPosts
   } = useApp();
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -145,7 +147,41 @@ export const FeedView: React.FC = () => {
       </div>
 
       {/* Posts List */}
-      {filteredPosts.length === 0 ? (
+      {isLoadingPosts ? (
+        <div>
+          <div className="loader-banner">
+            <div className="loader-icon-glow">
+              <Loader2 size={26} className="animate-spin" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                Recupero annunci della bacheca in corso...
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', margin: 0, maxWidth: '500px' }}>
+                Stiamo caricando le proposte di jam e gli annunci dei musicisti da MongoDB Atlas.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {[1, 2, 3].map(i => (
+              <div key={i} className="post-card" style={{ opacity: 0.75, pointerEvents: 'none' }}>
+                <div style={{ display: 'flex', gap: '12px', marginBottom: '14px', alignItems: 'center' }}>
+                  <div className="skeleton-box" style={{ width: '42px', height: '42px', borderRadius: '50%', flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div className="skeleton-box" style={{ height: '18px', width: '35%', marginBottom: '6px' }} />
+                    <div className="skeleton-box" style={{ height: '12px', width: '20%' }} />
+                  </div>
+                </div>
+                <div className="skeleton-box" style={{ height: '22px', width: '60%', marginBottom: '10px' }} />
+                <div className="skeleton-box" style={{ height: '14px', width: '100%', marginBottom: '6px' }} />
+                <div className="skeleton-box" style={{ height: '14px', width: '80%', marginBottom: '16px' }} />
+                <div className="skeleton-box" style={{ height: '32px', width: '120px', borderRadius: '20px' }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : filteredPosts.length === 0 ? (
         <div style={{ background: 'var(--bg-card)', padding: '48px 24px', textAlign: 'center', borderRadius: '16px', border: '1px dashed var(--border-subtle)' }}>
           <Radio size={42} color="var(--accent-purple-light)" style={{ marginBottom: '12px', opacity: 0.7 }} />
           <h3 style={{ fontSize: '1.2rem', marginBottom: '6px', color: '#fff' }}>Nessun annuncio in questa categoria</h3>

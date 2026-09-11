@@ -16,7 +16,8 @@ import {
   ChevronUp,
   Disc3,
   Info,
-  AlertTriangle
+  AlertTriangle,
+  Loader2
 } from 'lucide-react';
 import type { EventType } from '../types';
 import { INSTRUMENT_OPTIONS, GENRE_OPTIONS, CITY_OPTIONS } from '../data/mockData';
@@ -38,7 +39,8 @@ export const EventsView: React.FC = () => {
     musicians,
     isCreateEventOpen,
     setIsCreateEventOpen,
-    setIsAuthModalOpen
+    setIsAuthModalOpen,
+    isLoadingEvents
   } = useApp();
 
   const [selectedCity, setSelectedCity] = useState('all');
@@ -272,7 +274,38 @@ export const EventsView: React.FC = () => {
       </div>
 
       {/* Events Grid */}
-      {filteredEvents.length === 0 ? (
+      {isLoadingEvents ? (
+        <div>
+          <div className="loader-banner">
+            <div className="loader-icon-glow">
+              <Loader2 size={26} className="animate-spin" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                Recupero jam session ed eventi in corso...
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', margin: 0, maxWidth: '500px' }}>
+                Stiamo caricando le jam session, la scaletta brani e i posti strumento da MongoDB Atlas.
+              </p>
+            </div>
+          </div>
+
+          <div className="cards-grid">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="glass-card" style={{ opacity: 0.75, pointerEvents: 'none' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                  <div className="skeleton-box" style={{ height: '24px', width: '120px' }} />
+                  <div className="skeleton-box" style={{ height: '24px', width: '80px' }} />
+                </div>
+                <div className="skeleton-box" style={{ height: '24px', width: '70%', marginBottom: '12px' }} />
+                <div className="skeleton-box" style={{ height: '14px', width: '50%', marginBottom: '16px' }} />
+                <div className="skeleton-box" style={{ height: '60px', width: '100%', marginBottom: '16px' }} />
+                <div className="skeleton-box" style={{ height: '40px', width: '100%', borderRadius: '10px' }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : filteredEvents.length === 0 ? (
         <div style={{ background: 'var(--bg-card)', padding: '48px 24px', textAlign: 'center', borderRadius: '16px', border: '1px dashed var(--border-subtle)' }}>
           <Calendar size={42} color="var(--accent-purple-light)" style={{ marginBottom: '12px', opacity: 0.7 }} />
           <h3 style={{ fontSize: '1.2rem', marginBottom: '6px', color: '#fff' }}>Nessun evento in programma con questi filtri</h3>

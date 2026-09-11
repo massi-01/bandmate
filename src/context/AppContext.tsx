@@ -78,6 +78,13 @@ interface AppContextType {
 
   notification: { message: string; type: 'success' | 'info' | 'error' } | null;
   showNotification: (message: string, type?: 'success' | 'info' | 'error') => void;
+
+  // Loading states
+  isLoadingData: boolean;
+  isLoadingMusicians: boolean;
+  isLoadingBands: boolean;
+  isLoadingEvents: boolean;
+  isLoadingPosts: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -101,6 +108,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [isCreateBandOpen, setIsCreateBandOpen] = useState(false);
 
+  const [isLoadingMusicians, setIsLoadingMusicians] = useState(true);
+  const [isLoadingBands, setIsLoadingBands] = useState(true);
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+
+  const isLoadingData = isLoadingMusicians || isLoadingBands || isLoadingEvents || isLoadingPosts;
+
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
 
   const showNotification = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
@@ -112,38 +126,50 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // 1. Data Refreshers
   const refreshMusicians = useCallback(async () => {
+    setIsLoadingMusicians(true);
     try {
       const data = await musiciansApi.getAll();
       setMusicians(data);
     } catch (err: any) {
       console.error('Failed to load musicians:', err);
+    } finally {
+      setIsLoadingMusicians(false);
     }
   }, []);
 
   const refreshBands = useCallback(async () => {
+    setIsLoadingBands(true);
     try {
       const data = await bandsApi.getAll();
       setBands(data);
     } catch (err: any) {
       console.error('Failed to load bands:', err);
+    } finally {
+      setIsLoadingBands(false);
     }
   }, []);
 
   const refreshEvents = useCallback(async () => {
+    setIsLoadingEvents(true);
     try {
       const data = await eventsApi.getAll();
       setEvents(data);
     } catch (err: any) {
       console.error('Failed to load events:', err);
+    } finally {
+      setIsLoadingEvents(false);
     }
   }, []);
 
   const refreshPosts = useCallback(async () => {
+    setIsLoadingPosts(true);
     try {
       const data = await postsApi.getAll();
       setPosts(data);
     } catch (err: any) {
       console.error('Failed to load posts:', err);
+    } finally {
+      setIsLoadingPosts(false);
     }
   }, []);
 
@@ -492,7 +518,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsCreateBandOpen,
 
         notification,
-        showNotification
+        showNotification,
+
+        isLoadingData,
+        isLoadingMusicians,
+        isLoadingBands,
+        isLoadingEvents,
+        isLoadingPosts
       }}
     >
       {children}

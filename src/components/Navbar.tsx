@@ -10,7 +10,8 @@ import {
   Edit3, 
   LogIn,
   LogOut,
-  UserCheck
+  UserCheck,
+  Loader2
 } from 'lucide-react';
 import { authApi } from '../services/api';
 
@@ -25,7 +26,8 @@ export const Navbar: React.FC = () => {
     setActiveTab, 
     setIsEditProfileOpen,
     setIsAuthModalOpen,
-    showNotification
+    showNotification,
+    isLoadingData
   } = useApp();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -54,7 +56,7 @@ export const Navbar: React.FC = () => {
     <header className="navbar">
       <div className="navbar-inner">
         {/* Brand */}
-        <div className="brand-logo" onClick={() => setActiveTab('musicians')}>
+        <div className="brand-logo" onClick={() => setActiveTab('musicians')} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div className="brand-icon">
             <Music size={22} strokeWidth={2.5} />
           </div>
@@ -62,6 +64,16 @@ export const Navbar: React.FC = () => {
             <div className="brand-text">BandMate</div>
             <div className="brand-tagline">Musicians Network</div>
           </div>
+          {isLoadingData && (
+            <div 
+              className="loader-top-indicator" 
+              style={{ marginLeft: '4px', fontSize: '0.74rem', padding: '2px 8px' }}
+              title="Sincronizzazione dati da MongoDB Atlas in corso"
+            >
+              <Loader2 size={12} className="animate-spin" />
+              <span>Sincronizzazione DB...</span>
+            </div>
+          )}
         </div>
 
         {/* Central Nav Tabs */}

@@ -8,7 +8,8 @@ import {
   Sparkles, 
   Plus, 
   ChevronRight, 
-  Crown
+  Crown,
+  Loader2
 } from 'lucide-react';
 import { CITY_OPTIONS, GENRE_OPTIONS } from '../data/mockData';
 
@@ -18,7 +19,8 @@ export const BandsView: React.FC = () => {
     currentMusician, 
     setIsAuthModalOpen, 
     setIsCreateBandOpen,
-    setSelectedBandForModal 
+    setSelectedBandForModal,
+    isLoadingBands
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -145,7 +147,40 @@ export const BandsView: React.FC = () => {
       </div>
 
       {/* Grid of Band Cards */}
-      {filteredBands.length === 0 ? (
+      {isLoadingBands ? (
+        <div>
+          <div className="loader-banner">
+            <div className="loader-icon-glow">
+              <Loader2 size={26} className="animate-spin" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                Recupero gruppi e band in corso...
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', margin: 0, maxWidth: '500px' }}>
+                Stiamo sincronizzando i profili delle band e le posizioni aperte da MongoDB Atlas.
+              </p>
+            </div>
+          </div>
+
+          <div className="cards-grid">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="glass-card" style={{ opacity: 0.75, pointerEvents: 'none' }}>
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+                  <div className="skeleton-box" style={{ width: '64px', height: '64px', borderRadius: '14px', flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div className="skeleton-box" style={{ height: '22px', width: '60%', marginBottom: '8px' }} />
+                    <div className="skeleton-box" style={{ height: '14px', width: '40%' }} />
+                  </div>
+                </div>
+                <div className="skeleton-box" style={{ height: '40px', width: '100%', marginBottom: '14px' }} />
+                <div className="skeleton-box" style={{ height: '20px', width: '80%', marginBottom: '16px' }} />
+                <div className="skeleton-box" style={{ height: '38px', width: '100%', borderRadius: '10px' }} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : filteredBands.length === 0 ? (
         <div style={{
           textAlign: 'center',
           padding: '64px 20px',

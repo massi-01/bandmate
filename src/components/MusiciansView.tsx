@@ -6,7 +6,8 @@ import {
   Music, 
   Sparkles, 
   UserPlus, 
-  Eye
+  Eye,
+  Loader2
 } from 'lucide-react';
 import { INSTRUMENT_OPTIONS, CITY_OPTIONS, GENRE_OPTIONS } from '../data/mockData';
 
@@ -16,7 +17,8 @@ export const MusiciansView: React.FC = () => {
     setSelectedMusicianForModal, 
     currentMusician, 
     setIsEditProfileOpen,
-    setIsAuthModalOpen
+    setIsAuthModalOpen,
+    isLoadingMusicians
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -143,15 +145,61 @@ export const MusiciansView: React.FC = () => {
         )}
       </div>
 
-      {/* Statistiche Risultati */}
+      {/* Statistiche Risultati o Indicatore Caricamento */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-        <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-          Trovati <strong style={{ color: '#fff' }}>{filteredMusicians.length}</strong> musicisti pronti a suonare
-        </div>
+        {isLoadingMusicians ? (
+          <div className="loader-top-indicator">
+            <Loader2 size={15} className="animate-spin" />
+            <span>Recupero musicisti dal database...</span>
+          </div>
+        ) : (
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            Trovati <strong style={{ color: '#fff' }}>{filteredMusicians.length}</strong> musicisti pronti a suonare
+          </div>
+        )}
       </div>
 
       {/* Grid delle schede musicisti */}
-      {filteredMusicians.length === 0 ? (
+      {isLoadingMusicians ? (
+        <div>
+          {/* Banner di caricamento in corso */}
+          <div className="loader-banner">
+            <div className="loader-icon-glow">
+              <Loader2 size={26} className="animate-spin" />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>
+                Sincronizzazione profili in corso...
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', margin: 0, maxWidth: '500px' }}>
+                Stiamo recuperando i profili e gli strumenti dei musicisti da MongoDB Atlas. Un attimo di pazienza...
+              </p>
+            </div>
+          </div>
+
+          {/* Skeleton Cards Grid */}
+          <div className="cards-grid">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="glass-card" style={{ opacity: 0.75, pointerEvents: 'none' }}>
+                <div className="musician-card-header">
+                  <div className="skeleton-box" style={{ width: '64px', height: '64px', borderRadius: '50%', flexShrink: 0 }} />
+                  <div className="musician-meta" style={{ flex: 1 }}>
+                    <div className="skeleton-box" style={{ height: '20px', width: '60%', marginBottom: '8px' }} />
+                    <div className="skeleton-box" style={{ height: '14px', width: '40%' }} />
+                  </div>
+                </div>
+                <div style={{ marginTop: '16px' }}>
+                  <div className="skeleton-box" style={{ height: '22px', width: '75%', marginBottom: '12px' }} />
+                  <div className="skeleton-box" style={{ height: '13px', width: '100%', marginBottom: '6px' }} />
+                  <div className="skeleton-box" style={{ height: '13px', width: '90%', marginBottom: '6px' }} />
+                  <div className="skeleton-box" style={{ height: '13px', width: '65%', marginBottom: '18px' }} />
+                  <div className="skeleton-box" style={{ height: '38px', width: '100%', borderRadius: '10px' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : filteredMusicians.length === 0 ? (
         <div 
           style={{
             background: 'var(--bg-card)',
