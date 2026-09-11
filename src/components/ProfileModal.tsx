@@ -26,7 +26,8 @@ export const ProfileModal: React.FC = () => {
     currentMusician, 
     updateCurrentProfile,
     setIsAuthModalOpen,
-    events
+    events,
+    setSelectedEventForModal
   } = useApp();
 
   // Edit form state
@@ -686,14 +687,42 @@ export const ProfileModal: React.FC = () => {
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {userEvents.map(ev => (
-                    <div key={ev.id} style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div 
+                      key={ev.id} 
+                      onClick={() => setSelectedEventForModal(ev)}
+                      style={{ 
+                        padding: '10px 14px', 
+                        borderRadius: '8px', 
+                        background: 'rgba(255,255,255,0.03)', 
+                        border: '1px solid var(--border-subtle)', 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(139, 92, 246, 0.12)';
+                        e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.35)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                        e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                      }}
+                      title="Clicca per aprire la scheda dettagli dell'evento"
+                    >
                       <div>
                         <div style={{ fontWeight: 600, color: '#fff', fontSize: '0.88rem' }}>{ev.title}</div>
                         <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>📍 {ev.city} • 📅 {ev.date}</div>
                       </div>
-                      <span style={{ fontSize: '0.72rem', color: 'var(--accent-purple-light)', background: 'rgba(139, 92, 246, 0.15)', padding: '3px 8px', borderRadius: '4px' }}>
-                        {ev.type}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--accent-purple-light)', background: 'rgba(139, 92, 246, 0.15)', padding: '3px 8px', borderRadius: '4px' }}>
+                          {ev.type}
+                        </span>
+                        <span style={{ fontSize: '0.75rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>
+                          Dettagli →
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>

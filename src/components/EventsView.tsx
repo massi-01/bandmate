@@ -14,7 +14,9 @@ import {
   Trash2,
   ChevronDown,
   ChevronUp,
-  Disc3
+  Disc3,
+  Info,
+  AlertTriangle
 } from 'lucide-react';
 import type { EventType } from '../types';
 import { INSTRUMENT_OPTIONS, GENRE_OPTIONS, CITY_OPTIONS } from '../data/mockData';
@@ -30,6 +32,7 @@ export const EventsView: React.FC = () => {
     withdrawBandFromEvent,
     addEventComment,
     bands,
+    setSelectedEventForModal,
     setSelectedMusicianForModal,
     setSelectedBandForModal,
     musicians,
@@ -88,6 +91,29 @@ export const EventsView: React.FC = () => {
   const [expandedSetlists, setExpandedSetlists] = useState<Record<string, boolean>>({});
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
   const [isSubmittingComment, setIsSubmittingComment] = useState<Record<string, boolean>>({});
+
+  // Dialog for instrument mismatch warning
+  const [instrumentWarningSlot, setInstrumentWarningSlot] = useState<{ eventId: string; slotId: string; instrument: string } | null>(null);
+
+  const handleJoinSlotWithCheck = (eventId: string, slotId: string, instrument: string) => {
+    if (!currentMusician) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const instClean = instrument.toLowerCase().trim();
+    const hasInstrument = currentMusician.instruments.some(inst => {
+      const nameClean = inst.name.toLowerCase().trim();
+      return nameClean === instClean || instClean.includes(nameClean) || nameClean.includes(instClean);
+    });
+
+    if (!hasInstrument) {
+      setInstrumentWarningSlot({ eventId, slotId, instrument });
+      return;
+    }
+
+    joinEventSlot(eventId, slotId);
+  };
 
   const userBands = bands.filter(b => 
     currentMusician && (b.leaderId === currentMusician.id || b.members.some(m => m.musicianId === currentMusician.id))
@@ -273,13 +299,26 @@ export const EventsView: React.FC = () => {
 
             return (
               <div key={event.id} className="glass-card event-card">
-                {/* Event Type & City badge */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span className="event-type-badge">{event.type}</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <MapPin size={13} />
-                    {event.city}
-                  </span>
+                {/* Event Type & City badge & Info Evento button */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="event-type-badge">{event.type}</span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <MapPin size={13} />
+                      {event.city}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="btn btn-outline-accent btn-sm"
+                    onClick={() => setSelectedEventForModal(event)}
+                    style={{ padding: '3px 9px', fontSize: '0.76rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                    title="Vedi tutti i dettagli e la scheda completa dell'evento"
+                  >
+                    <Info size={13} />
+                    <span>Info Evento</span>
+                  </button>
                 </div>
 
                 {/* Title */}
@@ -349,7 +388,7 @@ export const EventsView: React.FC = () => {
                               <button
                                 className="btn btn-outline-accent btn-sm"
                                 style={{ fontSize: '0.74rem', padding: '3px 8px' }}
-                                onClick={() => joinEventSlot(event.id, slot.id)}
+                                onClick={() => handleJoinSlotWithCheck(event.id, slot.id, slot.instrument)}
                               >
                                 <Plus size={13} />
                                 <span>Unisciti</span>
@@ -713,11 +752,23 @@ export const EventsView: React.FC = () => {
                     </span>
                   </div>
 
-                  {isOrganizer && (
-                    <span style={{ fontSize: '0.72rem', color: 'var(--accent-purple-light)', background: 'rgba(139, 92, 246, 0.15)', padding: '2px 8px', borderRadius: '4px' }}>
-                      Tuo Evento
-                    </span>
-                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {isOrganizer && (
+                      <span style={{ fontSize: '0.72rem', color: 'var(--accent-purple-light)', background: 'rgba(139, 92, 246, 0.15)', padding: '2px 8px', borderRadius: '4px' }}>
+                        Tuo Evento
+                      </span>
+                    )}
+
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setSelectedEventForModal(event)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.78rem', padding: '4px 10px' }}
+                    >
+                      <Info size={14} />
+                      <span>Info Evento</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -1106,6 +1157,67 @@ export const EventsView: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Modal Avviso Strumento Profilo */}
+      {instrumentWarningSlot && (
+        <div 
+          className="modal-overlay modal-overlay-stacked" 
+          style={{ zIndex: 1250, background: 'rgba(0, 0, 0, 0.85)' }}
+          onClick={() => setInstrumentWarningSlot(null)}
+        >
+          <div className="modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: '440px' }}>
+            <div className="modal-header" style={{ borderBottomColor: 'rgba(245, 158, 11, 0.3)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#fbbf24' }}>
+                <AlertTriangle size={20} />
+                <div className="modal-title" style={{ color: '#fbbf24' }}>Avviso Strumento Profilo</div>
+              </div>
+              <button className="modal-close-btn" onClick={() => setInstrumentWarningSlot(null)}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <p style={{ fontSize: '0.94rem', color: '#e2e8f0', lineHeight: 1.5, margin: '0 0 12px 0' }}>
+                Attenzione: sul tuo profilo non è specificato che suoni <strong>{instrumentWarningSlot.instrument}</strong>.
+              </p>
+
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', background: 'rgba(255, 255, 255, 0.03)', padding: '10px 12px', borderRadius: '8px', border: '1px solid var(--border-subtle)', marginBottom: '14px' }}>
+                I tuoi strumenti registrati: <br />
+                {currentMusician?.instruments && currentMusician.instruments.length > 0 ? (
+                  <strong style={{ color: 'var(--accent-purple-light)' }}>
+                    {currentMusician.instruments.map(i => i.name).join(', ')}
+                  </strong>
+                ) : (
+                  <em style={{ color: '#f87171' }}>Nessuno strumento registrato nel profilo</em>
+                )}
+              </div>
+
+              <p style={{ fontSize: '0.88rem', color: '#cbd5e1', margin: 0 }}>
+                Vuoi candidarti comunque per questa jam/evento?
+              </p>
+            </div>
+
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={() => setInstrumentWarningSlot(null)}
+              >
+                Annulla
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={() => {
+                  joinEventSlot(instrumentWarningSlot.eventId, instrumentWarningSlot.slotId);
+                  setInstrumentWarningSlot(null);
+                }}
+              >
+                Sì, candidati comunque
+              </button>
+            </div>
           </div>
         </div>
       )}

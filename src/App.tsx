@@ -9,6 +9,7 @@ import { ProfileModal } from './components/ProfileModal';
 import { AuthModal } from './components/AuthModal';
 import { BandDetailsModal } from './components/BandDetailsModal';
 import { CreateBandModal } from './components/CreateBandModal';
+import { EventDetailsModal } from './components/EventDetailsModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Music, CheckCircle, Info, AlertTriangle } from 'lucide-react';
 
@@ -29,6 +30,7 @@ const MainAppContent: React.FC = () => {
       <MobileBottomNav />
       <BandDetailsModal />
       <CreateBandModal />
+      <EventDetailsModal />
       <ProfileModal />
       <AuthModal />
 

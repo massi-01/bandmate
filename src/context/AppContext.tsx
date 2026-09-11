@@ -65,6 +65,8 @@ interface AppContextType {
   setSelectedMusicianForModal: (m: MusicianProfile | null) => void;
   selectedBandForModal: Band | null;
   setSelectedBandForModal: (b: Band | null) => void;
+  selectedEventForModal: JamEvent | null;
+  setSelectedEventForModal: (event: JamEvent | null) => void;
   isEditProfileOpen: boolean;
   setIsEditProfileOpen: (open: boolean) => void;
   isCreateEventOpen: boolean;
@@ -93,6 +95,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeTab, setActiveTab] = useState<ActiveTab>('musicians');
   const [selectedMusicianForModal, setSelectedMusicianForModal] = useState<MusicianProfile | null>(null);
   const [selectedBandForModal, setSelectedBandForModal] = useState<Band | null>(null);
+  const [selectedEventForModal, setSelectedEventForModal] = useState<JamEvent | null>(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
@@ -230,6 +233,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     try {
       const updatedEvent = await eventsApi.joinSlot(eventId, slotId);
       setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+      if (selectedEventForModal?.id === updatedEvent.id) {
+        setSelectedEventForModal(updatedEvent);
+      }
       showNotification('Ti sei unito alla jam session!', 'success');
       return true;
     } catch (err: any) {
@@ -243,6 +249,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     try {
       const updatedEvent = await eventsApi.leaveSlot(eventId, slotId);
       setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+      if (selectedEventForModal?.id === updatedEvent.id) {
+        setSelectedEventForModal(updatedEvent);
+      }
       showNotification('Hai liberato il tuo posto nella jam.', 'info');
     } catch (err: any) {
       showNotification(err.message || 'Errore nel liberare il posto', 'error');
@@ -258,6 +267,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     try {
       const updatedEvent = await eventsApi.applyBand(eventId, { bandId, message });
       setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+      if (selectedEventForModal?.id === updatedEvent.id) {
+        setSelectedEventForModal(updatedEvent);
+      }
       showNotification('Band candidata con successo all\'evento!', 'success');
       return true;
     } catch (err: any) {
@@ -271,6 +283,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     try {
       const updatedEvent = await eventsApi.withdrawBand(eventId, bandId);
       setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+      if (selectedEventForModal?.id === updatedEvent.id) {
+        setSelectedEventForModal(updatedEvent);
+      }
       showNotification('Candidatura della band ritirata.', 'info');
       return true;
     } catch (err: any) {
@@ -288,6 +303,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     try {
       const updatedEvent = await eventsApi.addComment(eventId, content);
       setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+      if (selectedEventForModal?.id === updatedEvent.id) {
+        setSelectedEventForModal(updatedEvent);
+      }
       showNotification('Commento inviato con successo!', 'success');
       return true;
     } catch (err: any) {
@@ -462,6 +480,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setSelectedMusicianForModal,
         selectedBandForModal,
         setSelectedBandForModal,
+        selectedEventForModal,
+        setSelectedEventForModal,
         isEditProfileOpen,
         setIsEditProfileOpen,
         isCreateEventOpen,
